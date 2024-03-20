@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "273028113150",
+    "project_id": "easyattend-bc902",
+    "storage_bucket": "easyattend-bc902.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:273028113150:android:100fceeded892ab8137baf",
+        "android_client_info": {
+          "package_name": "com.example.easy_attend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCE3vPKo9xXZP-004g-CkFKql-8LyWyguA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
