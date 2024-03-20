@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/get_data.dart';
+import 'package:easy_attend/Methods/get_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../NativeAdd.dart';
+// import '../../NativeAdd.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -45,7 +45,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               child: (Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const BannerExample(),
+                  // const BannerExample(),
                   Padding(
                       padding: const EdgeInsets.fromLTRB(35, 35, 0, 10),
                       child: Column(

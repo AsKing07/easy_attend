@@ -1,7 +1,7 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/get_data.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/set_data.dart';
+import 'package:easy_attend/Methods/get_data.dart';
+import 'package:easy_attend/Methods/set_data.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';

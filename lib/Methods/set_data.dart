@@ -131,8 +131,33 @@ class set_data_Admin {
           await FirebaseFirestore.instance.collection("filiere").get();
 
       querySnapshot.docs.forEach((doc) {
-        doc.reference.delete();
+        doc.reference.update({'statut': "0"});
+        //TODO: Supprimer les cours associés
+        //
+        //TODO Supprimer les  étudiants associé
       });
+    } catch (e) {
+      errorMessage(context);
+    }
+  }
+
+//Supprimer prof
+  Future<void> deleteProf(
+    id,
+    BuildContext context,
+  ) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    // Supprimez le prof de Firestore
+
+    try {
+      FirebaseFirestore.instance.collection('prof').doc(id).delete();
+      //TODO: Supprimer le prof des cours associés
+
+      Navigator.pop(context);
     } catch (e) {
       errorMessage(context);
     }

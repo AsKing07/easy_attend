@@ -1,5 +1,5 @@
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/set_data.dart';
+import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';

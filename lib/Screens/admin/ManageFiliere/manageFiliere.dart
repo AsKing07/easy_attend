@@ -2,7 +2,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/addNewFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/editFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/filiere_trashed.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/set_data.dart';
+import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,6 @@ class ManageFilierePage extends StatefulWidget {
 }
 
 class _ManageFilierePageState extends State<ManageFilierePage> {
-  var allfiliere = [];
   String searchText = '';
 
   @override
@@ -28,13 +27,13 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
             height: 80,
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             child: SearchBar(
-              leading: Icon(
+              leading: const Icon(
                 Icons.search,
               ),
               hintText: "Rechercher",
               onChanged: (value) {
                 setState(() {
-                  searchText = value.toLowerCase();
+                  searchText = value;
                 });
               },
             ),
@@ -54,10 +53,9 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                   if (snapshot.data!.docs
                       .isEmpty) // Afficher un message si aucun résultat n'est trouvé
                   {
-                    return NoResultWidget();
+                    return const NoResultWidget();
                   } else {
                     final filieres = snapshot.data!.docs;
-                    allfiliere = filieres;
                     return ListView.builder(
                       itemCount: filieres.length,
                       itemBuilder: (context, index) {
@@ -173,7 +171,7 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => addNewFilierePage()),
+                        builder: (context) => const addNewFilierePage()),
                   );
                 },
               ),
