@@ -25,8 +25,15 @@ class connexion_methods_prof {
             await FirebaseFirestore.instance.collection("prof").doc(uid).get();
 
         if (userSnapshot.exists) {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => ProfHome()));
+          if (userSnapshot.data()!["statut"] == "0") {
+            Navigator.pop(context);
+
+            notProfMessage(context);
+            FirebaseAuth.instance.signOut();
+          } else {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => ProfHome()));
+          }
         } else {
           Navigator.pop(context);
 

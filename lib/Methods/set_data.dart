@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/my_success_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class set_data_Admin {
@@ -154,13 +155,65 @@ class set_data_Admin {
     // Supprimez le prof de Firestore
 
     try {
-      FirebaseFirestore.instance.collection('prof').doc(id).delete();
+      FirebaseFirestore.instance
+          .collection('prof')
+          .doc(id)
+          .update({"statut": "0"});
+
       //TODO: Supprimer le prof des cours associés
 
       Navigator.pop(context);
     } catch (e) {
       errorMessage(context);
     }
+  }
+
+  //Restaurer prof
+  Future<void> restoreProf(
+    id,
+    BuildContext context,
+  ) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    // Supprimez le prof de Firestore
+
+    try {
+      FirebaseFirestore.instance
+          .collection('prof')
+          .doc(id)
+          .update({"statut": "1"});
+
+      Navigator.pop(context);
+    } catch (e) {
+      errorMessage(context);
+    }
+  }
+
+//Modifier Filière
+  void modifierProfByAdmin(profId, nom, prenom, phone, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+
+    FirebaseFirestore.instance.collection('prof').doc(profId).update({
+      'nom': nom.toString().toUpperCase(),
+      'phone': phone.toString().toUpperCase(),
+      'prenom': prenom.toString().toUpperCase(),
+    }).then((value) {
+      // Filière modifiée avec succès
+      Navigator.pop(context);
+      succesMessage(context);
+    }).catchError((error) {
+      // Une erreur s'est produite lors de la modification de la filière
+      print(error);
+      Navigator.pop(context);
+      errorMessage(context);
+    });
   }
 
   void errorMessage(BuildContext context) {

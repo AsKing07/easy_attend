@@ -142,7 +142,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 width: 160.0,
                                 height: 210.0,
                                 child: FutureBuilder(
-                                    future: get_dataAdmin().getTeacherData(),
+                                    future:
+                                        get_dataAdmin().getActifTeacherData(),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
