@@ -1,5 +1,6 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
+import 'package:easy_attend/Screens/admin/ManageCourse/manageCourse.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/manageFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/manageProf.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
@@ -33,10 +34,10 @@ class _AdminHomeState extends State<AdminHome> {
     //     text: 'Gérer les étudiants',
     //     icon: Icons.person,
     //     tap: RegisterStudent()),
-    // MenuItems(
-    //     text: 'Gérer les Cours',
-    //     icon: Icons.settings_applications_outlined,
-    //     tap: ManageCourse()),
+    MenuItems(
+        text: 'Gérer les Cours',
+        icon: Icons.settings_applications_outlined,
+        tap: ManageCoursePage()),
   ];
 
   @override

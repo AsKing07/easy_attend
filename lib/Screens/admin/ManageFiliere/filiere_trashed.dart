@@ -95,9 +95,8 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
                                         TextButton(
                                           onPressed: () async {
                                             // Supprimez la filière de Firestore
-                                            await set_data_Admin()
-                                                .restoreFiliere(
-                                                    filiere.id, context);
+                                            await set_Data().restoreFiliere(
+                                                filiere.id, context);
                                             Navigator.of(context).pop();
                                           },
                                           child: const Text('Restaurer'),

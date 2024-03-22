@@ -227,7 +227,7 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             if (niveauxSelectionnes.isNotEmpty) {
-                              set_data_Admin().modifierFiliere(
+                              set_Data().modifierFiliere(
                                   widget.filiereId,
                                   _nomController.text,
                                   _idController.text,

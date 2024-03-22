@@ -226,7 +226,7 @@ class _EditProfPageState extends State<EditProfPage> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          set_data_Admin().modifierProfByAdmin(
+                          set_Data().modifierProfByAdmin(
                               widget.profId,
                               _nomController.text,
                               _prenomController.text,

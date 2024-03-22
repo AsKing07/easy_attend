@@ -146,9 +146,8 @@ class _ManageProfState extends State<ManageProf> {
                                               TextButton(
                                                 onPressed: () async {
                                                   // Supprimez le prof de Firestore
-                                                  await set_data_Admin()
-                                                      .deleteProf(
-                                                          prof.id, context);
+                                                  await set_Data().deleteProf(
+                                                      prof.id, context);
                                                   Navigator.of(context).pop();
                                                 },
                                                 child: const Text('Supprimer'),
@@ -240,7 +239,7 @@ class _ManageProfState extends State<ManageProf> {
                         TextButton(
                           onPressed: () async {
                             // // Supprimez les profs de Firestore
-                            // await set_data_Admin().deleteAllProf(context);
+                            // await set_Data().deleteAllProf(context);
                             // Navigator.of(context).pop();
                           },
                           child: const Text('Supprimer'),

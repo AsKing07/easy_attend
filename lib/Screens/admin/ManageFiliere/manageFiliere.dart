@@ -118,9 +118,8 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                                         TextButton(
                                           onPressed: () async {
                                             // Supprimez la filière de Firestore
-                                            await set_data_Admin()
-                                                .deleteFiliere(
-                                                    filiere.id, context);
+                                            await set_Data().deleteFiliere(
+                                                filiere.id, context);
                                             Navigator.of(context).pop();
                                           },
                                           child: const Text('Supprimer'),
@@ -137,12 +136,14 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                     );
                   }
                 } else if (snapshot.hasError) {
-                  // return
-                  //  Text('Erreur: ${snapshot.error}'
-                  //  );
-                  return myErrorWidget(
-                      content: "Une erreur innatendue s'est produite",
-                      height: 40);
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return myErrorWidget(
+                            content: "Une erreur innatendue s'est produite",
+                            height: 40);
+                      });
+                  return Text('Erreur: ${snapshot.error}');
                 } else {
                   return const Center(
                     child: CircularProgressIndicator(),
@@ -218,7 +219,7 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                         TextButton(
                           onPressed: () async {
                             // Supprimez les filière de Firestore
-                            await set_data_Admin().deleteAllFiliere(context);
+                            await set_Data().deleteAllFiliere(context);
                             Navigator.of(context).pop();
                           },
                           child: const Text('Supprimer'),

@@ -91,7 +91,7 @@ class _TrashProfPageState extends State<TrashProfPage> {
                                         TextButton(
                                           onPressed: () async {
                                             // Supprimez la filière de Firestore
-                                            await set_data_Admin()
+                                            await set_Data()
                                                 .restoreProf(prof.id, context);
                                             Navigator.of(context).pop();
                                           },

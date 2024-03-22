@@ -9,6 +9,7 @@ class get_dataAdmin {
   //METHODES DES FILIERES
   Future getFiliereData() async {
     var data = await FirebaseFirestore.instance.collection("filiere").get();
+
     return data.docs;
   }
 

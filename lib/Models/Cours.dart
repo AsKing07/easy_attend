@@ -3,16 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Cours {
   String idCours;
   String nomCours;
-  String departementId;
-  String filiereId;
+  String? filiereId;
   String niveau;
-  String professeurId;
+  String? professeurId;
 
   Cours({
     required this.idCours,
     required this.nomCours,
-    required this.departementId,
-    required this.filiereId,
+    this.filiereId,
     required this.niveau,
     required this.professeurId,
   });
@@ -22,7 +20,6 @@ class Cours {
       idCours: doc['idCours'],
       nomCours: doc["nomCours"],
       filiereId: doc["filiereId"],
-      departementId: doc["departementId"],
       niveau: doc['niveau'],
       professeurId: doc["professeurId"],
     );

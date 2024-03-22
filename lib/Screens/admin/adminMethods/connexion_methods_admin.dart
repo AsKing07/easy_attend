@@ -93,7 +93,7 @@ class connexion_methods_admin {
               child: CircularProgressIndicator(),
             ));
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final data = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -103,8 +103,10 @@ class connexion_methods_admin {
             await FirebaseFirestore.instance.collection("admin").doc(uid).get();
 
         if (userSnapshot.exists) {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => AdminHome()));
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => AdminHome()),
+              (route) => false);
         } else {
           Navigator.pop(context);
           notAdminMessage(context);
@@ -228,9 +230,7 @@ class connexion_methods_admin {
   //log out user method
   void logUserOut(BuildContext context) {
     FirebaseAuth.instance.signOut();
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AuthPage()),
-    );
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => AuthPage()), (route) => false);
   }
 }

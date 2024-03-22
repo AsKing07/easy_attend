@@ -219,7 +219,7 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               if (niveauxSelectionnes.isNotEmpty) {
-                                await set_data_Admin().ajouterFiliere(
+                                await set_Data().ajouterFiliere(
                                     _nomController.text,
                                     _idController.text,
                                     niveauxSelectionnes.toSet().toList(),
