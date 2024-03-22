@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/admin/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/my_success_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 
 class connexion_methods_admin {
-  //Fonctions de création de l'utilisateur admin
+//Fonctions de création de l'utilisateur admin
   Future signUp(String email, String password, String nom, String prenom,
       String phone, BuildContext context) async {
     showDialog(
@@ -64,28 +65,17 @@ class connexion_methods_admin {
         } else {
           // Gérer les autres erreurs Firebase
           print('Une erreur s\'est produite lors de l\'inscription : $e');
-          errorMessage(context);
+          Helper().ErrorMessage(context);
         }
       } else {
         // Gérer les autres erreurs
         print('Une erreur s\'est produite lors de l\'inscription : $e');
-        errorMessage(context);
+        Helper().ErrorMessage(context);
       }
     }
   }
 
-  Future addUserDetails(
-      String nom, String prenom, String email, String phone, final ref) async {
-    await ref.set({
-      'nom': nom,
-      'prenom': prenom,
-      'email': email,
-      'phone': phone,
-    });
-  }
-
-  //Méthodes de connexion admin
-
+//LogIn Admin
   Future logAdminIn(String email, String password, BuildContext context) async {
     showDialog(
         context: context,
@@ -127,6 +117,7 @@ class connexion_methods_admin {
     }
   }
 
+//Ajouter 1 prof
   Future createProf(String email, String password, String nom, String prenom,
       String phone, BuildContext context) async {
     showDialog(
@@ -153,8 +144,8 @@ class connexion_methods_admin {
       if (uid != null) {
         // Ajout des détails du prof
         FirebaseFirestore _db = FirebaseFirestore.instance;
-        final adminRef = _db.collection("prof").doc(uid);
-        await addUserDetails(nom, prenom, email, phone, adminRef);
+        final Ref = _db.collection("prof").doc(uid);
+        await addUserDetails(nom, prenom, email, phone, Ref);
         Navigator.pop(context);
         showDialog(
           context: context,
@@ -183,26 +174,123 @@ class connexion_methods_admin {
         } else {
           // Gérer les autres erreurs Firebase
           print('Une erreur s\'est produite lors de l\'inscription : $e');
-          errorMessage(context);
+          Helper().ErrorMessage(context);
         }
       } else {
         // Gérer les autres erreurs
         print('Une erreur s\'est produite lors de l\'inscription : $e');
-        errorMessage(context);
+        Helper().ErrorMessage(context);
       }
     }
   }
 
-//  affiche un message  invalide si un mauvais e-mail ou mdp est fourni
-  void badCredential(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return myErrorWidget(
-            content: "Veuillez vérifier vos informations de connexion.",
-            height: 150);
-      },
-    );
+//Ajouter 1 étudiant
+  Future<void> addOneStudent(Etudiant etudiant, BuildContext context) async {
+    try {
+      showDialog(
+          context: context,
+          builder: (context) => const Center(
+                child: CircularProgressIndicator(),
+              ));
+
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection('etudiant')
+          .where('matricule', isEqualTo: etudiant.matricule)
+          .get();
+
+      if (docSnapshot.docs.isNotEmpty) {
+        // L' étudiant existe déjà, afficher un message d'erreur
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return myErrorWidget(
+                content: "Un étudiant avec le même matricule existe déjà.",
+                height: 160);
+          },
+        );
+      } else {
+        // Création de l'etudiant
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: etudiant.email.trim(),
+          password: etudiant.password.trim(),
+        );
+
+        // Connexion de l'étudiant
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: etudiant.email,
+          password: etudiant.password,
+        );
+
+        // Obtention de l'UID de l'étudiant
+        String? uid = FirebaseAuth.instance.currentUser?.uid;
+
+        if (uid != null) {
+          FirebaseFirestore _db = FirebaseFirestore.instance;
+
+          // L'étudiant n'existe pas encore, ajouter
+          await FirebaseFirestore.instance.collection('etudiant').doc(uid).set({
+            'nom': etudiant.nom.toUpperCase(),
+            'prenom': etudiant.prenom.toUpperCase(),
+            'matricule': etudiant.matricule.toUpperCase(),
+            'phone': etudiant.phone.toUpperCase(),
+            'filiere': etudiant.filiere.toUpperCase(),
+            'idFiliere': etudiant.idFiliere,
+            'niveau': etudiant.niveau.toUpperCase(),
+            'statut': etudiant.statut.toUpperCase(),
+          }).then((value) {
+            // Etudiant ajouté avec succès
+            Navigator.pop(context);
+            Helper().succesMessage(context);
+          }).catchError((error) {
+            // Une erreur s'est produite lors de l'ajout du cours
+            print(error);
+            Navigator.pop(context);
+            Helper().ErrorMessage(context);
+          });
+        }
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      // Gérer l'erreur d'inscription ici
+      if (e is FirebaseAuthException) {
+        if (e.code == 'email-already-in-use') {
+          // L'email est déjà utilisé, afficher un message à l'utilisateur
+
+          GFToast.showToast(
+              'Un utilisateur avec cet email existe déjà', context,
+              backgroundColor: Colors.white,
+              textStyle: const TextStyle(color: Colors.red),
+              toastDuration: 6);
+        } else {
+          // Gérer les autres erreurs Firebase
+          print('Une erreur s\'est produite lors de l\'inscription : $e');
+          Helper().ErrorMessage(context);
+        }
+      } else {
+        // Gérer les autres erreurs
+        print('Une erreur s\'est produite lors de l\'inscription : $e');
+        Helper().ErrorMessage(context);
+      }
+    }
+  }
+
+  //log out user method
+  void logUserOut(BuildContext context) {
+    FirebaseAuth.instance.signOut();
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => AuthPage()), (route) => false);
+  }
+
+//HELPER
+  Future addUserDetails(
+      String nom, String prenom, String email, String phone, final ref) async {
+    await ref.set({
+      'nom': nom,
+      'prenom': prenom,
+      'email': email,
+      'phone': phone,
+    });
   }
 
   void notAdminMessage(BuildContext context) {
@@ -217,20 +305,15 @@ class connexion_methods_admin {
     );
   }
 
-  void errorMessage(BuildContext context) {
+  //  affiche un message  invalide si un mauvais e-mail ou mdp est fourni
+  void badCredential(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
         return myErrorWidget(
-            content: "Une erreur inconnue s'est produite.", height: 180);
+            content: "Veuillez vérifier vos informations de connexion.",
+            height: 150);
       },
     );
-  }
-
-  //log out user method
-  void logUserOut(BuildContext context) {
-    FirebaseAuth.instance.signOut();
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => AuthPage()), (route) => false);
   }
 }

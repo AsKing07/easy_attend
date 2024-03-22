@@ -3,6 +3,7 @@ import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/manageCourse.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/manageFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/manageProf.dart';
+import 'package:easy_attend/Screens/admin/ManageStudents/manageStudent.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
 import 'package:easy_attend/Screens/admin/admin_Dashboard.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
@@ -30,14 +31,18 @@ class _AdminHomeState extends State<AdminHome> {
         tap: ManageFilierePage()),
     MenuItems(
         text: 'Gérer les professeurs', icon: Icons.person_3, tap: ManageProf()),
-    // MenuItems(
-    //     text: 'Gérer les étudiants',
-    //     icon: Icons.person,
-    //     tap: RegisterStudent()),
+    MenuItems(
+        text: 'Gérer les étudiants',
+        icon: Icons.person,
+        tap: ManageStudentPage()),
     MenuItems(
         text: 'Gérer les Cours',
         icon: Icons.settings_applications_outlined,
         tap: ManageCoursePage()),
+    // MenuItems(
+    //     text: 'Gérer les requettes',
+    //     icon: Icons.settings_applications_outlined,
+    //     tap: ManageCoursePage()),
   ];
 
   @override

@@ -1,10 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/addNewCourse.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/editCourse.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
@@ -137,9 +140,8 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                   );
                 }
               } else if (snapshot.hasError) {
-                return myErrorWidget(
-                    content: "Une erreur innatendue s'est produite",
-                    height: 40);
+                Helper().ErrorMessage(context);
+                return SizedBox();
               } else {
                 return const Center(
                   child: CircularProgressIndicator(),

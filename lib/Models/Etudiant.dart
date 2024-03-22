@@ -1,17 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Admin {
-  String uid;
+class Etudiant {
+  String? uid;
   String nom;
   String prenom;
   String email;
   String password;
   String phone;
   String matricule;
-  String idFiliere;
+  String? idFiliere;
+  String filiere;
+  String niveau;
+  String statut;
 
-  Admin({
-    required this.uid,
+  Etudiant({
+    this.uid,
     required this.matricule,
     required this.nom,
     required this.prenom,
@@ -19,18 +22,23 @@ class Admin {
     required this.password,
     required this.phone,
     required this.idFiliere,
+    required this.filiere,
+    required this.niveau,
+    required this.statut,
   });
 
-  factory Admin.fromDocument(DocumentSnapshot doc) {
-    return Admin(
-      uid: doc['uid'],
-      matricule: doc['matricule'],
-      nom: doc["nom"],
-      prenom: doc["prenom"],
-      email: doc["email"],
-      password: doc["password"],
-      phone: doc["phone"],
-      idFiliere: doc["idFiliere"],
-    );
+  factory Etudiant.fromDocument(DocumentSnapshot doc) {
+    return Etudiant(
+        uid: doc.id,
+        matricule: doc['matricule'],
+        nom: doc["nom"],
+        prenom: doc["prenom"],
+        email: doc["email"],
+        password: doc["password"],
+        phone: doc["phone"],
+        idFiliere: doc["idFiliere"],
+        filiere: doc["filiere"],
+        niveau: doc["niveau"],
+        statut: doc['statut']);
   }
 }

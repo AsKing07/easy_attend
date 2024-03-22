@@ -2,6 +2,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Models/Cours.dart';
+import 'package:easy_attend/Models/Etudiant.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/my_success_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +29,7 @@ class set_Data {
     if (docSnapshot.exists) {
       // La filière existe déjà, afficher un message d'erreur
       Navigator.pop(context);
-      filiereExistanteMessage(context);
+      Helper().filiereExistanteMessage(context);
     } else {
       // La filière n'existe pas encore, ajouter la nouvelle filière
       await FirebaseFirestore.instance.collection('filiere').add({
@@ -38,12 +40,12 @@ class set_Data {
       }).then((value) {
         // Filère ajoutée avec succès
         Navigator.pop(context);
-        succesMessage(context);
+        Helper().succesMessage(context);
       }).catchError((error) {
         // Une erreur s'est produite lors de l'ajout de la filière
         print(error);
         Navigator.pop(context);
-        errorMessage(context);
+        Helper().ErrorMessage(context);
       });
     }
   }
@@ -64,12 +66,12 @@ class set_Data {
     }).then((value) {
       // Filière modifiée avec succès
       Navigator.pop(context);
-      succesMessage(context);
+      Helper().succesMessage(context);
     }).catchError((error) {
       // Une erreur s'est produite lors de la modification de la filière
       print(error);
       Navigator.pop(context);
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     });
   }
 
@@ -95,7 +97,7 @@ class set_Data {
       //TODO Supprimer les  étudiants associé
       Navigator.pop(context);
     } catch (e) {
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     }
   }
 
@@ -121,7 +123,7 @@ class set_Data {
       //TODO Restaurer les  étudiants associé
       Navigator.pop(context);
     } catch (e) {
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     }
   }
 
@@ -143,7 +145,7 @@ class set_Data {
         //TODO Supprimer les  étudiants associé
       });
     } catch (e) {
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     }
   }
 
@@ -167,11 +169,9 @@ class set_Data {
           .doc(id)
           .update({"statut": "0"});
 
-      //TODO: Supprimer le prof des cours associés
-
       Navigator.pop(context);
     } catch (e) {
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     }
   }
 
@@ -195,7 +195,7 @@ class set_Data {
 
       Navigator.pop(context);
     } catch (e) {
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     }
   }
 
@@ -214,12 +214,12 @@ class set_Data {
     }).then((value) {
       // Filière modifiée avec succès
       Navigator.pop(context);
-      succesMessage(context);
+      Helper().succesMessage(context);
     }).catchError((error) {
       // Une erreur s'est produite lors de la modification de la filière
       print(error);
       Navigator.pop(context);
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     });
   }
 
@@ -241,13 +241,7 @@ class set_Data {
     if (docSnapshot.docs.length > 0) {
       // Le cours existe déjà, afficher un message d'erreur
       Navigator.pop(context);
-      showDialog(
-        context: context,
-        builder: (context) {
-          return myErrorWidget(
-              content: "Un cours avec le même id existe déjà.", height: 160);
-        },
-      );
+      Helper().ErrorMessage(context);
     } else {
       // Le cours n'existe pas encore, ajouter
       await FirebaseFirestore.instance.collection('cours').add({
@@ -259,12 +253,12 @@ class set_Data {
       }).then((value) {
         // Cours ajouté avec succès
         Navigator.pop(context);
-        succesMessage(context);
+        Helper().succesMessage(context);
       }).catchError((error) {
         // Une erreur s'est produite lors de l'ajout du cours
         print(error);
         Navigator.pop(context);
-        errorMessage(context);
+        Helper().ErrorMessage(context);
       });
     }
   }
@@ -289,12 +283,12 @@ class set_Data {
     }).then((value) {
       // Cours modifié avec succès
       Navigator.pop(context);
-      succesMessage(context);
+      Helper().succesMessage(context);
     }).catchError((error) {
       // Une erreur s'est produite lors de la modification du cours
       print(error);
       Navigator.pop(context);
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     });
   }
 
@@ -315,7 +309,7 @@ class set_Data {
 
       Navigator.pop(context);
     } catch (e) {
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     }
   }
 
@@ -340,38 +334,9 @@ class set_Data {
 
       Navigator.pop(context);
     } catch (e) {
-      errorMessage(context);
+      Helper().ErrorMessage(context);
     }
   }
 
-//HELPER
-  void errorMessage(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return myErrorWidget(
-            content: "Une erreur inconnue s'est produite.", height: 180);
-      },
-    );
-  }
-
-  void filiereExistanteMessage(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return myErrorWidget(
-            content: "Une filière avec le même id existe déjà.", height: 160);
-      },
-    );
-  }
-
-  void succesMessage(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return SuccessWidget(
-            content: "L'opération a été un succes.", height: 100);
-      },
-    );
-  }
+//METHODES DES ETUDIANTS
 }

@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Screens/professeur/ProfHome.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,7 +29,7 @@ class connexion_methods_prof {
           if (userSnapshot.data()!["statut"] == "0") {
             Navigator.pop(context);
 
-            notProfMessage(context);
+            Helper().notAuthorizedMessage(context);
             FirebaseAuth.instance.signOut();
           } else {
             Navigator.pushReplacement(
@@ -37,7 +38,7 @@ class connexion_methods_prof {
         } else {
           Navigator.pop(context);
 
-          notProfMessage(context);
+          Helper().notAuthorizedMessage(context);
           FirebaseAuth.instance.signOut();
         }
       }
@@ -55,18 +56,6 @@ class connexion_methods_prof {
         return myErrorWidget(
             content: "Veuillez vérifier vos informations de connexion.",
             height: 150);
-      },
-    );
-  }
-
-  void notProfMessage(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return myErrorWidget(
-            content:
-                "Désolé, vous n'êtes pas autorisé(e) à accéder à cette page.",
-            height: 180);
       },
     );
   }

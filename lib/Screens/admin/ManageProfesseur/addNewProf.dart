@@ -19,6 +19,8 @@ class _addNewProfPageState extends State<addNewProfPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  @override
   void dispose() {
     _nomController.dispose();
     _prenomController.dispose();

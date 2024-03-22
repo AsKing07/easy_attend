@@ -3,6 +3,7 @@ import 'package:easy_attend/Screens/admin/ManageFiliere/addNewFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/editFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/filiere_trashed.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
@@ -136,14 +137,8 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                     );
                   }
                 } else if (snapshot.hasError) {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return myErrorWidget(
-                            content: "Une erreur innatendue s'est produite",
-                            height: 40);
-                      });
-                  return Text('Erreur: ${snapshot.error}');
+                  Helper().ErrorMessage(context);
+                  return SizedBox();
                 } else {
                   return const Center(
                     child: CircularProgressIndicator(),

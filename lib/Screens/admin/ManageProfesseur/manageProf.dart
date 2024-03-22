@@ -162,10 +162,6 @@ class _ManageProfState extends State<ManageProf> {
                               );
                             });
                       }
-                    } else if (snapshot.hasError) {
-                      return myErrorWidget(
-                          content: "Une erreur innatendue s'est produite",
-                          height: 150);
                     } else {
                       return const Center(
                         child: CircularProgressIndicator(),
