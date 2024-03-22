@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
@@ -23,13 +25,13 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
   List<Prof> AllProfs = [];
   Filiere? _selectedFiliere;
   Prof? _selectedProf;
-  var _selectedNiveau = null;
+  var _selectedNiveau;
   final _nomCoursController = TextEditingController();
   final _idCoursController = TextEditingController();
 
   Future<void> loadAllActifFilieres() async {
     List<QueryDocumentSnapshot> docsFiliere =
-        await get_dataAdmin().getActifFiliereData();
+        await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
     docsFiliere.forEach((doc) {
@@ -53,7 +55,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
 
   Future<void> loadAllActifProfData() async {
     List<QueryDocumentSnapshot> docsProfs =
-        await get_dataAdmin().getActifTeacherData();
+        await get_Data().getActifTeacherData();
     List<Prof> profs = [];
 
     docsProfs.forEach((doc) {
@@ -71,16 +73,6 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
     setState(() {
       AllProfs.addAll(profs);
     });
-  }
-
-  Widget TextForm() {
-    if (_selectedProf!.nom.isNotEmpty) {
-      return Column(
-        children: [],
-      );
-    } else {
-      return SizedBox();
-    }
   }
 
   @override
@@ -164,7 +156,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                       decoration: const InputDecoration(
                           labelText: 'Choisissez la filière'),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
 
@@ -184,11 +176,11 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                                 child: Text(value),
                               );
                             }).toList(),
-                            hint: Text('Choisissez le niveau'),
+                            hint: const Text('Choisissez le niveau'),
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 16,
                     ),
 
@@ -212,18 +204,22 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                             decoration: const InputDecoration(
                                 labelText: 'Choisissez le professeur'),
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 40,
                     ),
 
                     _selectedProf != null
                         ? TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                _nomCoursController.text = value;
+                              });
+                            },
                             controller: _nomCoursController,
                             validator: (value) {
-                              if (_nomCoursController.text.isEmpty ||
-                                  _nomCoursController.text == null) {
+                              if (_nomCoursController.text.isEmpty) {
                                 return "Ce champ est obligatoire";
                               }
                             },
@@ -255,18 +251,22 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                                     color: Color(0xff9DD1F1), width: 3.0),
                               ),
                             ))
-                        : SizedBox(),
+                        : const SizedBox(),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
 
                     _nomCoursController.text.isNotEmpty
                         ? TextFormField(
+                            onChanged: (value) {
+                              setState(() {
+                                _idCoursController.text = value;
+                              });
+                            },
                             controller: _idCoursController,
                             validator: (value) {
-                              if (_idCoursController.text.isEmpty ||
-                                  _idCoursController.text == null) {
+                              if (_idCoursController.text.isEmpty) {
                                 return "Ce champ est obligatoire";
                               }
                             },
@@ -298,7 +298,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                                     color: Color(0xff9DD1F1), width: 3.0),
                               ),
                             ))
-                        : SizedBox(),
+                        : const SizedBox(),
                     const SizedBox(
                       height: 50,
                     ),

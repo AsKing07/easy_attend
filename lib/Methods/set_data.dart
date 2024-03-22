@@ -239,7 +239,7 @@ class set_Data {
         .get();
 
     if (docSnapshot.docs.length > 0) {
-      // La filière existe déjà, afficher un message d'erreur
+      // Le cours existe déjà, afficher un message d'erreur
       Navigator.pop(context);
       showDialog(
         context: context,
@@ -257,16 +257,45 @@ class set_Data {
         'filiereId': cours.filiereId,
         'professeurId': cours.professeurId,
       }).then((value) {
-        // Filère ajoutée avec succès
+        // Cours ajouté avec succès
         Navigator.pop(context);
         succesMessage(context);
       }).catchError((error) {
-        // Une erreur s'est produite lors de l'ajout de la filière
+        // Une erreur s'est produite lors de l'ajout du cours
         print(error);
         Navigator.pop(context);
         errorMessage(context);
       });
     }
+  }
+
+//Modifier cours
+  Future<void> modifierCours(Cours cours, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+
+    await FirebaseFirestore.instance
+        .collection('cours')
+        .doc(cours.idDoc)
+        .update({
+      'nomCours': cours.nomCours,
+      'idCours': cours.idCours.toUpperCase(),
+      'niveau': cours.niveau.toUpperCase(),
+      'filiereId': cours.filiereId,
+      'professeurId': cours.professeurId
+    }).then((value) {
+      // Cours modifié avec succès
+      Navigator.pop(context);
+      succesMessage(context);
+    }).catchError((error) {
+      // Une erreur s'est produite lors de la modification du cours
+      print(error);
+      Navigator.pop(context);
+      errorMessage(context);
+    });
   }
 
 // SUPPRIMER COURS
@@ -283,6 +312,31 @@ class set_Data {
 
     try {
       FirebaseFirestore.instance.collection('cours').doc(id).delete();
+
+      Navigator.pop(context);
+    } catch (e) {
+      errorMessage(context);
+    }
+  }
+
+// SUPPRIMER TOUS LES COURS
+  Future<void> deleteAllCours(
+    BuildContext context,
+  ) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    // Supprimez les cours de Firestore
+
+    try {
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection("cours").get();
+
+      querySnapshot.docs.forEach((doc) {
+        doc.reference.delete();
+      });
 
       Navigator.pop(context);
     } catch (e) {

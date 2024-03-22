@@ -19,7 +19,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   bool dataIsLoaded = false;
 
   void loadAdmin() async {
-    final x = await get_dataAdmin().loadCurrentAdminData();
+    final x = await get_Data().loadCurrentAdminData();
     setState(() {
       admin = x;
       dataIsLoaded = true;
@@ -81,7 +81,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                               width: 160,
                               height: 210,
                               child: FutureBuilder(
-                                future: get_dataAdmin().getStudentData(),
+                                future: get_Data().getStudentData(),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -142,8 +142,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 width: 160.0,
                                 height: 210.0,
                                 child: FutureBuilder(
-                                    future:
-                                        get_dataAdmin().getActifTeacherData(),
+                                    future: get_Data().getActifTeacherData(),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
@@ -210,7 +209,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                               width: 160,
                               height: 210,
                               child: FutureBuilder(
-                                future: get_dataAdmin().getActifFiliereData(),
+                                future: get_Data().getActifFiliereData(),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -271,7 +270,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 width: 160.0,
                                 height: 210.0,
                                 child: FutureBuilder(
-                                    future: get_dataAdmin().getCourseData(),
+                                    future: get_Data().getCourseData(),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {

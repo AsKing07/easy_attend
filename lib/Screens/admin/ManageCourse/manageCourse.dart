@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/addNewCourse.dart';
+import 'package:easy_attend/Screens/admin/ManageCourse/editCourse.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,11 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                       final courData = cour.data() as Map<String, dynamic>;
                       return ListTile(
                         title: Text(courData['nomCours']),
+                        subtitle: Text(
+                          courData['idCours'],
+                          style:
+                              const TextStyle(color: AppColors.secondaryColor),
+                        ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -68,13 +74,12 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                               icon: const Icon(Icons.edit),
                               onPressed: () {
                                 // Naviguez vers la page de modification en passant l'ID
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //       builder: (context) =>
-                                //           ModifierFilierePage(
-                                //               filiereId: filiere.id)),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditCoursePage(id: cour.id)),
+                                );
                               },
                             ),
                             IconButton(
@@ -209,8 +214,8 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                         TextButton(
                           onPressed: () async {
                             // Supprimez les filière de Firestore
-                            // await set_Data().deleteAllFiliere(context);
-                            // Navigator.of(context).pop();
+                            await set_Data().deleteAllCours(context);
+                            Navigator.of(context).pop();
                           },
                           child: const Text('Supprimer'),
                         ),

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 
-class get_dataAdmin {
+class get_Data {
   //METHODES
 
   //METHODES DES FILIERES
@@ -86,8 +86,28 @@ class get_dataAdmin {
   }
 
 //METHODES DES COURS
+
+//Recupérer tous les cours
   Future getCourseData() async {
-    var data = await FirebaseFirestore.instance.collection("courses").get();
+    var data = await FirebaseFirestore.instance.collection("cours").get();
     return data.docs;
+  }
+
+  //Récupérer un cours donné
+
+  Future getCourseById(id, BuildContext context) async {
+    try {
+      DocumentSnapshot x =
+          await FirebaseFirestore.instance.collection('cours').doc(id).get();
+      return x;
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      GFToast.showToast(
+          "Une erreur est subvenue lors de la récupération des données",
+          context,
+          backgroundColor: Colors.white,
+          textStyle: const TextStyle(color: Colors.red),
+          toastDuration: 6);
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Cours {
+  String? idDoc;
   String idCours;
   String nomCours;
   String? filiereId;
@@ -8,6 +9,7 @@ class Cours {
   String? professeurId;
 
   Cours({
+    this.idDoc,
     required this.idCours,
     required this.nomCours,
     this.filiereId,
@@ -17,6 +19,7 @@ class Cours {
 
   factory Cours.fromDocument(DocumentSnapshot doc) {
     return Cours(
+      idDoc: doc.id,
       idCours: doc['idCours'],
       nomCours: doc["nomCours"],
       filiereId: doc["filiereId"],

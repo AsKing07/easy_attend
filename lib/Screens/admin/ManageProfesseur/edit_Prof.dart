@@ -35,7 +35,7 @@ class _EditProfPageState extends State<EditProfPage> {
 
   void loadProfData() async {
     DocumentSnapshot prof =
-        await get_dataAdmin().getProfById(widget.profId, context);
+        await get_Data().getProfById(widget.profId, context);
 
     if (prof.exists) {
       final data = prof.data() as Map<String, dynamic>;

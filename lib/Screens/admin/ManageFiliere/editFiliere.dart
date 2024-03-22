@@ -1,5 +1,6 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 class ModifierFilierePage extends StatefulWidget {
   final String filiereId;
 
-  ModifierFilierePage({required this.filiereId});
+  const ModifierFilierePage({super.key, required this.filiereId});
 
   @override
   _ModifierFilierePageState createState() => _ModifierFilierePageState();
@@ -32,8 +33,7 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
 
   void loadFiliereData() async {
     DocumentSnapshot filiere =
-        await get_dataAdmin().getFiliereById(widget.filiereId, context);
-    print(filiere);
+        await get_Data().getFiliereById(widget.filiereId, context);
 
     if (filiere.exists) {
       final data = filiere.data() as Map<String, dynamic>;
@@ -114,10 +114,10 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
                       TextFormField(
                           controller: _nomController,
                           validator: (value) {
-                            if (_nomController.text.isEmpty ||
-                                _nomController.text == null) {
+                            if (_nomController.text.isEmpty) {
                               return "Ce champ est obligatoire";
                             }
+                            return null;
                           },
                           keyboardType: TextInputType.text,
                           style:
@@ -153,10 +153,10 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
                       TextFormField(
                           controller: _idController,
                           validator: (value) {
-                            if (_idController.text.isEmpty ||
-                                _idController.text == null) {
+                            if (_idController.text.isEmpty) {
                               return "Ce champ est obligatoire";
                             }
+                            return null;
                           },
                           keyboardType: TextInputType.text,
                           style:
