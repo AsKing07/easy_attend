@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/admin/AdminHome.dart';
@@ -8,10 +10,22 @@ import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/my_success_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:excel/excel.dart';
 
 class connexion_methods_admin {
+  static Future<UserCredential> register(String email, String password) async {
+    FirebaseApp app = await Firebase.initializeApp(
+        name: 'Secondary', options: Firebase.app().options);
+    UserCredential userCredential = await FirebaseAuth.instanceFor(app: app)
+        .createUserWithEmailAndPassword(email: email, password: password);
+
+    await app.delete();
+    return Future.sync(() => userCredential);
+  }
+
 //Fonctions de création de l'utilisateur admin
   Future signUp(String email, String password, String nom, String prenom,
       String phone, BuildContext context) async {
@@ -40,7 +54,7 @@ class connexion_methods_admin {
         // Ajout des détails de l'utilisateur
         FirebaseFirestore _db = FirebaseFirestore.instance;
         final adminRef = _db.collection("admin").doc(uid);
-        await addUserDetails(nom, prenom, email, phone, adminRef);
+        await addUserDetails(nom, prenom, email, phone, adminRef, null);
 
         // Redirection vers la page d'accueil de l'admin
         Navigator.pushReplacement(
@@ -99,7 +113,7 @@ class connexion_methods_admin {
               (route) => false);
         } else {
           Navigator.pop(context);
-          notAdminMessage(context);
+          Helper().notAuthorizedMessage(context);
           FirebaseAuth.instance.signOut();
         }
       }
@@ -112,10 +126,12 @@ class connexion_methods_admin {
             textStyle: const TextStyle(color: Colors.red),
             toastDuration: 3);
       } else {
-        badCredential(context);
+        Helper().badCredential(context);
       }
     }
   }
+
+//METHODE DES PROFS
 
 //Ajouter 1 prof
   Future createProf(String email, String password, String nom, String prenom,
@@ -126,26 +142,25 @@ class connexion_methods_admin {
               child: CircularProgressIndicator(),
             ));
     try {
-      // Création du prof
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email.trim(),
-        password: password.trim(),
-      );
+      print(FirebaseAuth.instance.currentUser!.uid);
 
-      // Connexion du prof
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      // Création du prof
+      UserCredential userCredential = await register(email, password);
+      // await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      //   email: email.trim(),
+      //   password: password.trim(),
+      // );
 
       // Obtention de l'UID du prof
-      String? uid = FirebaseAuth.instance.currentUser?.uid;
+      String? uid = userCredential.user?.uid;
+
+      print(FirebaseAuth.instance.currentUser!.uid);
 
       if (uid != null) {
         // Ajout des détails du prof
         FirebaseFirestore _db = FirebaseFirestore.instance;
         final Ref = _db.collection("prof").doc(uid);
-        await addUserDetails(nom, prenom, email, phone, Ref);
+        await addUserDetails(nom, prenom, email, phone, Ref, null);
         Navigator.pop(context);
         showDialog(
           context: context,
@@ -184,6 +199,8 @@ class connexion_methods_admin {
     }
   }
 
+//METHODES DES ETUDIANTS
+
 //Ajouter 1 étudiant
   Future<void> addOneStudent(Etudiant etudiant, BuildContext context) async {
     try {
@@ -211,23 +228,17 @@ class connexion_methods_admin {
         );
       } else {
         // Création de l'etudiant
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: etudiant.email.trim(),
-          password: etudiant.password.trim(),
-        );
-
-        // Connexion de l'étudiant
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: etudiant.email,
-          password: etudiant.password,
-        );
+        UserCredential userCredential =
+            await register(etudiant.email.trim(), etudiant.password.trim());
+        // await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        //   email: etudiant.email.trim(),
+        //   password: etudiant.password.trim(),
+        // );
 
         // Obtention de l'UID de l'étudiant
-        String? uid = FirebaseAuth.instance.currentUser?.uid;
+        String? uid = userCredential.user?.uid;
 
         if (uid != null) {
-          FirebaseFirestore _db = FirebaseFirestore.instance;
-
           // L'étudiant n'existe pas encore, ajouter
           await FirebaseFirestore.instance.collection('etudiant').doc(uid).set({
             'nom': etudiant.nom.toUpperCase(),
@@ -275,45 +286,144 @@ class connexion_methods_admin {
     }
   }
 
-  //log out user method
-  void logUserOut(BuildContext context) {
-    FirebaseAuth.instance.signOut();
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => AuthPage()), (route) => false);
+//Ajout d'un étudiant récupérer depuis un fichier excel
+  Future<void> addStudentTookFromExcel(
+      Etudiant etudiant, BuildContext context) async {
+    final docSnapshot = await FirebaseFirestore.instance
+        .collection('etudiant')
+        .where('matricule', isEqualTo: etudiant.matricule)
+        .get();
+
+    if (docSnapshot.docs.isEmpty) {
+      // Création de l'etudiant
+      UserCredential userCredential =
+          await register(etudiant.email.trim(), etudiant.password.trim());
+
+      String? uid = userCredential.user?.uid;
+
+      if (uid != null) {
+        // L'étudiant n'existe pas encore, ajouter
+        await FirebaseFirestore.instance.collection('etudiant').doc(uid).set({
+          'nom': etudiant.nom.toUpperCase(),
+          'prenom': etudiant.prenom.toUpperCase(),
+          'matricule': etudiant.matricule.toUpperCase(),
+          'phone': etudiant.phone.toUpperCase(),
+          'filiere': etudiant.filiere.toUpperCase(),
+          'idFiliere': etudiant.idFiliere,
+          'niveau': etudiant.niveau.toUpperCase(),
+          'statut': etudiant.statut.toUpperCase(),
+        });
+      }
+    }
+  }
+
+//Add multiple Students from excel
+  Future<void> addMultipleStudent(String filePath, BuildContext context) async {
+    final bytes = File(filePath).readAsBytesSync();
+    final excel = Excel.decodeBytes(bytes);
+    final sheet = excel.tables[excel.tables.keys.first];
+
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+
+    // Vérifiez que les colonnes attendues sont présentes dans le fichier Excel
+    final expectedColumns = [
+      'Matricule',
+      'Nom',
+      'Prenom',
+      'Email',
+      'Password',
+      'Phone',
+      'Filiere',
+      'Niveau'
+    ];
+    final headerRow =
+        sheet!.rows.first.map((cell) => cell!.value.toString().trim()).toList();
+    // for (var cell in headerRow) {
+    //   print(
+    //       cell.toUpperCase()); // Affiche chaque valeur de cellule de l'en-tête
+    // }
+
+    if (!headerRow.every((cell) => expectedColumns.contains(cell))) {
+      // throw Exception(
+      //     'Le fichier Excel ne contient pas les colonnes attendues.');
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return myErrorWidget(
+              content:
+                  "Le fichier Excel ne contient pas les colonnes attendues.",
+              height: 160);
+        },
+      );
+    } else {
+      for (var i = 1; i < sheet.rows.length; i++) {
+        try {
+          final row = sheet.rows[i];
+          final filiereName = row[6]!.value.toString();
+
+          QuerySnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
+              .instance
+              .collection('filiere')
+              .where('nomFiliere', isEqualTo: filiereName.toUpperCase())
+              .limit(1)
+              .get();
+          String idFiliere = doc.docs.first.id;
+          print(idFiliere);
+          print(filiereName);
+
+          final etudiant = Etudiant(
+              matricule: row[0]!.value.toString(),
+              nom: row[1]!.value.toString(),
+              prenom: row[2]!.value.toString(),
+              email: row[3]!.value.toString(),
+              password: row[4]!.value.toString(),
+              phone: row[5]!.value.toString(),
+              idFiliere: idFiliere,
+              filiere: row[6]!.value.toString(),
+              niveau: row[7]!.value.toString(),
+              statut: "1");
+
+          await addStudentTookFromExcel(etudiant, context);
+        } catch (e) {
+          Navigator.pop(context);
+          print(
+              'Une erreur s\'est produite lors de l\'ajout depuis excel : $e');
+          // Helper().ErrorMessage(context);
+          showDialog(
+            context: context,
+            builder: (context) {
+              return myErrorWidget(
+                  content:
+                      "L'opération s'est déroulée avec des erreurs. Veuillez vérifier le résultat",
+                  height: 160);
+            },
+          );
+        }
+      }
+    }
   }
 
 //HELPER
-  Future addUserDetails(
-      String nom, String prenom, String email, String phone, final ref) async {
+  Future addUserDetails(String nom, String prenom, String email, String phone,
+      final ref, String? statut) async {
     await ref.set({
       'nom': nom,
       'prenom': prenom,
       'email': email,
       'phone': phone,
+      'statut': statut != null ? statut : "1"
     });
   }
 
-  void notAdminMessage(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return myErrorWidget(
-            content:
-                "Désolé, vous n'êtes pas autorisé(e) à accéder à cette page.",
-            height: 180);
-      },
-    );
-  }
-
-  //  affiche un message  invalide si un mauvais e-mail ou mdp est fourni
-  void badCredential(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return myErrorWidget(
-            content: "Veuillez vérifier vos informations de connexion.",
-            height: 150);
-      },
-    );
+  //log out user method
+  void logUserOut(BuildContext context) {
+    FirebaseAuth.instance.signOut();
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => AuthPage()), (route) => false);
   }
 }

@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
@@ -6,6 +10,7 @@ import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:file_picker/file_picker.dart';
 
 class addNewStudentPage extends StatefulWidget {
   const addNewStudentPage({super.key});

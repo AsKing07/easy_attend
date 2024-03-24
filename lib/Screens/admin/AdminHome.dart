@@ -4,10 +4,8 @@ import 'package:easy_attend/Screens/admin/ManageCourse/manageCourse.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/manageFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/manageProf.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/manageStudent.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
 import 'package:easy_attend/Screens/admin/admin_Dashboard.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AdminHome extends StatefulWidget {

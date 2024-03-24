@@ -47,6 +47,9 @@ dependencies:
   google_mobile_ads: ^4.0.0
   flutter_expandable_fab: ^2.0.0
   flutter_svg: ^2.0.10+1
+  shared_preferences: ^2.2.2
+  file_picker: ^8.0.0+1
+  excel: ^4.0.3
 
 dev_dependencies:
   flutter_test:

@@ -43,14 +43,23 @@ class get_Data {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final DocumentSnapshot x =
         await FirebaseFirestore.instance.collection("admin").doc(uid).get();
-    print(x);
+    print(uid);
+
     return x;
   }
 
   //METHODES DES ETUDIANTS
 
+  Future getActifStudentData() async {
+    var data = await FirebaseFirestore.instance
+        .collection("etudiant")
+        .where("statut", isEqualTo: "1")
+        .get();
+    return data.docs;
+  }
+
   Future getStudentData() async {
-    var data = await FirebaseFirestore.instance.collection("allStudent").get();
+    var data = await FirebaseFirestore.instance.collection("etudiant").get();
     return data.docs;
   }
 

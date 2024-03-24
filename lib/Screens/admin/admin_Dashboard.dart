@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -81,7 +80,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                               width: 160,
                               height: 210,
                               child: FutureBuilder(
-                                future: get_Data().getStudentData(),
+                                future: get_Data().getActifStudentData(),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {

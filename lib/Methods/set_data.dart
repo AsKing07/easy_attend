@@ -2,11 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Models/Cours.dart';
-import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Widgets/helper.dart';
-import 'package:easy_attend/Widgets/my_error_widget.dart';
-import 'package:easy_attend/Widgets/my_success_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class set_Data {
@@ -161,7 +157,7 @@ class set_Data {
         builder: (context) => const Center(
               child: CircularProgressIndicator(),
             ));
-    // Supprimez le prof de Firestore
+    // Update le statut du prof dans Firestore
 
     try {
       FirebaseFirestore.instance
@@ -185,7 +181,7 @@ class set_Data {
         builder: (context) => const Center(
               child: CircularProgressIndicator(),
             ));
-    // Supprimez le prof de Firestore
+    // Update le statut du prof dans Firestore
 
     try {
       FirebaseFirestore.instance
@@ -339,4 +335,46 @@ class set_Data {
   }
 
 //METHODES DES ETUDIANTS
+
+//Delete Student
+  Future<void> deleteOneStudent(id, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    // Update le statut de l'étudiant dans  Firestore
+
+    try {
+      FirebaseFirestore.instance
+          .collection('etudiant')
+          .doc(id)
+          .update({"statut": "0"});
+
+      Navigator.pop(context);
+    } catch (e) {
+      Helper().ErrorMessage(context);
+    }
+  }
+
+//Restore Student
+  Future<void> restoreOneStudent(id, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    // Update le statut de l'étudiant dans  Firestore
+
+    try {
+      FirebaseFirestore.instance
+          .collection('etudiant')
+          .doc(id)
+          .update({"statut": "1"});
+
+      Navigator.pop(context);
+    } catch (e) {
+      Helper().ErrorMessage(context);
+    }
+  }
 }

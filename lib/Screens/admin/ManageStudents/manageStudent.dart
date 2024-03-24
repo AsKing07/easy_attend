@@ -1,8 +1,10 @@
-import 'dart:math';
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/addNewStudent.dart';
+import 'package:easy_attend/Screens/admin/ManageStudents/addStudentFromExcel.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
@@ -49,7 +51,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                       searchFilter = newValue!;
                     });
                   },
-                  items: <String>['Nom', 'Prenom', 'Filiere']
+                  items: <String>['Nom', 'Prenom', 'Filiere', 'Matricule']
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -68,7 +70,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                 .where(searchFilter.toLowerCase().trim(),
                     isGreaterThanOrEqualTo: searchText.toUpperCase())
                 .where(searchFilter.toLowerCase().trim(),
-                    isLessThanOrEqualTo: searchText.toUpperCase() + '\uf8ff')
+                    isLessThanOrEqualTo: '${searchText.toUpperCase()}\uf8ff')
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -90,7 +92,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                               '${etudiantData['nom']}  ${etudiantData['prenom']}'),
                           subtitle: Text(
                             '${etudiantData['matricule']}  ${etudiantData['filiere']} ${etudiantData['niveau']}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: AppColors.secondaryColor,
                                 fontSize: FontSize.small),
                           ),
@@ -137,7 +139,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                                         ],
                                       ),
                                       content: const Text(
-                                          'Êtes-vous sûr de vouloir supprimer cet ?'),
+                                          'Êtes-vous sûr de vouloir supprimer cet étudiant?'),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
@@ -147,10 +149,10 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                                         ),
                                         TextButton(
                                           onPressed: () async {
-                                            // Supprimez le prof de Firestore
-                                            // await set_Data().deleteProf(
-                                            //     prof.id, context);
-                                            // Navigator.of(context).pop();
+                                            // Changer le statut de l'étudiant dans Firestore
+                                            await set_Data().deleteOneStudent(
+                                                etudiant.id, context);
+                                            Navigator.of(context).pop();
                                           },
                                           child: const Text('Supprimer'),
                                         ),
@@ -165,7 +167,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                       });
                 }
               } else if (snapshot.hasData) {
-                return NoResultWidget();
+                return const NoResultWidget();
               } else {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -201,6 +203,25 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
           ),
           Row(
             children: [
+              const Text("Ajouter depuis un fichier"),
+              const SizedBox(
+                width: 10,
+              ),
+              FloatingActionButton(
+                heroTag: null,
+                child: const Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddStudentFromExcel()),
+                  );
+                },
+              ),
+            ],
+          ),
+          Row(
+            children: [
               const Text("Tous supprimer"),
               const SizedBox(
                 width: 10,
@@ -220,7 +241,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "Supprimer tous les étudiants ? ",
+                            "Tous les Supprimer ? ",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20.0,
@@ -264,7 +285,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                 onPressed: () {
                   // Navigator.push(
                   //   context,
-                  //   MaterialPageRoute(builder: (context) => TrashProfPage()),
+                  //   MaterialPageRoute(builder: (context) => TrashStudentPage()),
                   // );
                 },
               ),
