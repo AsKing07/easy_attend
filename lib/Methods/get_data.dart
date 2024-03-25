@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +63,21 @@ class get_Data {
   Future getStudentData() async {
     var data = await FirebaseFirestore.instance.collection("etudiant").get();
     return data.docs;
+  }
+
+  Future getStudentById(id, BuildContext context) async {
+    try {
+      DocumentSnapshot x =
+          await FirebaseFirestore.instance.collection('etudiant').doc(id).get();
+      return x;
+    } catch (e) {
+      GFToast.showToast(
+          "Une erreur est subvenue lors de la récupération des données",
+          context,
+          backgroundColor: Colors.white,
+          textStyle: const TextStyle(color: Colors.red),
+          toastDuration: 6);
+    }
   }
 
   // METHODES DES PROFS

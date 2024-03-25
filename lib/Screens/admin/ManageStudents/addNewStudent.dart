@@ -10,7 +10,6 @@ import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:file_picker/file_picker.dart';
 
 class addNewStudentPage extends StatefulWidget {
   const addNewStudentPage({super.key});
@@ -91,7 +90,7 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(30, 30, 30, 30),
+          padding: const EdgeInsets.all(30),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(

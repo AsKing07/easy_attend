@@ -21,8 +21,6 @@ class _EditProfPageState extends State<EditProfPage> {
   final _prenomController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   void dispose() {
     _nomController.dispose();
@@ -43,7 +41,7 @@ class _EditProfPageState extends State<EditProfPage> {
       _nomController.text = data['nom'];
       _prenomController.text = data['prenom'];
       _phoneController.text = data['phone'];
-    } else {}
+    }
   }
 
   @override
@@ -226,7 +224,7 @@ class _EditProfPageState extends State<EditProfPage> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          set_Data().modifierProfByAdmin(
+                          await set_Data().modifierProfByAdmin(
                               widget.profId,
                               _nomController.text,
                               _prenomController.text,

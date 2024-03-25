@@ -5,6 +5,8 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/addNewStudent.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/addStudentFromExcel.dart';
+import 'package:easy_attend/Screens/admin/ManageStudents/edit_Student.dart';
+import 'package:easy_attend/Screens/admin/ManageStudents/student_trashed.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
@@ -45,6 +47,10 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                 ),
                 const SizedBox(width: 10),
                 DropdownButton<String>(
+                  dropdownColor: AppColors.secondaryColor,
+                  style: const TextStyle(
+                    color: AppColors.backgroundColor,
+                  ),
                   value: searchFilter,
                   onChanged: (String? newValue) {
                     setState(() {
@@ -55,7 +61,9 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                       .map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Text(
+                        value,
+                      ),
                     );
                   }).toList(),
                 ),
@@ -103,14 +111,13 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
                                   // Naviguez vers la page de modification en passant l'ID
-                                  // Navigator.push(
-                                  //   context,
-                                  // MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         EditProfPage(
-                                  //           profId: prof.id,
-                                  //         )),
-                                  // );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EditStudentPage(
+                                              studentId: etudiant.id,
+                                            )),
+                                  );
                                 },
                               ),
                               IconButton(
@@ -260,9 +267,9 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                         ),
                         TextButton(
                           onPressed: () async {
-                            // // Supprimez les profs de Firestore
-                            // await set_Data().deleteAllProf(context);
-                            // Navigator.of(context).pop();
+                            // Supprimez les étudiants de Firestore
+                            await set_Data().deleteAllStudents(context);
+                            Navigator.of(context).pop();
                           },
                           child: const Text('Supprimer'),
                         ),
@@ -283,10 +290,10 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                 heroTag: null,
                 child: const Icon(Icons.delete_sweep),
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => TrashStudentPage()),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TrashStudentPage()),
+                  );
                 },
               ),
             ],

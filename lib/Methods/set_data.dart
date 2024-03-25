@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Models/Cours.dart';
 import 'package:easy_attend/Widgets/helper.dart';
+import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:flutter/material.dart';
 
 class set_Data {
@@ -171,6 +172,31 @@ class set_Data {
     }
   }
 
+  //Supprimer tous les prof
+  Future<void> deleteAllProf(
+    BuildContext context,
+  ) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    // Update le statut du prof dans Firestor
+
+    try {
+      QuerySnapshot snapshots =
+          await FirebaseFirestore.instance.collection('prof').get();
+
+      snapshots.docs.forEach((document) async {
+        document.reference.update({"statut": "0"});
+      });
+
+      Navigator.pop(context);
+    } catch (e) {
+      Helper().ErrorMessage(context);
+    }
+  }
+
   //Restaurer prof
   Future<void> restoreProf(
     id,
@@ -196,7 +222,8 @@ class set_Data {
   }
 
 //Modifier prof
-  void modifierProfByAdmin(profId, nom, prenom, phone, BuildContext context) {
+  Future<void> modifierProfByAdmin(
+      profId, nom, prenom, phone, BuildContext context) async {
     showDialog(
         context: context,
         builder: (context) => const Center(
@@ -219,6 +246,50 @@ class set_Data {
     });
   }
 
+  Future<void> modifierEtudiantByAdmin(idEtudiant, nom, prenom, phone, filiere,
+      idFiliere, niveau, matricule, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+
+    final docSnapshot = await FirebaseFirestore.instance
+        .collection('etudiant')
+        .where('matricule', isEqualTo: matricule)
+        .where(FieldPath.documentId, isNotEqualTo: idEtudiant)
+        .get();
+
+    if (docSnapshot.docs.isNotEmpty) {
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return myErrorWidget(
+              content: "Un étudiant avec le même matricule existe déjà.",
+              height: 160);
+        },
+      );
+    } else {
+      FirebaseFirestore.instance.collection('etudiant').doc(idEtudiant).update({
+        'nom': nom.toString().toUpperCase(),
+        'phone': phone.toString().toUpperCase(),
+        'prenom': prenom.toString().toUpperCase(),
+        'filiere': filiere.toString().toUpperCase(),
+        'idFiliere': idFiliere.toString().toUpperCase(),
+        'niveau': niveau.toString().toUpperCase()
+      }).then((value) {
+        // Etudiant modifié avec succès
+        Navigator.pop(context);
+        Helper().succesMessage(context);
+      }).catchError((error) {
+        // Une erreur s'est produite lors de la modification
+        print(error);
+        Navigator.pop(context);
+        Helper().ErrorMessage(context);
+      });
+    }
+  }
 //METHODES DES COURS
 
 //Ajouter cours
@@ -350,6 +421,30 @@ class set_Data {
           .collection('etudiant')
           .doc(id)
           .update({"statut": "0"});
+
+      Navigator.pop(context);
+    } catch (e) {
+      Helper().ErrorMessage(context);
+    }
+  }
+
+  //Delete All Students
+  Future<void> deleteAllStudents(
+    BuildContext context,
+  ) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+
+    try {
+      QuerySnapshot snapshots =
+          await FirebaseFirestore.instance.collection('etudiant').get();
+
+      snapshots.docs.forEach((document) async {
+        document.reference.update({"statut": "0"});
+      });
 
       Navigator.pop(context);
     } catch (e) {

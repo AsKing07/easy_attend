@@ -32,6 +32,10 @@ class _ManageProfState extends State<ManageProf> {
             child: Row(
               children: [
                 DropdownButton<String>(
+                  dropdownColor: AppColors.secondaryColor,
+                  style: const TextStyle(
+                    color: AppColors.backgroundColor,
+                  ),
                   value: searchFilter,
                   onChanged: (String? newValue) {
                     setState(() {
@@ -91,6 +95,12 @@ class _ManageProfState extends State<ManageProf> {
                               return ListTile(
                                 title: Text(
                                     '${profData["nom"]}  ${profData["prenom"]}'),
+                                subtitle: Text(
+                                  'Num : ${profData["phone"]}',
+                                  style: const TextStyle(
+                                      color: AppColors.secondaryColor,
+                                      fontSize: FontSize.small),
+                                ),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
@@ -234,9 +244,9 @@ class _ManageProfState extends State<ManageProf> {
                         ),
                         TextButton(
                           onPressed: () async {
-                            // // Supprimez les profs de Firestore
-                            // await set_Data().deleteAllProf(context);
-                            // Navigator.of(context).pop();
+                            // Supprimez les profs de Firestore
+                            await set_Data().deleteAllProf(context);
+                            Navigator.of(context).pop();
                           },
                           child: const Text('Supprimer'),
                         ),
