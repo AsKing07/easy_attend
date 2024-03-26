@@ -108,6 +108,18 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
+                                icon: const Icon(Icons.remove_red_eye_sharp),
+                                onPressed: () {
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) => EditStudentPage(
+                                  //             studentId: etudiant.id,
+                                  //           )),
+                                  // );
+                                },
+                              ),
+                              IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
                                   // Naviguez vers la page de modification en passant l'ID
@@ -173,7 +185,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                         );
                       });
                 }
-              } else if (snapshot.hasData) {
+              } else if (snapshot.hasError) {
                 return const NoResultWidget();
               } else {
                 return const Center(

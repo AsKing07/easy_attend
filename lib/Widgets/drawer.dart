@@ -93,25 +93,30 @@ class _HelperDrawerState extends State<HelperDrawer> {
                       Row(
                         children: [
                           Expanded(
-                            child: IconButton(
-                                onPressed: () {
-                                  connexion_methods_admin().logUserOut(context);
-                                },
-                                icon: const Icon(
-                                  Icons.logout,
-                                  color: AppColors.textColor,
-                                  size: 21,
-                                )),
-                          ),
-                          const Expanded(
-                              flex: 3,
-                              child: Text(
-                                "Deconnexion",
-                                style: TextStyle(
+                              child: Padding(
+                            padding: const EdgeInsets.only(left: 30),
+                            child: GestureDetector(
+                              onTap: () {
+                                connexion_methods_admin().logUserOut(context);
+                              },
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.logout,
                                     color: AppColors.textColor,
-                                    fontSize: FontSize.small,
-                                    fontWeight: FontWeight.bold),
-                              ))
+                                    size: 21,
+                                  ),
+                                  Text(
+                                    "Deconnexion",
+                                    style: TextStyle(
+                                        color: AppColors.textColor,
+                                        fontSize: FontSize.small,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ))
                         ],
                       ),
                     ],

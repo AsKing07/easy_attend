@@ -17,7 +17,6 @@ class _AuthPageState extends State<AuthPage> {
   final TextEditingController _pinController = TextEditingController();
   String _selectedRole = 'Administrateur';
   String _selectedSchool = 'Selectionner une école';
-  String? pin;
 
   List<String> _schools = [];
 
@@ -43,46 +42,35 @@ class _AuthPageState extends State<AuthPage> {
     });
   }
 
-  void _validatePinAndRedirect() {
-    // Vérifier le code PIN dans Firebase
-    // Si le code PIN est valide, rediriger vers la page correspondante
-    FirebaseFirestore.instance
-        .collection('pins')
-        .doc(_selectedSchool)
-        .get()
-        .then((DocumentSnapshot<Map<String, dynamic>> snapshot) {
-      if (snapshot.exists) {
-        pin = snapshot.data()?['pin'];
-        if (pin == _pinController.text) {
-          switch (_selectedRole) {
-            case 'Administrateur':
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LoginAdmin()));
+  void _validateAndRedirect() {
+    if (_selectedSchool.isEmpty ||
+        _selectedSchool == "Selectionner une école") {
+      GFToast.showToast('Vous devez au moins sélectionner une école', context,
+          backgroundColor: Colors.white,
+          textStyle: const TextStyle(color: Colors.red),
+          toastDuration: 3);
+    } else {
+      switch (_selectedRole) {
+        case 'Administrateur':
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const LoginAdmin()));
 
-              break;
-            case 'Professeur':
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LoginProf()));
-              break;
-            case 'Étudiant':
-              Navigator.pushNamed(context, '/student_page');
-              break;
-            default:
-              GFToast.showToast(
-                  'Vous devez au moins sélectionner un rôle', context,
-                  backgroundColor: Colors.white,
-                  textStyle: const TextStyle(color: Colors.red),
-                  toastDuration: 3);
-              break;
-          }
-        }
-      } else {
-        GFToast.showToast('Vous devez au moins sélectionner une école', context,
-            backgroundColor: Colors.white,
-            textStyle: const TextStyle(color: Colors.red),
-            toastDuration: 3);
+          break;
+        case 'Professeur':
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const LoginProf()));
+          break;
+        case 'Étudiant':
+          Navigator.pushNamed(context, '/student_page');
+          break;
+        default:
+          GFToast.showToast('Vous devez au moins sélectionner un rôle', context,
+              backgroundColor: Colors.white,
+              textStyle: const TextStyle(color: Colors.red),
+              toastDuration: 3);
+          break;
       }
-    });
+    }
   }
 
   @override
@@ -119,13 +107,6 @@ class _AuthPageState extends State<AuthPage> {
                       labelText: 'Choisissez votre école'),
                 ),
                 const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _pinController,
-                  decoration:
-                      const InputDecoration(labelText: 'Code PIN de l\'école'),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 16.0),
                 const SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   value: _selectedRole,
@@ -147,7 +128,7 @@ class _AuthPageState extends State<AuthPage> {
                 ),
                 const SizedBox(height: 32.0),
                 GFButton(
-                  onPressed: _validatePinAndRedirect,
+                  onPressed: _validateAndRedirect,
                   text: "Valider",
                   shape: GFButtonShape.pills,
                   fullWidthButton: true,

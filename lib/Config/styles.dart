@@ -13,6 +13,9 @@ class AppColors {
   static const Color greenColor = Color.fromARGB(255, 73, 233, 28);
   static const Color redColor = Color.fromARGB(255, 240, 18, 18);
 
+  static const Color shadow = Color(0xFFbfc9e0);
+  static const Color white = Color(0xFFFFFFFF);
+
   static const Color profColor = Color.fromARGB(255, 115, 218, 12);
   static const Color filiereColor = Color.fromARGB(255, 0, 0, 0);
   static const Color studColor = Colors.orange;

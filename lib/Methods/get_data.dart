@@ -136,4 +136,13 @@ class get_Data {
           toastDuration: 6);
     }
   }
+
+  // METHODES REQUETES
+  Future getUnsolvedQueriesData() async {
+    var data = await FirebaseFirestore.instance
+        .collection("requete")
+        .where("statut", isEqualTo: "2")
+        .get();
+    return data.docs;
+  }
 }

@@ -78,7 +78,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             //Données étudiants
                             SizedBox(
                               width: 160,
-                              height: 210,
+                              height: 200,
                               child: FutureBuilder(
                                 future: get_Data().getActifStudentData(),
                                 builder: (context, snapshot) {
@@ -106,7 +106,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                               const Icon(
                                                 Icons.people,
                                                 color: AppColors.studColor,
-                                                size: 80.0,
+                                                size: 70.0,
                                               ),
                                               const SizedBox(
                                                 height: 20.0,
@@ -139,7 +139,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             //données professeur
                             SizedBox(
                                 width: 160.0,
-                                height: 210.0,
+                                height: 200.0,
                                 child: FutureBuilder(
                                     future: get_Data().getActifTeacherData(),
                                     builder: (context, snapshot) {
@@ -168,7 +168,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                       Icons.person_3,
                                                       color:
                                                           AppColors.profColor,
-                                                      size: 80.0,
+                                                      size: 70.0,
                                                     ),
                                                     const SizedBox(
                                                       height: 20.0,
@@ -206,7 +206,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             //Données filieres
                             SizedBox(
                               width: 160,
-                              height: 210,
+                              height: 200,
                               child: FutureBuilder(
                                 future: get_Data().getActifFiliereData(),
                                 builder: (context, snapshot) {
@@ -234,7 +234,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                               const Icon(
                                                 Icons.school,
                                                 color: AppColors.filiereColor,
-                                                size: 80.0,
+                                                size: 70.0,
                                               ),
                                               const SizedBox(
                                                 height: 20.0,
@@ -267,7 +267,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                             //données cours
                             SizedBox(
                                 width: 160.0,
-                                height: 210.0,
+                                height: 200.0,
                                 child: FutureBuilder(
                                     future: get_Data().getCourseData(),
                                     builder: (context, snapshot) {
@@ -297,7 +297,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                           .settings_applications_outlined,
                                                       color:
                                                           AppColors.courColor,
-                                                      size: 80.0,
+                                                      size: 70.0,
                                                     ),
                                                     const SizedBox(
                                                       height: 20.0,
@@ -328,6 +328,84 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             ));
                                       }
                                     })),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            //Données requetes
+                            SizedBox(
+                              width: 320,
+                              height: 105,
+                              child: FutureBuilder(
+                                future: get_Data().getUnsolvedQueriesData(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Material(
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  } else {
+                                    return Card(
+                                      elevation: 8.0,
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.query_stats,
+                                                    color:
+                                                        AppColors.filiereColor,
+                                                    size: 50.0,
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 10.0,
+                                                  ),
+                                                  const Text(
+                                                    "Requetes",
+                                                    style: TextStyle(
+                                                      color:
+                                                          AppColors.textColor,
+                                                      fontSize:
+                                                          FontSize.xxLarge,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 100.0),
+                                                  Text(
+                                                    snapshot.data.length
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                      color:
+                                                          AppColors.textColor,
+                                                      fontSize: 25.0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const Text(
+                                                "En attente de traitement",
+                                                style: TextStyle(
+                                                    color:
+                                                        AppColors.accentColor),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
                           ],
                         ),
                       ],

@@ -472,4 +472,68 @@ class set_Data {
       Helper().ErrorMessage(context);
     }
   }
+
+  //METHODES DES REQUETES
+
+  //Approuver requete
+  Future<void> approuverRequete(idRequete, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    try {
+      await FirebaseFirestore.instance
+          .collection("requete")
+          .doc(idRequete)
+          .update({"statut": "1"});
+      if (!context.mounted) return;
+
+      Navigator.pop(context);
+    } catch (e) {
+      Navigator.pop(context);
+      Helper().ErrorMessage(context);
+    }
+  }
+
+  //Désapprouver requete
+  Future<void> desapprouverRequete(idRequete, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    try {
+      await FirebaseFirestore.instance
+          .collection("requete")
+          .doc(idRequete)
+          .update({"statut": "0"});
+      if (!context.mounted) return;
+
+      Navigator.pop(context);
+    } catch (e) {
+      Navigator.pop(context);
+      Helper().ErrorMessage(context);
+    }
+  }
+
+  //Mettre requete en attente
+  Future<void> mettreEnAttenteRequete(idRequete, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    try {
+      await FirebaseFirestore.instance
+          .collection("requete")
+          .doc(idRequete)
+          .update({"statut": "2"});
+      if (!context.mounted) return;
+      Navigator.pop(context);
+    } catch (e) {
+      Navigator.pop(context);
+      Helper().ErrorMessage(context);
+    }
+  }
 }

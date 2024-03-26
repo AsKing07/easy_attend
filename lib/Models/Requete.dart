@@ -2,28 +2,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Requete {
   String idRequete;
-  String typeRequete;
+  String type;
   String details;
-  String status;
-  Object auteur;
+  String statut;
+  String auteur;
+  String idAuteur;
   Timestamp dateCreation;
 
   Requete(
       {required this.idRequete,
-      required this.typeRequete,
+      required this.type,
       required this.details,
-      required this.status,
+      required this.statut,
       required this.auteur,
+      required this.idAuteur,
       required this.dateCreation});
 
   factory Requete.fromDocument(DocumentSnapshot doc) {
     return Requete(
       idRequete: doc['idRequete'],
-      typeRequete: doc["typeRequete"],
-      details: doc["detail"],
-      status: doc["status"],
+      type: doc["type"],
+      details: doc["details"],
+      statut: doc["statut"],
       auteur: doc['auteur'],
       dateCreation: doc['dateCreation'],
+      idAuteur: doc['idAuteur'],
     );
   }
 }
