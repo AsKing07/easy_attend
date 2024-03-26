@@ -1,5 +1,5 @@
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/professeur/profMethods/connexion_methods_prof.dart';
+import 'package:easy_attend/Screens/professeur/profMethods/auth_methods_prof.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -154,7 +154,7 @@ class _LoginProfState extends State<LoginProf> {
                           ElevatedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                await connexion_methods_prof().logProfIn(
+                                await auth_methods_prof().logProfIn(
                                     _emailController.text,
                                     _passwordController.text,
                                     context);
@@ -183,8 +183,7 @@ class _LoginProfState extends State<LoginProf> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            connexion_methods_prof()
-                                .requestProfAccount(context);
+                            auth_methods_prof().requestProfAccount(context);
                           },
                           child: Text(
                             "Inscrivez-vous",

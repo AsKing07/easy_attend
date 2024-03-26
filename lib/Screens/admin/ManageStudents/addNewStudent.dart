@@ -7,7 +7,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Models/Filiere.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
+import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -461,8 +461,7 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                             niveau: _selectedNiveau,
                             statut: "1");
 
-                        await connexion_methods_admin()
-                            .addOneStudent(etu, context);
+                        await auth_methods_admin().addOneStudent(etu, context);
                       }
                     },
                     child: Text("Ajouter Etudiant",

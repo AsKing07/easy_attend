@@ -21,6 +21,8 @@ class _AdminHomeState extends State<AdminHome> {
       text: 'Dashboard', icon: Icons.dashboard_outlined, tap: AdminDashboard());
   List<MenuItems> items = [
     MenuItems(
+        text: 'Paramètres', icon: Icons.settings, tap: ManageCoursePage()),
+    MenuItems(
         text: 'Dashboard',
         icon: Icons.dashboard_outlined,
         tap: AdminDashboard()),

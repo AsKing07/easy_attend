@@ -1,7 +1,7 @@
 // ignore_for_file: camel_case_types, library_private_types_in_public_api
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
+import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';

@@ -3,7 +3,7 @@
 import 'dart:io';
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
+import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -108,7 +108,7 @@ class _AddStudentFromExcelState extends State<AddStudentFromExcel> {
                       setState(() {
                         studentsFile = File(result.files.single.path!);
                       });
-                      await connexion_methods_admin()
+                      await auth_methods_admin()
                           .addMultipleStudent(studentsFile!.path, context);
                     }
                   },

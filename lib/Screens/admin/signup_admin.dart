@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
+import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
@@ -377,7 +377,7 @@ class _SignUpAdminState extends State<SignUpAdmin> {
                                           const TextStyle(color: Colors.red),
                                       toastDuration: 8);
                                 } else {
-                                  await connexion_methods_admin().signUp(
+                                  await auth_methods_admin().signUp(
                                       _emailController.text,
                                       _passwordController.text,
                                       _nomController.text,

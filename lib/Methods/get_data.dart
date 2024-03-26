@@ -82,6 +82,15 @@ class get_Data {
 
   // METHODES DES PROFS
 
+  Future<DocumentSnapshot<Object?>> loadCurrentProfData() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final DocumentSnapshot x =
+        await FirebaseFirestore.instance.collection("prof").doc(uid).get();
+    print(uid);
+
+    return x;
+  }
+
   Future getTeacherData() async {
     var data = await FirebaseFirestore.instance.collection("prof").get();
     return data.docs;

@@ -246,50 +246,6 @@ class set_Data {
     });
   }
 
-  Future<void> modifierEtudiantByAdmin(idEtudiant, nom, prenom, phone, filiere,
-      idFiliere, niveau, matricule, BuildContext context) async {
-    showDialog(
-        context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
-            ));
-
-    final docSnapshot = await FirebaseFirestore.instance
-        .collection('etudiant')
-        .where('matricule', isEqualTo: matricule)
-        .where(FieldPath.documentId, isNotEqualTo: idEtudiant)
-        .get();
-
-    if (docSnapshot.docs.isNotEmpty) {
-      Navigator.pop(context);
-      showDialog(
-        context: context,
-        builder: (context) {
-          return myErrorWidget(
-              content: "Un étudiant avec le même matricule existe déjà.",
-              height: 160);
-        },
-      );
-    } else {
-      FirebaseFirestore.instance.collection('etudiant').doc(idEtudiant).update({
-        'nom': nom.toString().toUpperCase(),
-        'phone': phone.toString().toUpperCase(),
-        'prenom': prenom.toString().toUpperCase(),
-        'filiere': filiere.toString().toUpperCase(),
-        'idFiliere': idFiliere.toString().toUpperCase(),
-        'niveau': niveau.toString().toUpperCase()
-      }).then((value) {
-        // Etudiant modifié avec succès
-        Navigator.pop(context);
-        Helper().succesMessage(context);
-      }).catchError((error) {
-        // Une erreur s'est produite lors de la modification
-        print(error);
-        Navigator.pop(context);
-        Helper().ErrorMessage(context);
-      });
-    }
-  }
 //METHODES DES COURS
 
 //Ajouter cours
@@ -406,6 +362,52 @@ class set_Data {
   }
 
 //METHODES DES ETUDIANTS
+
+  Future<void> modifierEtudiantByAdmin(idEtudiant, nom, prenom, phone, filiere,
+      idFiliere, niveau, matricule, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+
+    final docSnapshot = await FirebaseFirestore.instance
+        .collection('etudiant')
+        .where('matricule', isEqualTo: matricule)
+        .where(FieldPath.documentId, isNotEqualTo: idEtudiant)
+        .get();
+
+    if (docSnapshot.docs.isNotEmpty) {
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return myErrorWidget(
+              content: "Un étudiant avec le même matricule existe déjà.",
+              height: 160);
+        },
+      );
+    } else {
+      FirebaseFirestore.instance.collection('etudiant').doc(idEtudiant).update({
+        'nom': nom.toString().toUpperCase(),
+        'phone': phone.toString().toUpperCase(),
+        'prenom': prenom.toString().toUpperCase(),
+        'filiere': filiere.toString().toUpperCase(),
+        'idFiliere': idFiliere.toString().toUpperCase(),
+        'niveau': niveau.toString().toUpperCase(),
+        'matricule': matricule.toString().toUpperCase()
+      }).then((value) {
+        // Etudiant modifié avec succès
+        Navigator.pop(context);
+        Helper().succesMessage(context);
+      }).catchError((error) {
+        // Une erreur s'est produite lors de la modification
+        print(error);
+        Navigator.pop(context);
+        Helper().ErrorMessage(context);
+      });
+    }
+  }
 
 //Delete Student
   Future<void> deleteOneStudent(id, BuildContext context) async {

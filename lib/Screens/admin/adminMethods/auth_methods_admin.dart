@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:excel/excel.dart';
 
-class connexion_methods_admin {
+class auth_methods_admin {
   static Future<UserCredential> register(String email, String password) async {
     FirebaseApp app = await Firebase.initializeApp(
         name: 'Secondary', options: Firebase.app().options);

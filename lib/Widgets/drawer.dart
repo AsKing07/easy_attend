@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/connexion_methods_admin.dart';
+import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -97,7 +97,7 @@ class _HelperDrawerState extends State<HelperDrawer> {
                             padding: const EdgeInsets.only(left: 30),
                             child: GestureDetector(
                               onTap: () {
-                                connexion_methods_admin().logUserOut(context);
+                                auth_methods_admin().logUserOut(context);
                               },
                               child: const Row(
                                 children: [
