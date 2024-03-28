@@ -184,7 +184,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                   color: AppColors.textColor,
                                                   fontWeight: FontWeight.w400),
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               height: 10,
                                             ),
                                             ElevatedButton(

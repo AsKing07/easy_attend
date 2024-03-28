@@ -29,7 +29,6 @@ class get_Data {
           await FirebaseFirestore.instance.collection('filiere').doc(id).get();
       return x;
     } catch (e) {
-      // ignore: use_build_context_synchronously
       GFToast.showToast(
           "Une erreur est subvenue lors de la récupération des données",
           context,
@@ -80,6 +79,28 @@ class get_Data {
     }
   }
 
+  Future getEtudiantsOfAFiliere(String idFiliere) async {
+    print(idFiliere);
+    var data = await FirebaseFirestore.instance
+        .collection("etudiant")
+        .where('idFiliere', isEqualTo: idFiliere)
+        .where('statut', isEqualTo: '1')
+        .get();
+    return data.docs;
+  }
+
+  Future getEtudiantsOfAFiliereAndNiveau(
+      String idFiliere, String niveau) async {
+    print(idFiliere);
+    var data = await FirebaseFirestore.instance
+        .collection("etudiant")
+        .where('idFiliere', isEqualTo: idFiliere)
+        .where('niveau', isEqualTo: niveau.toUpperCase())
+        .where('statut', isEqualTo: '1')
+        .get();
+    return data.docs;
+  }
+
   // METHODES DES PROFS
 
   Future<DocumentSnapshot<Object?>> loadCurrentProfData() async {
@@ -102,7 +123,6 @@ class get_Data {
           await FirebaseFirestore.instance.collection('prof').doc(id).get();
       return x;
     } catch (e) {
-      // ignore: use_build_context_synchronously
       GFToast.showToast(
           "Une erreur est subvenue lors de la récupération des données",
           context,
@@ -136,7 +156,6 @@ class get_Data {
           await FirebaseFirestore.instance.collection('cours').doc(id).get();
       return x;
     } catch (e) {
-      // ignore: use_build_context_synchronously
       GFToast.showToast(
           "Une erreur est subvenue lors de la récupération des données",
           context,
@@ -153,5 +172,42 @@ class get_Data {
         .where("statut", isEqualTo: "2")
         .get();
     return data.docs;
+  }
+
+  // METHODES SEANCES
+
+//Liste des séances d'un cours
+  Future getSeanceOfOneCourse(String courseId) async {
+    var data = await FirebaseFirestore.instance
+        .collection("seance")
+        .where("idCours", isEqualTo: courseId)
+        .get();
+    return data.docs;
+  }
+
+  //Récuperer une séance
+
+  Future getSeanceById(id, BuildContext context) async {
+    try {
+      DocumentSnapshot x =
+          await FirebaseFirestore.instance.collection('seance').doc(id).get();
+      return x;
+    } catch (e) {
+      GFToast.showToast(
+          "Une erreur est subvenue lors de la récupération des données",
+          context,
+          backgroundColor: Colors.white,
+          textStyle: const TextStyle(color: Colors.red),
+          toastDuration: 6);
+    }
+  }
+
+  Future getSeanceData(String seanceId) async {
+    var doc = await FirebaseFirestore.instance
+        .collection('seance')
+        .doc(seanceId)
+        .get();
+
+    return doc;
   }
 }

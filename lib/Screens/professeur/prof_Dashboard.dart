@@ -78,30 +78,14 @@ class _ProfDashboardState extends State<ProfDashboard> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 50,
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            side: const BorderSide(
-                                width: 5, color: Colors.blueGrey),
-                            backgroundColor: AppColors.secondaryColor,
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30)),
-                          ),
-                          onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(builder: (context) => const startClass()),
-                            // );
-                          },
-                          child: const Text(
-                            'Démarrer une nouvelle séance de cours',
-                            style: TextStyle(color: AppColors.white),
-                          ),
-                        ),
+                    const SizedBox(height: 15.0),
+                    // ignore: prefer_const_constructors
+                    Text(
+                      'Sélectionnez un cours pour gérer la présence',
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.secondaryColor,
                       ),
                     ),
                     const SizedBox(height: 20.0),
@@ -149,22 +133,24 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         CourseCard(
-                                            name: previous['nomCours'],
-                                            niveau: previous['niveau'],
-                                            filiere:
-                                                _selectedFiliere?.idFiliere,
-                                            teacher: prof['nom'],
-                                            option: "professeur"),
+                                          name: previous['nomCours'],
+                                          niveau: previous['niveau'],
+                                          filiere: _selectedFiliere?.idFiliere,
+                                          teacher: prof['nom'],
+                                          option: "professeur",
+                                          CourseId: previous.id,
+                                        ),
                                         const SizedBox(
                                           width: 20.0,
                                         ),
                                         CourseCard(
-                                            name: object['nomCours'],
-                                            niveau: object['niveau'],
-                                            filiere:
-                                                _selectedFiliere?.idFiliere,
-                                            teacher: prof['nom'],
-                                            option: "professeur"),
+                                          name: object['nomCours'],
+                                          niveau: object['niveau'],
+                                          filiere: _selectedFiliere?.idFiliere,
+                                          teacher: prof['nom'],
+                                          option: "professeur",
+                                          CourseId: object.id,
+                                        ),
                                       ]),
                                   const SizedBox(height: 10.0),
                                 ]));
@@ -176,11 +162,13 @@ class _ProfDashboardState extends State<ProfDashboard> {
                             if (identical(previous, null) == false) {
                               myWidgets.add(Row(children: [
                                 CourseCard(
-                                    name: previous['nomCours'],
-                                    niveau: previous['niveau'],
-                                    filiere: _selectedFiliere?.idFiliere,
-                                    teacher: prof['nom'],
-                                    option: "professeur"),
+                                  name: previous['nomCours'],
+                                  niveau: previous['niveau'],
+                                  filiere: _selectedFiliere?.idFiliere,
+                                  teacher: prof['nom'],
+                                  option: "professeur",
+                                  CourseId: previous.id,
+                                ),
                                 const SizedBox(
                                   width: 20.0,
                                 ),

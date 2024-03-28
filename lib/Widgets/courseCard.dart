@@ -1,17 +1,17 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Screens/professeur/TakeAttendance/OneCoursePage.dart';
 import 'package:flutter/material.dart';
 
 class CourseCard extends StatefulWidget {
-  // const CourseCard({Key? key}) : super(key: key);
-
   String? name, filiere, teacher, niveau;
-  String option;
+  String option, CourseId;
   CourseCard(
       {required this.name,
       required this.niveau,
       this.filiere,
+      required this.CourseId,
       required this.teacher,
       required this.option});
   @override
@@ -23,7 +23,7 @@ class _CourseCardState extends State<CourseCard> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 5.0),
-      width: 175,
+      width: 160,
       height: 175,
       decoration: BoxDecoration(
         color: AppColors.secondaryColor,
@@ -51,12 +51,12 @@ class _CourseCardState extends State<CourseCard> {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 5.0),
               Text(
                 widget.name!,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 15.0,
+                  fontSize: 13.0,
                   color: Colors.white,
                 ),
               ),
@@ -64,11 +64,13 @@ class _CourseCardState extends State<CourseCard> {
             ],
           ),
           onPressed: () {
-            if (widget.option == "prof") {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => enrollStudent(dept:widget.dept,id:widget.id)),
-              // );
+            if (widget.option == "professeur") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        OneCoursePage(CourseId: widget.CourseId)),
+              );
             } else if (widget.option == "etudiant") {
               // Navigator.push(
               //   context,

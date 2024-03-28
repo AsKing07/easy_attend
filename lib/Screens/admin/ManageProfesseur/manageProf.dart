@@ -4,7 +4,6 @@ import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/addNewProf.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/prof_trashed.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/edit_Prof.dart';
-import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
@@ -31,6 +30,20 @@ class _ManageProfState extends State<ManageProf> {
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             child: Row(
               children: [
+                Expanded(
+                  child: SearchBar(
+                    leading: const Icon(
+                      Icons.search,
+                    ),
+                    hintText: "Rechercher",
+                    onChanged: (value) {
+                      setState(() {
+                        searchText = value;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
                 DropdownButton<String>(
                   dropdownColor: AppColors.secondaryColor,
                   style: const TextStyle(
@@ -49,20 +62,6 @@ class _ManageProfState extends State<ManageProf> {
                       child: Text(value),
                     );
                   }).toList(),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: SearchBar(
-                    leading: const Icon(
-                      Icons.search,
-                    ),
-                    hintText: "Rechercher",
-                    onChanged: (value) {
-                      setState(() {
-                        searchText = value;
-                      });
-                    },
-                  ),
                 ),
               ],
             ),

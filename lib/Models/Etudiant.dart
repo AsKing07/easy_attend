@@ -4,8 +4,8 @@ class Etudiant {
   String? uid;
   String nom;
   String prenom;
-  String email;
-  String password;
+  String? email;
+  String? password;
   String phone;
   String matricule;
   String? idFiliere;
@@ -18,8 +18,8 @@ class Etudiant {
     required this.matricule,
     required this.nom,
     required this.prenom,
-    required this.email,
-    required this.password,
+    this.email,
+    this.password,
     required this.phone,
     required this.idFiliere,
     required this.filiere,

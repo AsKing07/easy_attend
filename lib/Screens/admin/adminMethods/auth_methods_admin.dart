@@ -31,7 +31,7 @@ class auth_methods_admin {
       String phone, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => Center(
+        builder: (context) => const Center(
               child: CircularProgressIndicator(),
             ));
     try {
@@ -54,12 +54,13 @@ class auth_methods_admin {
         // Ajout des détails de l'utilisateur
         FirebaseFirestore _db = FirebaseFirestore.instance;
         final adminRef = _db.collection("admin").doc(uid);
-        await addUserDetails(nom, prenom, email, phone, adminRef, null);
+        await addUserDetails(nom.toUpperCase().trim(),
+            prenom.toUpperCase().trim(), email, phone, adminRef, null);
 
         // Redirection vers la page d'accueil de l'admin
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => AdminHome()),
+          MaterialPageRoute(builder: (context) => const AdminHome()),
         );
       } else {
         print('Impossible d\'obtenir l\'UID de l\'utilisateur.');
@@ -93,7 +94,7 @@ class auth_methods_admin {
   Future logAdminIn(String email, String password, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => Center(
+        builder: (context) => const Center(
               child: CircularProgressIndicator(),
             ));
     try {
@@ -102,20 +103,18 @@ class auth_methods_admin {
         password: password,
       );
       final uid = await FirebaseAuth.instance.currentUser!.uid;
-      if (uid != null) {
-        var userSnapshot =
-            await FirebaseFirestore.instance.collection("admin").doc(uid).get();
+      var userSnapshot =
+          await FirebaseFirestore.instance.collection("admin").doc(uid).get();
 
-        if (userSnapshot.exists) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => AdminHome()),
-              (route) => false);
-        } else {
-          Navigator.pop(context);
-          Helper().notAuthorizedMessage(context);
-          FirebaseAuth.instance.signOut();
-        }
+      if (userSnapshot.exists) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const AdminHome()),
+            (route) => false);
+      } else {
+        Navigator.pop(context);
+        Helper().notAuthorizedMessage(context);
+        FirebaseAuth.instance.signOut();
       }
     } on FirebaseAuthException catch (e) {
       print(e);
@@ -138,7 +137,7 @@ class auth_methods_admin {
       String phone, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => Center(
+        builder: (context) => const Center(
               child: CircularProgressIndicator(),
             ));
     try {
@@ -160,7 +159,8 @@ class auth_methods_admin {
         // Ajout des détails du prof
         FirebaseFirestore _db = FirebaseFirestore.instance;
         final Ref = _db.collection("prof").doc(uid);
-        await addUserDetails(nom, prenom, email, phone, Ref, null);
+        await addUserDetails(nom.toUpperCase().trim(),
+            prenom.toUpperCase().trim(), email, phone, Ref, null);
         Navigator.pop(context);
         showDialog(
           context: context,
@@ -229,7 +229,7 @@ class auth_methods_admin {
       } else {
         // Création de l'etudiant
         UserCredential userCredential =
-            await register(etudiant.email.trim(), etudiant.password.trim());
+            await register(etudiant.email!.trim(), etudiant.password!.trim());
         // await FirebaseAuth.instance.createUserWithEmailAndPassword(
         //   email: etudiant.email.trim(),
         //   password: etudiant.password.trim(),
@@ -241,14 +241,14 @@ class auth_methods_admin {
         if (uid != null) {
           // L'étudiant n'existe pas encore, ajouter
           await FirebaseFirestore.instance.collection('etudiant').doc(uid).set({
-            'nom': etudiant.nom.toUpperCase(),
-            'prenom': etudiant.prenom.toUpperCase(),
-            'matricule': etudiant.matricule.toUpperCase(),
-            'phone': etudiant.phone.toUpperCase(),
-            'filiere': etudiant.filiere.toUpperCase(),
-            'idFiliere': etudiant.idFiliere,
-            'niveau': etudiant.niveau.toUpperCase(),
-            'statut': etudiant.statut.toUpperCase(),
+            'nom': etudiant.nom.toUpperCase().trim(),
+            'prenom': etudiant.prenom.toUpperCase().trim(),
+            'matricule': etudiant.matricule.toUpperCase().trim(),
+            'phone': etudiant.phone.toUpperCase().trim(),
+            'filiere': etudiant.filiere.toUpperCase().trim(),
+            'idFiliere': etudiant.idFiliere!.trim(),
+            'niveau': etudiant.niveau.toUpperCase().trim(),
+            'statut': etudiant.statut.toUpperCase().trim(),
           }).then((value) {
             // Etudiant ajouté avec succès
             Navigator.pop(context);
@@ -297,21 +297,21 @@ class auth_methods_admin {
     if (docSnapshot.docs.isEmpty) {
       // Création de l'etudiant
       UserCredential userCredential =
-          await register(etudiant.email.trim(), etudiant.password.trim());
+          await register(etudiant.email!.trim(), etudiant.password!.trim());
 
       String? uid = userCredential.user?.uid;
 
       if (uid != null) {
         // L'étudiant n'existe pas encore, ajouter
         await FirebaseFirestore.instance.collection('etudiant').doc(uid).set({
-          'nom': etudiant.nom.toUpperCase(),
-          'prenom': etudiant.prenom.toUpperCase(),
-          'matricule': etudiant.matricule.toUpperCase(),
-          'phone': etudiant.phone.toUpperCase(),
-          'filiere': etudiant.filiere.toUpperCase(),
-          'idFiliere': etudiant.idFiliere,
-          'niveau': etudiant.niveau.toUpperCase(),
-          'statut': etudiant.statut.toUpperCase(),
+          'nom': etudiant.nom.toUpperCase().trim(),
+          'prenom': etudiant.prenom.toUpperCase().trim(),
+          'matricule': etudiant.matricule.toUpperCase().trim(),
+          'phone': etudiant.phone.toUpperCase().trim(),
+          'filiere': etudiant.filiere.toUpperCase().trim(),
+          'idFiliere': etudiant.idFiliere!.trim(),
+          'niveau': etudiant.niveau.toUpperCase().trim(),
+          'statut': etudiant.statut.toUpperCase().trim(),
         });
       }
     }
@@ -377,15 +377,15 @@ class auth_methods_admin {
           print(filiereName);
 
           final etudiant = Etudiant(
-              matricule: row[0]!.value.toString(),
-              nom: row[1]!.value.toString(),
-              prenom: row[2]!.value.toString(),
-              email: row[3]!.value.toString(),
-              password: row[4]!.value.toString(),
-              phone: row[5]!.value.toString(),
-              idFiliere: idFiliere,
-              filiere: row[6]!.value.toString(),
-              niveau: row[7]!.value.toString(),
+              matricule: row[0]!.value.toString().toUpperCase().trim(),
+              nom: row[1]!.value.toString().toUpperCase().trim(),
+              prenom: row[2]!.value.toString().toUpperCase().trim(),
+              email: row[3]!.value.toString().toUpperCase().trim(),
+              password: row[4]!.value.toString().toUpperCase().trim(),
+              phone: row[5]!.value.toString().toUpperCase().trim(),
+              idFiliere: idFiliere.toUpperCase().trim(),
+              filiere: row[6]!.value.toString().toUpperCase().trim(),
+              niveau: row[7]!.value.toString().toUpperCase().trim(),
               statut: "1");
 
           await addStudentTookFromExcel(etudiant, context);
@@ -423,7 +423,9 @@ class auth_methods_admin {
   //log out user method
   void logUserOut(BuildContext context) {
     FirebaseAuth.instance.signOut();
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => AuthPage()), (route) => false);
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const AuthPage()),
+        (route) => false);
   }
 }

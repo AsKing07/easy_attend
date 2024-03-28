@@ -2,9 +2,12 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Models/Cours.dart';
+import 'package:easy_attend/Screens/professeur/TakeAttendance/listOfOneCourseSeance.dart';
+import 'package:easy_attend/Screens/professeur/TakeAttendance/takeQRattendance.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:random_string/random_string.dart';
 
 class set_Data {
 //METHODES DES FILIERES
@@ -18,10 +21,8 @@ class set_Data {
               child: CircularProgressIndicator(),
             ));
 
-    final docSnapshot = await FirebaseFirestore.instance
-        .collection('filiere')
-        .doc(id.toUpperCase())
-        .get();
+    final docSnapshot =
+        await FirebaseFirestore.instance.collection('filiere').doc(id).get();
 
     if (docSnapshot.exists) {
       // La filière existe déjà, afficher un message d'erreur
@@ -30,8 +31,8 @@ class set_Data {
     } else {
       // La filière n'existe pas encore, ajouter la nouvelle filière
       await FirebaseFirestore.instance.collection('filiere').add({
-        'nomFiliere': nom.toUpperCase(),
-        'idFiliere': id.toUpperCase(),
+        'nomFiliere': nom.toUpperCase().trim(),
+        'idFiliere': id.toUpperCase().trim(),
         'niveaux': niveaux,
         'statut': "1",
       }).then((value) {
@@ -57,8 +58,8 @@ class set_Data {
             ));
 
     FirebaseFirestore.instance.collection('filiere').doc(filiereId).update({
-      'nomFiliere': nomFiliere,
-      'idFiliere': idFiliere,
+      'nomFiliere': nomFiliere.toString().toUpperCase().trim(),
+      'idFiliere': idFiliere.toString().toUpperCase().trim(),
       'niveaux': niveaux,
     }).then((value) {
       // Filière modifiée avec succès
@@ -231,11 +232,11 @@ class set_Data {
             ));
 
     FirebaseFirestore.instance.collection('prof').doc(profId).update({
-      'nom': nom.toString().toUpperCase(),
-      'phone': phone.toString().toUpperCase(),
-      'prenom': prenom.toString().toUpperCase(),
+      'nom': nom.toString().toUpperCase().trim(),
+      'phone': phone.toString().toUpperCase().trim(),
+      'prenom': prenom.toString().toUpperCase().trim(),
     }).then((value) {
-      // Filière modifiée avec succès
+      // Prof modifié avec succès
       Navigator.pop(context);
       Helper().succesMessage(context);
     }).catchError((error) {
@@ -258,7 +259,8 @@ class set_Data {
 
     final docSnapshot = await FirebaseFirestore.instance
         .collection('cours')
-        .where('idCours', isEqualTo: cours.idCours)
+        .where('idCours',
+            isEqualTo: cours.idCours.toString().toUpperCase().trim())
         .get();
 
     if (docSnapshot.docs.length > 0) {
@@ -268,11 +270,11 @@ class set_Data {
     } else {
       // Le cours n'existe pas encore, ajouter
       await FirebaseFirestore.instance.collection('cours').add({
-        'nomCours': cours.nomCours.toUpperCase(),
-        'idCours': cours.idCours.toUpperCase(),
-        'niveau': cours.niveau.toUpperCase(),
-        'filiereId': cours.filiereId,
-        'professeurId': cours.professeurId,
+        'nomCours': cours.nomCours.toUpperCase().trim(),
+        'idCours': cours.idCours.toUpperCase().trim(),
+        'niveau': cours.niveau.toUpperCase().trim(),
+        'filiereId': cours.filiereId.toString().trim(),
+        'professeurId': cours.professeurId!.trim(),
       }).then((value) {
         // Cours ajouté avec succès
         Navigator.pop(context);
@@ -298,11 +300,11 @@ class set_Data {
         .collection('cours')
         .doc(cours.idDoc)
         .update({
-      'nomCours': cours.nomCours,
-      'idCours': cours.idCours.toUpperCase(),
-      'niveau': cours.niveau.toUpperCase(),
-      'filiereId': cours.filiereId,
-      'professeurId': cours.professeurId
+      'nomCours': cours.nomCours.toUpperCase().trim(),
+      'idCours': cours.idCours.toUpperCase().trim(),
+      'niveau': cours.niveau.toUpperCase().trim(),
+      'filiereId': cours.filiereId!.trim(),
+      'professeurId': cours.professeurId!.trim()
     }).then((value) {
       // Cours modifié avec succès
       Navigator.pop(context);
@@ -373,7 +375,7 @@ class set_Data {
 
     final docSnapshot = await FirebaseFirestore.instance
         .collection('etudiant')
-        .where('matricule', isEqualTo: matricule)
+        .where('matricule', isEqualTo: matricule.toString().toUpperCase())
         .where(FieldPath.documentId, isNotEqualTo: idEtudiant)
         .get();
 
@@ -389,13 +391,13 @@ class set_Data {
       );
     } else {
       FirebaseFirestore.instance.collection('etudiant').doc(idEtudiant).update({
-        'nom': nom.toString().toUpperCase(),
-        'phone': phone.toString().toUpperCase(),
-        'prenom': prenom.toString().toUpperCase(),
-        'filiere': filiere.toString().toUpperCase(),
-        'idFiliere': idFiliere.toString().toUpperCase(),
-        'niveau': niveau.toString().toUpperCase(),
-        'matricule': matricule.toString().toUpperCase()
+        'nom': nom.toString().toUpperCase().trim(),
+        'phone': phone.toString().toUpperCase().trim(),
+        'prenom': prenom.toString().toUpperCase().trim(),
+        'filiere': filiere.toString().toUpperCase().trim(),
+        'idFiliere': idFiliere.toString().trim(),
+        'niveau': niveau.toString().toUpperCase().trim(),
+        'matricule': matricule.toString().toUpperCase().trim()
       }).then((value) {
         // Etudiant modifié avec succès
         Navigator.pop(context);
@@ -537,5 +539,52 @@ class set_Data {
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     }
+  }
+
+  //METHODES DES SEANCES
+
+  Future createSeance(idCours, dateSeance, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    try {
+      var x = await FirebaseFirestore.instance.collection('seance').add({
+        'idCours': idCours.toString().trim(),
+        'dateSeance': dateSeance,
+        'presenceEtudiant': [],
+        'isActive': false,
+        'seanceCode': randomAlphaNumeric(6).toUpperCase(),
+      });
+      Navigator.pop(context);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ListOfOneCourseSeancePage(CourseId: idCours)),
+      );
+    } catch (e) {
+      Navigator.pop(context);
+      Helper().ErrorMessage(context);
+    }
+  }
+
+  Future starSeance(idSeance) async {
+    var x = await FirebaseFirestore.instance
+        .collection('seance')
+        .doc(idSeance)
+        .update({
+      'isActive': true,
+    });
+  }
+
+  Future stopSeance(idSeance) async {
+    var x = await FirebaseFirestore.instance
+        .collection('seance')
+        .doc(idSeance)
+        .update({
+      'isActive': false,
+    });
   }
 }
