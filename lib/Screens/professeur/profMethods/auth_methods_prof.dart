@@ -11,7 +11,7 @@ class auth_methods_prof {
   Future logProfIn(String email, String password, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => Center(
+        builder: (context) => const Center(
               child: CircularProgressIndicator(),
             ));
     try {
@@ -31,8 +31,8 @@ class auth_methods_prof {
             Helper().notAuthorizedMessage(context);
             FirebaseAuth.instance.signOut();
           } else {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => ProfHome()));
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const ProfHome()));
           }
         } else {
           Navigator.pop(context);

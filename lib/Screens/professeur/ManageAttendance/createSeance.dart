@@ -103,14 +103,14 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
     String? uid = FirebaseAuth.instance.currentUser?.uid;
 
     return !dataIsloaded
-        ? SizedBox()
+        ? const SizedBox()
         : Scaffold(
             appBar: AppBar(
               backgroundColor: AppColors.secondaryColor,
               foregroundColor: Colors.white,
               title: Text(
                 'Créer une séance de ${course['nomCours']} ',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: FontSize.medium,
                 ),
@@ -156,7 +156,7 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
                       backgroundColor: AppColors.secondaryColor,
                     ),
                     child: dateTimeController.text.isEmpty
-                        ? Text(
+                        ? const Text(
                             "Sélectionner",
                             style: TextStyle(color: AppColors.white),
                           )

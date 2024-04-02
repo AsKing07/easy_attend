@@ -3,7 +3,6 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
-import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 
 class ProfDashboard extends StatefulWidget {
@@ -126,7 +125,6 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                print(snapshot);
                                 int length = snapshot.data!.docs.length;
                                 var previous = null;
                                 myWidgets.clear();
@@ -143,7 +141,6 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                               niveau: previous['niveau'],
                                               filiere:
                                                   _selectedFiliere?.idFiliere,
-                                              teacher: prof['nom'],
                                               option: "professeur",
                                               CourseId: previous.id,
                                             ),
@@ -155,7 +152,6 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                               niveau: object['niveau'],
                                               filiere:
                                                   _selectedFiliere?.idFiliere,
-                                              teacher: prof['nom'],
                                               option: "professeur",
                                               CourseId: object.id,
                                             ),
@@ -173,7 +169,6 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                       name: previous['nomCours'],
                                       niveau: previous['niveau'],
                                       filiere: _selectedFiliere?.idFiliere,
-                                      teacher: prof['nom'],
                                       option: "professeur",
                                       CourseId: previous.id,
                                     ),

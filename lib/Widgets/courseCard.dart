@@ -1,18 +1,18 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Screens/etudiant/seeMyAttendance.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/OneCoursePage.dart';
 import 'package:flutter/material.dart';
 
 class CourseCard extends StatefulWidget {
-  String? name, filiere, teacher, niveau;
+  String? name, filiere, niveau;
   String option, CourseId;
   CourseCard(
       {required this.name,
       required this.niveau,
       this.filiere,
       required this.CourseId,
-      required this.teacher,
       required this.option});
   @override
   State<CourseCard> createState() => _CourseCardState();
@@ -43,14 +43,23 @@ class _CourseCardState extends State<CourseCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                '${widget.filiere} ${widget.niveau}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                  color: Colors.white,
-                ),
-              ),
+              widget.option == "professeur"
+                  ? Text(
+                      '${widget.filiere} ${widget.niveau}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      ' ${widget.niveau}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                        color: Colors.white,
+                      ),
+                    ),
               const SizedBox(height: 5.0),
               Text(
                 widget.name!,
@@ -72,10 +81,12 @@ class _CourseCardState extends State<CourseCard> {
                         OneCoursePage(CourseId: widget.CourseId)),
               );
             } else if (widget.option == "etudiant") {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context)=> showAttendance(course:widget.dept+' '+widget.id)),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        seeMyAttendance(courseId: widget.CourseId)),
+              );
             }
           },
         ),

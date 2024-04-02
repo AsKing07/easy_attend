@@ -7,6 +7,7 @@ import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/listOfOneCourseSeance.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 
@@ -537,6 +538,34 @@ class set_Data {
       if (!context.mounted) return;
       Navigator.pop(context);
     } catch (e) {
+      Navigator.pop(context);
+      Helper().ErrorMessage(context);
+    }
+  }
+
+  //CREER REQUETE
+
+  Future<void> createQuery(auteur, idAuteur, type, sujet, details, statut,
+      dateCreation, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    try {
+      await FirebaseFirestore.instance.collection("requete").doc(idAuteur).set({
+        "auteur": auteur,
+        "idAuteur": idAuteur,
+        "type": type,
+        "sujet": sujet,
+        "details": details,
+        "statut": "2",
+        "dateCreation": dateCreation
+      });
+      if (!context.mounted) return;
+      Navigator.pop(context);
+    } catch (e) {
+      print(e);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     }

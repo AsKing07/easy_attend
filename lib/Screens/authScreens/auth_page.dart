@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/login_admin.dart';
 import 'package:easy_attend/Screens/admin/signup_admin.dart';
+import 'package:easy_attend/Screens/etudiant/login_etudiant.dart';
 import 'package:easy_attend/Screens/professeur/login_prof.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
@@ -61,7 +62,8 @@ class _AuthPageState extends State<AuthPage> {
               MaterialPageRoute(builder: (context) => const LoginProf()));
           break;
         case 'Étudiant':
-          Navigator.pushNamed(context, '/student_page');
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const LoginStudent()));
           break;
         default:
           GFToast.showToast('Vous devez au moins sélectionner un rôle', context,

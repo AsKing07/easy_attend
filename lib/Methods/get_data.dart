@@ -51,6 +51,15 @@ class get_Data {
 
   //METHODES DES ETUDIANTS
 
+  Future<DocumentSnapshot<Object?>> loadCurrentStudentData() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final DocumentSnapshot x =
+        await FirebaseFirestore.instance.collection("etudiant").doc(uid).get();
+    print(uid);
+
+    return x;
+  }
+
   Future getActifStudentData() async {
     var data = await FirebaseFirestore.instance
         .collection("etudiant")
@@ -172,6 +181,12 @@ class get_Data {
         .where("statut", isEqualTo: "2")
         .get();
     return data.docs;
+  }
+
+  Future getQueryById(id) async {
+    DocumentSnapshot query =
+        await FirebaseFirestore.instance.collection('requete').doc(id).get();
+    return query;
   }
 
   // METHODES SEANCES

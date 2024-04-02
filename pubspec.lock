@@ -137,6 +137,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0+1"
+  dialogs:
+    dependency: "direct main"
+    description:
+      name: dialogs
+      sha256: "93f5fd23cfbe09e57a15bf43a0208b50232a9db3c718f0d8f8e94118e38c14e5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.7"
   equatable:
     dependency: transitive
     description:
