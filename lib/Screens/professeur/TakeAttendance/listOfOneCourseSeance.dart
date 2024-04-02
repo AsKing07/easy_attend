@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
+import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Seance.dart';
 import 'package:easy_attend/Screens/professeur/TakeAttendance/seeAttendance.dart';
 import 'package:easy_attend/Screens/professeur/TakeAttendance/takeAttendanceManualy.dart';
@@ -67,8 +68,8 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                             return WarningWidget(
                                 title: "Information",
                                 content:
-                                    "Un point vert indique qu'une séance de présence est en cours",
-                                height: 150);
+                                    "Un point vert indique qu'une séance de présence QR code est en cours et n'a pas été arrêtée !",
+                                height: 160);
                           });
                     },
                     icon: const Icon(Icons.info)),
@@ -100,7 +101,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                     const SizedBox(height: 30),
                     ElevatedButton(
                         onPressed: () {},
-                        child: Text(
+                        child: const Text(
                             "Consulter la présence globale d'un étudiant")),
                     const SizedBox(height: 30),
                     Container(
@@ -188,20 +189,62 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                           )
                                                         ],
                                                       ),
-                                                      collapsed: Text(
-                                                        "${course['nomCours']} - ${course['niveau']} ",
-                                                        softWrap: true,
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: const TextStyle(
-                                                            fontSize:
-                                                                FontSize.medium,
-                                                            color: AppColors
-                                                                .textColor,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
+                                                      collapsed: Column(
+                                                        children: [
+                                                          Text(
+                                                            "${course['nomCours']} - ${course['niveau']} ",
+                                                            softWrap: true,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: const TextStyle(
+                                                                fontSize:
+                                                                    FontSize
+                                                                        .medium,
+                                                                color: AppColors
+                                                                    .textColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400),
+                                                          ),
+                                                          !seanceData[
+                                                                  'presenceTookOnce']
+                                                              ? const Text(
+                                                                  "Aucune présence effectuée",
+                                                                  softWrap:
+                                                                      true,
+                                                                  maxLines: 2,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: AppColors
+                                                                          .textColor,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w400),
+                                                                )
+                                                              : const Text(
+                                                                  "Une présence a été effectuée sur cette séance",
+                                                                  softWrap:
+                                                                      true,
+                                                                  maxLines: 2,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: AppColors
+                                                                          .textColor,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w400),
+                                                                )
+                                                        ],
                                                       ),
                                                       expanded: Column(
                                                         mainAxisAlignment:
@@ -211,8 +254,8 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                             CrossAxisAlignment
                                                                 .start,
                                                         children: [
-                                                          seanceData['presenceEtudiant']
-                                                                  .isEmpty
+                                                          !seanceData[
+                                                                  'presenceTookOnce']
                                                               ? const Text(
                                                                   "Aucune présence effectuée",
                                                                   softWrap:
@@ -247,10 +290,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                     );
                                                                   },
                                                                   child: const Text(
-                                                                      "Consulter la présence")),
-                                                          const SizedBox(
-                                                            height: 10,
-                                                          ),
+                                                                      "Consulter la présence déjà prise")),
                                                           ElevatedButton(
                                                               style: const ButtonStyle(
                                                                   fixedSize:
@@ -288,7 +328,80 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                 );
                                                               },
                                                               child: const Text(
-                                                                  "Prendre la présence avec un QR code")),
+                                                                "Prendre la présence avec un QR code",
+                                                              )),
+                                                          ElevatedButton(
+                                                              style: const ButtonStyle(
+                                                                  fixedSize:
+                                                                      MaterialStatePropertyAll(Size(
+                                                                          280,
+                                                                          30)),
+                                                                  backgroundColor:
+                                                                      MaterialStatePropertyAll(
+                                                                          AppColors
+                                                                              .redColor)),
+                                                              onPressed:
+                                                                  () async {
+                                                                showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (context) =>
+                                                                          AlertDialog(
+                                                                    title:
+                                                                        const Row(
+                                                                      children: [
+                                                                        Icon(
+                                                                          Icons
+                                                                              .warning,
+                                                                          color:
+                                                                              Colors.orange,
+                                                                        ),
+                                                                        SizedBox(
+                                                                            width:
+                                                                                10),
+                                                                        Text(
+                                                                          "Supprimer la séance",
+                                                                          style: TextStyle(
+                                                                              fontWeight: FontWeight.bold,
+                                                                              fontSize: 20.0,
+                                                                              color: Colors.orange),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    content:
+                                                                        const Text(
+                                                                            'Êtes-vous sûr de vouloir supprimer cette séance ?'),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                        },
+                                                                        child: const Text(
+                                                                            'Annuler'),
+                                                                      ),
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () async {
+                                                                          await set_Data().deleteSeance(
+                                                                              seance.id,
+                                                                              context);
+                                                                        },
+                                                                        child: const Text(
+                                                                            'Supprimer'),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                );
+                                                              },
+                                                              child: const Text(
+                                                                "Supprimer la séance",
+                                                                style: TextStyle(
+                                                                    color: AppColors
+                                                                        .white),
+                                                              )),
                                                         ],
                                                       )),
                                                 ],

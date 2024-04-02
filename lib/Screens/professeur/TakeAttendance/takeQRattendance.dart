@@ -52,11 +52,12 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
               ),
             ),
             body: Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
+                padding: const EdgeInsets.only(left: 10, right: 10),
                 child: Container(
                   child: Center(
                       child: !started
                           ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -80,7 +81,7 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                 Lottie.asset('assets/qrAnim.json'),
                                 const SizedBox(height: 10),
                                 const Text(
-                                  '1. Lancez la séance de scan.',
+                                  '1. Lancez la séance de présence.',
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 const SizedBox(height: 5),
@@ -90,8 +91,9 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                 ),
                                 const SizedBox(height: 5),
                                 const Text(
-                                  '3.Arretez le scan',
+                                  '3. Arretez la séance de présence pour empêcher tout nouveau scan',
                                   style: TextStyle(fontSize: 16),
+                                  textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 10),
                                 ElevatedButton(
@@ -130,7 +132,7 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 40,
                                 ),
                                 ElevatedButton(
@@ -146,7 +148,7 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                     backgroundColor: AppColors.secondaryColor,
                                   ),
                                   child: const Text(
-                                    'Arreter la séance',
+                                    'Arreter la séance de présence',
                                     style: TextStyle(
                                         fontSize: FontSize.xMedium,
                                         fontWeight: FontWeight.w700),

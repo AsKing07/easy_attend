@@ -380,10 +380,10 @@ class auth_methods_admin {
               matricule: row[0]!.value.toString().toUpperCase().trim(),
               nom: row[1]!.value.toString().toUpperCase().trim(),
               prenom: row[2]!.value.toString().toUpperCase().trim(),
-              email: row[3]!.value.toString().toUpperCase().trim(),
-              password: row[4]!.value.toString().toUpperCase().trim(),
+              email: row[3]!.value.toString().trim(),
+              password: row[4]!.value.toString().trim(),
               phone: row[5]!.value.toString().toUpperCase().trim(),
-              idFiliere: idFiliere.toUpperCase().trim(),
+              idFiliere: idFiliere.trim(),
               filiere: row[6]!.value.toString().toUpperCase().trim(),
               niveau: row[7]!.value.toString().toUpperCase().trim(),
               statut: "1");
@@ -405,6 +405,9 @@ class auth_methods_admin {
           );
         }
       }
+
+      Navigator.pop(context);
+      Helper().succesMessage(context);
     }
   }
 

@@ -99,11 +99,11 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                             })),
                         present
                             ? const DataCell(Text(
-                                'Présent',
+                                'Présent(e)',
                                 style: TextStyle(color: AppColors.greenColor),
                               ))
                             : const DataCell(Text(
-                                'Absent',
+                                'Absent(e)',
                                 style: TextStyle(color: AppColors.redColor),
                               )),
                       ],
@@ -112,7 +112,7 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                   return Column(
                     children: [
                       Text(date),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       SizedBox(

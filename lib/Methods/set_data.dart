@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Cours.dart';
+import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/professeur/TakeAttendance/listOfOneCourseSeance.dart';
-import 'package:easy_attend/Screens/professeur/TakeAttendance/takeQRattendance.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:flutter/material.dart';
@@ -550,12 +551,47 @@ class set_Data {
               child: CircularProgressIndicator(),
             ));
     try {
+      Map<String, bool> presenceEtudiantsMap = {};
+
+      DocumentSnapshot cours = await get_Data().getCourseById(idCours, context);
+
+      final List<QueryDocumentSnapshot> etudiantDoc = await get_Data()
+          .getEtudiantsOfAFiliereAndNiveau(cours['filiereId'], cours['niveau']);
+
+      List<Etudiant> etudiants = [];
+
+      etudiantDoc.forEach((doc) {
+        final etudiant = Etudiant(
+            uid: doc.id,
+            matricule: doc['matricule'],
+            nom: doc['nom'],
+            prenom: doc['prenom'],
+            phone: doc['phone'],
+            idFiliere: doc['idFiliere'],
+            filiere: doc["filiere"],
+            niveau: doc['niveau'],
+            statut: doc['statut']);
+
+        etudiants.add(etudiant);
+      });
+
+      List<Map<String, dynamic>> presenceEtudiant =
+          List.generate(etudiants.length, (index) {
+        return {'id': etudiants[index].uid, 'present': false};
+      });
+
+      for (int i = 0; i < etudiants.length; i++) {
+        presenceEtudiantsMap[etudiants[i].uid!] =
+            presenceEtudiant[i]['present'];
+      }
+
       var x = await FirebaseFirestore.instance.collection('seance').add({
         'idCours': idCours.toString().trim(),
         'dateSeance': dateSeance,
-        'presenceEtudiant': [],
+        'presenceEtudiant': presenceEtudiantsMap,
         'isActive': false,
         'seanceCode': randomAlphaNumeric(6).toUpperCase(),
+        'presenceTookOnce': false
       });
       Navigator.pop(context);
 
@@ -586,5 +622,19 @@ class set_Data {
         .update({
       'isActive': false,
     });
+  }
+
+  Future deleteSeance(idSeance, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    await FirebaseFirestore.instance
+        .collection('seance')
+        .doc(idSeance)
+        .delete();
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 }

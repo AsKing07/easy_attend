@@ -76,6 +76,11 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
 
   Future<void> enregistrerPresence() async {
     try {
+      showDialog(
+          context: context,
+          builder: (context) => const Center(
+                child: CircularProgressIndicator(),
+              ));
       // Récupérer l'ID de la séance
       String seanceId = widget.seanceId;
 
@@ -94,9 +99,11 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
           .doc(seanceId)
           .update({
         'presenceEtudiant': presenceEtudiantsMap,
+        'presenceTookOnce': true
       });
 
       // Afficher un message de confirmation
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Présence enregistrée avec succès'),

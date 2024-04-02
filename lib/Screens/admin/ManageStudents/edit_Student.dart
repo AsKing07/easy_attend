@@ -22,6 +22,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
   final _matriculeController = TextEditingController();
   final _nomController = TextEditingController();
   final _prenomController = TextEditingController();
+  final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
 
   var _selectedNiveau;
