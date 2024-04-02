@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Cours.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
-import 'package:easy_attend/Screens/professeur/TakeAttendance/listOfOneCourseSeance.dart';
+import 'package:easy_attend/Screens/professeur/ManageAttendance/listOfOneCourseSeance.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:flutter/material.dart';

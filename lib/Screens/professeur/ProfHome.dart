@@ -21,13 +21,7 @@ class _ProfHomeState extends State<ProfHome> {
         text: 'Dashboard',
         icon: Icons.dashboard_outlined,
         tap: const ProfDashboard()),
-    //to-do: change attendance icon
-    //   MenuItems(
-    //       text: 'Gestion de Présence',
-    //       icon: Icons.calendar_month_sharp,
-    //       tap: Attendance()),
-    //   MenuItems(text: '', icon: Icons.settings, tap: teacherSetting()),
-    //
+    // MenuItems(text: 'Paramètres', icon: Icons.settings, tap: teacherSetting()),
   ];
 
   @override

@@ -111,79 +111,87 @@ class _ProfDashboardState extends State<ProfDashboard> {
                     const SizedBox(
                       height: 16,
                     ),
-                    StreamBuilder(
-                        stream: FirebaseFirestore.instance
-                            .collection('cours')
-                            .where('professeurId', isEqualTo: prof.id)
-                            .where('filiereId',
-                                isEqualTo: _selectedFiliere?.idDoc)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            print(snapshot);
-                            int length = snapshot.data!.docs.length;
-                            var previous = null;
-                            myWidgets.clear();
-                            for (int i = 0; i < length; i++) {
-                              var object = snapshot.data!.docs[i];
-                              if (identical(previous, null) == false) {
-                                myWidgets.add(Column(children: [
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        CourseCard(
-                                          name: previous['nomCours'],
-                                          niveau: previous['niveau'],
-                                          filiere: _selectedFiliere?.idFiliere,
-                                          teacher: prof['nom'],
-                                          option: "professeur",
-                                          CourseId: previous.id,
-                                        ),
-                                        const SizedBox(
-                                          width: 20.0,
-                                        ),
-                                        CourseCard(
-                                          name: object['nomCours'],
-                                          niveau: object['niveau'],
-                                          filiere: _selectedFiliere?.idFiliere,
-                                          teacher: prof['nom'],
-                                          option: "professeur",
-                                          CourseId: object.id,
-                                        ),
-                                      ]),
-                                  const SizedBox(height: 10.0),
-                                ]));
-                                previous = null;
-                              } else {
-                                previous = object;
-                              }
-                            }
-                            if (identical(previous, null) == false) {
-                              myWidgets.add(Row(children: [
-                                CourseCard(
-                                  name: previous['nomCours'],
-                                  niveau: previous['niveau'],
-                                  filiere: _selectedFiliere?.idFiliere,
-                                  teacher: prof['nom'],
-                                  option: "professeur",
-                                  CourseId: previous.id,
-                                ),
-                                const SizedBox(
-                                  width: 20.0,
-                                ),
-                              ]));
-                            }
 
-                            return createCourseList(myWidgets);
-                          } else {
-                            return const Material(
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-                        })
+                    _selectedFiliere == null
+                        ? const Center(
+                            child: Text(
+                                'Sélectionnez une filière pour afficher vos cours attribués'),
+                          )
+                        : StreamBuilder(
+                            stream: FirebaseFirestore.instance
+                                .collection('cours')
+                                .where('professeurId', isEqualTo: prof.id)
+                                .where('filiereId',
+                                    isEqualTo: _selectedFiliere?.idDoc)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                print(snapshot);
+                                int length = snapshot.data!.docs.length;
+                                var previous = null;
+                                myWidgets.clear();
+                                for (int i = 0; i < length; i++) {
+                                  var object = snapshot.data!.docs[i];
+                                  if (identical(previous, null) == false) {
+                                    myWidgets.add(Column(children: [
+                                      Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            CourseCard(
+                                              name: previous['nomCours'],
+                                              niveau: previous['niveau'],
+                                              filiere:
+                                                  _selectedFiliere?.idFiliere,
+                                              teacher: prof['nom'],
+                                              option: "professeur",
+                                              CourseId: previous.id,
+                                            ),
+                                            const SizedBox(
+                                              width: 20.0,
+                                            ),
+                                            CourseCard(
+                                              name: object['nomCours'],
+                                              niveau: object['niveau'],
+                                              filiere:
+                                                  _selectedFiliere?.idFiliere,
+                                              teacher: prof['nom'],
+                                              option: "professeur",
+                                              CourseId: object.id,
+                                            ),
+                                          ]),
+                                      const SizedBox(height: 10.0),
+                                    ]));
+                                    previous = null;
+                                  } else {
+                                    previous = object;
+                                  }
+                                }
+                                if (identical(previous, null) == false) {
+                                  myWidgets.add(Row(children: [
+                                    CourseCard(
+                                      name: previous['nomCours'],
+                                      niveau: previous['niveau'],
+                                      filiere: _selectedFiliere?.idFiliere,
+                                      teacher: prof['nom'],
+                                      option: "professeur",
+                                      CourseId: previous.id,
+                                    ),
+                                    const SizedBox(
+                                      width: 20.0,
+                                    ),
+                                  ]));
+                                }
+
+                                return createCourseList(myWidgets);
+                              } else {
+                                return const Material(
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+                            })
                   ],
                 ),
               ),

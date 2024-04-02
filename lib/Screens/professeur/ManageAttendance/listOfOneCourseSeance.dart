@@ -3,9 +3,9 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Seance.dart';
-import 'package:easy_attend/Screens/professeur/TakeAttendance/seeAttendance.dart';
-import 'package:easy_attend/Screens/professeur/TakeAttendance/takeAttendanceManualy.dart';
-import 'package:easy_attend/Screens/professeur/TakeAttendance/takeQRattendance.dart';
+import 'package:easy_attend/Screens/professeur/ManageAttendance/seeAttendance.dart';
+import 'package:easy_attend/Screens/professeur/ManageAttendance/takeAttendanceManualy.dart';
+import 'package:easy_attend/Screens/professeur/ManageAttendance/takeQRattendance.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
@@ -151,13 +151,14 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                     'fr')
                                                                 .format(seanceData[
                                                                         'dateSeance']
-                                                                    .toDate()),
+                                                                    .toDate())
+                                                                .toUpperCase(),
                                                             style: const TextStyle(
                                                                 color: AppColors
                                                                     .secondaryColor,
                                                                 fontSize:
                                                                     FontSize
-                                                                        .xMedium,
+                                                                        .medium,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600),
@@ -305,7 +306,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                 );
                                                               },
                                                               child: const Text(
-                                                                  "Prendre manuellement la présence")),
+                                                                  "PRESENCE MANUELLE")),
                                                           ElevatedButton(
                                                               style: const ButtonStyle(
                                                                   fixedSize:
@@ -323,7 +324,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                 );
                                                               },
                                                               child: const Text(
-                                                                "Prendre la présence avec un QR code",
+                                                                "PRESENCE CODE QR",
                                                               )),
                                                           ElevatedButton(
                                                               style: const ButtonStyle(

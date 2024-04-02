@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/professeur/TakeAttendance/OneCoursePage.dart';
+import 'package:easy_attend/Screens/professeur/ManageAttendance/OneCoursePage.dart';
 import 'package:flutter/material.dart';
 
 class CourseCard extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/professeur/TakeAttendance/seeOneStudentAttendance.dart';
+import 'package:easy_attend/Screens/professeur/ManageAttendance/seeOneStudentAttendance.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
