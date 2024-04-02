@@ -3,6 +3,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Screens/professeur/TakeAttendance/createSeance.dart';
 import 'package:easy_attend/Screens/professeur/TakeAttendance/listOfOneCourseSeance.dart';
+import 'package:easy_attend/Screens/professeur/TakeAttendance/listOfStudentsOfACourse.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -109,6 +110,24 @@ class _OneCoursePageState extends State<OneCoursePage> {
                           style: GoogleFonts.poppins(
                             color: AppColors.secondaryColor,
                             fontSize: FontSize.medium,
+                            fontWeight: FontWeight.bold,
+                          ))),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(fixedSize: Size(1000, 40)),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  listOfStudentsOfACourse(course: course)),
+                        );
+                      },
+                      child: Text("Consulter la présence d'un seul étudiant",
+                          style: GoogleFonts.poppins(
+                            color: AppColors.secondaryColor,
+                            fontSize: FontSize.small,
                             fontWeight: FontWeight.bold,
                           ))),
                 ],

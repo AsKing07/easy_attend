@@ -99,11 +99,6 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    ElevatedButton(
-                        onPressed: () {},
-                        child: const Text(
-                            "Consulter la présence globale d'un étudiant")),
-                    const SizedBox(height: 30),
                     Container(
                         height: MediaQuery.of(context).size.height - 180,
                         child: StreamBuilder<QuerySnapshot>(
