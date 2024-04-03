@@ -43,20 +43,20 @@ class _CourseCardState extends State<CourseCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              widget.option == "professeur"
+              widget.option == "etudiant"
                   ? Text(
-                      '${widget.filiere} ${widget.niveau}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                        color: Colors.white,
-                      ),
-                    )
-                  : Text(
                       ' ${widget.niveau}',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20.0,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      '${widget.filiere} ${widget.niveau}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
                         color: Colors.white,
                       ),
                     ),
@@ -73,7 +73,7 @@ class _CourseCardState extends State<CourseCard> {
             ],
           ),
           onPressed: () {
-            if (widget.option == "professeur") {
+            if (widget.option == "professeur" || widget.option == 'admin') {
               Navigator.push(
                 context,
                 MaterialPageRoute(

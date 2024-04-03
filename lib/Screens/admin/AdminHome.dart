@@ -6,6 +6,7 @@ import 'package:easy_attend/Screens/admin/ManageProfesseur/manageProf.dart';
 import 'package:easy_attend/Screens/admin/ManageQueries/manageQueries.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/manageStudent.dart';
 import 'package:easy_attend/Screens/admin/admin_Dashboard.dart';
+import 'package:easy_attend/Screens/admin/seeAttendance/listOfCourse.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -18,36 +19,42 @@ class AdminHome extends StatefulWidget {
 
 class _AdminHomeState extends State<AdminHome> {
   MenuItems currentPage = MenuItems(
-      text: 'Dashboard', icon: Icons.dashboard_outlined, tap: AdminDashboard());
+      text: 'Dashboard',
+      icon: Icons.dashboard_outlined,
+      tap: const AdminDashboard());
   List<MenuItems> items = [
     MenuItems(
-        text: 'Paramètres', icon: Icons.settings, tap: ManageCoursePage()),
+        text: 'Paramètres',
+        icon: Icons.settings,
+        tap: const ManageCoursePage()),
     MenuItems(
         text: 'Dashboard',
         icon: Icons.dashboard_outlined,
-        tap: AdminDashboard()),
+        tap: const AdminDashboard()),
     MenuItems(
         text: 'Gérer les filières',
         icon: Icons.school,
         tap: ManageFilierePage()),
     MenuItems(
-        text: 'Gérer les professeurs', icon: Icons.person_3, tap: ManageProf()),
+        text: 'Gérer les professeurs',
+        icon: Icons.person_3,
+        tap: const ManageProf()),
     MenuItems(
         text: 'Gérer les étudiants',
         icon: Icons.person,
-        tap: ManageStudentPage()),
+        tap: const ManageStudentPage()),
     MenuItems(
         text: 'Gérer les Cours',
         icon: Icons.settings_applications_outlined,
-        tap: ManageCoursePage()),
+        tap: const ManageCoursePage()),
     MenuItems(
         text: 'Gérer les requetes',
         icon: Icons.query_stats,
-        tap: ManageQueriesPage()),
+        tap: const ManageQueriesPage()),
     MenuItems(
-        text: 'Consulter les présences',
+        text: 'Gérer les présences',
         icon: Icons.assignment_turned_in_sharp,
-        tap: ManageCoursePage()),
+        tap: const listOfCourse()),
   ];
 
   @override

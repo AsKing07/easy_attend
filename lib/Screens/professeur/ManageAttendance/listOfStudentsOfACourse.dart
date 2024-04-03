@@ -47,6 +47,7 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
             stream: FirebaseFirestore.instance
                 .collection('etudiant')
                 .where('idFiliere', isEqualTo: widget.course['filiereId'])
+                .where('niveau', isEqualTo: widget.course['niveau'])
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {

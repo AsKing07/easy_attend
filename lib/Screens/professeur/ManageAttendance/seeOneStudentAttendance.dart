@@ -4,6 +4,7 @@ import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class seeOneStudentAttendance extends StatefulWidget {
   final String studentId, studentName;
@@ -20,6 +21,9 @@ class seeOneStudentAttendance extends StatefulWidget {
 }
 
 class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
+  int nombreTotalSeances = 0;
+  int nombreDePresences = 0;
+  double pourcentageDePresence = 0.0;
   @override
   void initState() {
     initializeDateFormatting('fr');
@@ -50,6 +54,12 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
             return const NoResultWidget();
           }
 
+          nombreTotalSeances = snapshot.data!.docs.length;
+          nombreDePresences = snapshot.data!.docs.where((seance) {
+            Map<String, dynamic> data = seance.data() as Map<String, dynamic>;
+            return data['presenceEtudiant'][widget.studentId];
+          }).length;
+          pourcentageDePresence = (nombreDePresences / nombreTotalSeances);
           List<DataRow> rows = [];
           snapshot.data!.docs.forEach((seance) {
             Map<String, dynamic> data = seance.data() as Map<String, dynamic>;
@@ -92,6 +102,22 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
                       color: AppColors.secondaryColor,
                     ),
                     textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 15),
+                  CircularPercentIndicator(
+                    radius: 130.0,
+                    animation: true,
+                    animationDuration: 1200,
+                    lineWidth: 15.0,
+                    percent: pourcentageDePresence,
+                    center: Text(
+                      '${pourcentageDePresence * 100}% de présence',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20.0),
+                    ),
+                    circularStrokeCap: CircularStrokeCap.butt,
+                    backgroundColor: Colors.grey,
+                    progressColor: AppColors.secondaryColor,
                   ),
                   const SizedBox(height: 15),
                   DataTable(

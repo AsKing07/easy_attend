@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
-import 'package:easy_attend/Models/Seance.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
@@ -11,7 +10,6 @@ import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CreateSeancePage extends StatefulWidget {
   String Courseid;
@@ -45,42 +43,6 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
       });
     }
   }
-
-  // void _showDatePicker() {
-  //   showDatePicker(
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(2000),
-  //     lastDate: DateTime(2030),
-  //     builder: (context, child) {
-  //       return Theme(
-  //         data: Theme.of(context).copyWith(
-  //           dialogTheme: DialogTheme(
-  //             shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(15),
-  //             ),
-  //           ),
-  //           colorScheme: const ColorScheme.light(
-  //             primary: AppColors.secondaryColor, // header background color
-  //             onPrimary: Colors.white, // header text color
-  //             onSurface: AppColors.secondaryColor, // body text color
-  //           ),
-  //           dialogBackgroundColor: Colors.blue[50],
-  //           textButtonTheme: TextButtonThemeData(
-  //             style: TextButton.styleFrom(
-  //               foregroundColor: AppColors.secondaryColor, // button text color
-  //             ),
-  //           ),
-  //         ),
-  //         child: child!,
-  //       );
-  //     },
-  //   ).then((value) {
-  //     setState(() {
-  //       _dateTime = value!;
-  //     });
-  //   });
-  // }
 
   Future loadCourseData() async {
     course = await get_Data().getCourseById(widget.Courseid, context);
@@ -167,48 +129,7 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
                                 color: AppColors.white),
                           ),
                   ),
-                  // Row(
-                  //   children: [
-                  //       const Text(
-                  //       'Sélectionnez l\'heure : ',
-                  //       style: TextStyle(
-                  //         fontSize: 25,
-                  //         color: AppColors.secondaryColor,
-                  //       ),
-                  //     ),
-                  //     const SizedBox(width: 10),
-                  //        TextButton(
-                  //   onPressed: () {
-                  //     Navigator.of(context).push(
-                  //       showPicker(
-                  //         disableMinute: true,
-                  //         minHour: 8.0,
-                  //         maxHour: 17.0,
-                  //         is24HrFormat: true,
-                  //         iosStylePicker: true,
-                  //         context: context,
-                  //         value: _time,
-                  //         onChange: (time) {
-                  //           setState(() {
-                  //             _time = time;
-                  //           });
-                  //         },
-                  //       ),
-                  //     );
-                  //   },
-                  //   child: Text(
-                  //     '${_time.hour}HH: ${_time.minute}mm',
-                  //     style: const TextStyle(
-                  //         color: AppColors.primaryColor,
-                  //         fontSize: FontSize.medium,
-                  //         fontWeight: FontWeight.bold),
-                  //   ),
-                  // ),
-                  //   ],
-                  // )
-
                   const SizedBox(height: 20),
-
                   ElevatedButton(
                       onPressed: () async {
                         if (dateTimeController.text.isEmpty) {

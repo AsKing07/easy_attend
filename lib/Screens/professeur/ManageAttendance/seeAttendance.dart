@@ -3,6 +3,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class SeeSeanceAttendanceProf extends StatefulWidget {
   final String seanceId;
@@ -16,6 +17,9 @@ class SeeSeanceAttendanceProf extends StatefulWidget {
 }
 
 class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
+  int nombreTotalEtudiants = 0;
+  int nombreDePresences = 0;
+  double pourcentageDePresence = 0.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,6 +76,12 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                         child: Text(
                             'Aucune présence enregistrée pour cette séance'));
                   }
+                  nombreTotalEtudiants = presenceEtudiants.length;
+                  nombreDePresences = presenceEtudiants.values
+                      .where((present) => present)
+                      .length;
+                  pourcentageDePresence =
+                      (nombreDePresences / nombreTotalEtudiants);
                   List<DataRow> rows = [];
                   presenceEtudiants.forEach((etudiantId, present) {
                     rows.add(DataRow(
@@ -115,6 +125,24 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                       const SizedBox(
                         height: 10,
                       ),
+                      CircularPercentIndicator(
+                        footer:
+                            Text("$nombreTotalEtudiants Etudiants au total"),
+                        radius: 130.0,
+                        animation: true,
+                        animationDuration: 1200,
+                        lineWidth: 15.0,
+                        percent: pourcentageDePresence,
+                        center: Text(
+                          '${(pourcentageDePresence * 100).toString().substring(0, 5)}% de présence',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20.0),
+                        ),
+                        circularStrokeCap: CircularStrokeCap.butt,
+                        backgroundColor: Colors.grey,
+                        progressColor: AppColors.secondaryColor,
+                      ),
+                      const SizedBox(height: 15),
                       SizedBox(
                         width: double.infinity,
                         child: DataTable(
