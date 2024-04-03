@@ -1,6 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
+import 'package:easy_attend/Methods/pdfHelper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -8,9 +13,9 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class seeMyAttendance extends StatefulWidget {
-  String courseId;
+  DocumentSnapshot course;
 
-  seeMyAttendance({required this.courseId});
+  seeMyAttendance({required this.course});
 
   @override
   State<seeMyAttendance> createState() => _seeOneStudentAttendanceState();
@@ -34,7 +39,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
   }
 
   Future loadCourse() async {
-    final x = await get_Data().getCourseById(widget.courseId, context);
+    final x = await get_Data().getCourseById(widget.course.id, context);
     setState(() {
       course = x;
     });
@@ -106,54 +111,71 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                   ]));
                 });
                 return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
                     child: Column(
-                      children: [
-                        Text(
-                          course['nomCours'],
-                          style: const TextStyle(
-                            fontSize: FontSize.xLarge,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textColor,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 15),
-                        Text(
-                          '${etudiant['nom']} ${etudiant['prenom']}',
-                          style: const TextStyle(
-                            fontSize: FontSize.medium,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.secondaryColor,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 15),
-                        CircularPercentIndicator(
-                          radius: 130.0,
-                          animation: true,
-                          animationDuration: 1200,
-                          lineWidth: 15.0,
-                          percent: pourcentageDePresence,
-                          center: Text(
-                            '${pourcentageDePresence * 100}% de présence',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20.0),
-                          ),
-                          circularStrokeCap: CircularStrokeCap.butt,
-                          backgroundColor: Colors.grey,
-                          progressColor: AppColors.secondaryColor,
-                        ),
-                        const SizedBox(height: 15),
-                        DataTable(
-                          columns: const [
-                            DataColumn(label: Text('Date de la séance')),
-                            DataColumn(label: Text('Statut')),
-                          ],
-                          rows: rows,
-                        ),
+                  children: [
+                    Text(
+                      course['nomCours'],
+                      style: const TextStyle(
+                        fontSize: FontSize.xLarge,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textColor,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      '${etudiant['nom']} ${etudiant['prenom']}',
+                      style: const TextStyle(
+                        fontSize: FontSize.medium,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.secondaryColor,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 15),
+                    CircularPercentIndicator(
+                      radius: 130.0,
+                      animation: true,
+                      animationDuration: 1200,
+                      lineWidth: 15.0,
+                      percent: pourcentageDePresence,
+                      center: Text(
+                        '${pourcentageDePresence * 100}% de présence',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20.0),
+                      ),
+                      circularStrokeCap: CircularStrokeCap.butt,
+                      backgroundColor: Colors.grey,
+                      progressColor: AppColors.secondaryColor,
+                    ),
+                    const SizedBox(height: 15),
+                    IconButton(
+                        iconSize: 50,
+                        onPressed: () async {
+                          PDFHelper pdfHelper = PDFHelper();
+                          Uint8List pdfBytes = await pdfHelper.buildStudentPdf(
+                              widget.course,
+                              '${etudiant['nom']} ${etudiant['prenom']}',
+                              etudiant.id,
+                              context);
+                          await pdfHelper.savePdf(
+                              pdfBytes,
+                              '${widget.course['nomCours']}- ${widget.course['niveau']}- ${etudiant['nom']} ${etudiant['prenom']}',
+                              context);
+                        },
+                        icon: const Icon(Icons.print,
+                            color: AppColors.secondaryColor)),
+                    const Text("Imprimer"),
+                    const SizedBox(height: 15),
+                    DataTable(
+                      columns: const [
+                        DataColumn(label: Text('Date de la séance')),
+                        DataColumn(label: Text('Statut')),
                       ],
-                    ));
+                      rows: rows,
+                    ),
+                  ],
+                ));
               },
             ),
     );

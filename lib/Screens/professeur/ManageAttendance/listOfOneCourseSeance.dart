@@ -16,9 +16,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class ListOfOneCourseSeancePage extends StatefulWidget {
-  String CourseId;
+  DocumentSnapshot course;
 
-  ListOfOneCourseSeancePage({required this.CourseId});
+  ListOfOneCourseSeancePage({required this.course});
   @override
   State<ListOfOneCourseSeancePage> createState() =>
       _ListOfOneCourseSeancePageState();
@@ -30,7 +30,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
   bool dataIsloaded = false;
 
   Future<void> loadCourseSeance() async {
-    course = await get_Data().getCourseById(widget.CourseId, context);
+    course = await get_Data().getCourseById(widget.course.id, context);
 
     setState(() {
       dataIsloaded = true;
@@ -104,7 +104,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                         child: StreamBuilder<QuerySnapshot>(
                           stream: FirebaseFirestore.instance
                               .collection('seance')
-                              .where('idCours', isEqualTo: widget.CourseId)
+                              .where('idCours', isEqualTo: widget.course.id)
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
@@ -282,7 +282,10 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                       context,
                                                                       MaterialPageRoute(
                                                                           builder: (context) =>
-                                                                              SeeSeanceAttendanceProf(seanceId: seance.id)),
+                                                                              SeeSeanceAttendanceProf(
+                                                                                seanceId: seance.id,
+                                                                                course: widget.course,
+                                                                              )),
                                                                     );
                                                                   },
                                                                   child: const Text(
@@ -301,8 +304,9 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                       builder: (context) => TakeManualAttendance(
                                                                           seanceId: seance
                                                                               .id,
-                                                                          courseId:
-                                                                              widget.CourseId)),
+                                                                          courseId: widget
+                                                                              .course
+                                                                              .id)),
                                                                 );
                                                               },
                                                               child: const Text(

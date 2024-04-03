@@ -12,9 +12,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 class CreateSeancePage extends StatefulWidget {
-  String Courseid;
+  DocumentSnapshot course;
 
-  CreateSeancePage({required this.Courseid});
+  CreateSeancePage({required this.course});
 
   @override
   State<CreateSeancePage> createState() => _CreateSeancePageState();
@@ -45,7 +45,7 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
   }
 
   Future loadCourseData() async {
-    course = await get_Data().getCourseById(widget.Courseid, context);
+    course = await get_Data().getCourseById(widget.course.id, context);
 
     setState(() {
       dataIsloaded = true;
@@ -136,8 +136,8 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
                           GFToast.showToast(
                               "Vous devez sélectionner la date", context);
                         } else {
-                          var x = await set_Data().createSeance(
-                              widget.Courseid, _dateTime, context);
+                          var x = await set_Data()
+                              .createSeance(widget.course, _dateTime, context);
                         }
                       },
                       child: Text("Créer la séance",

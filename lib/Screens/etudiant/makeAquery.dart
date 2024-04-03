@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
@@ -190,6 +193,8 @@ class _MakeQueryState extends State<MakeQuery> {
                                   "2",
                                   x,
                                   context);
+
+                              loadCurrentStudent();
                             }
                           },
                           child: const Text('Soumettre')),

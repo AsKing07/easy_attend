@@ -129,7 +129,7 @@ class _listOfCourseState extends State<listOfCourse> {
                                               filiere:
                                                   _selectedFiliere?.idFiliere,
                                               option: "admin",
-                                              CourseId: previous.id,
+                                              course: previous,
                                             ),
                                             const SizedBox(
                                               width: 20.0,
@@ -140,7 +140,7 @@ class _listOfCourseState extends State<listOfCourse> {
                                               filiere:
                                                   _selectedFiliere?.idFiliere,
                                               option: "admin",
-                                              CourseId: object.id,
+                                              course: object,
                                             ),
                                           ]),
                                       const SizedBox(height: 10.0),
@@ -157,7 +157,7 @@ class _listOfCourseState extends State<listOfCourse> {
                                       niveau: previous['niveau'],
                                       filiere: _selectedFiliere?.idFiliere,
                                       option: "admin",
-                                      CourseId: previous.id,
+                                      course: previous,
                                     ),
                                     const SizedBox(
                                       width: 20.0,

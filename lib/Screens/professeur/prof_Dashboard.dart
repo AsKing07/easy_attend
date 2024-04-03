@@ -142,7 +142,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                               filiere:
                                                   _selectedFiliere?.idFiliere,
                                               option: "professeur",
-                                              CourseId: previous.id,
+                                              course: previous,
                                             ),
                                             const SizedBox(
                                               width: 20.0,
@@ -153,7 +153,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                               filiere:
                                                   _selectedFiliere?.idFiliere,
                                               option: "professeur",
-                                              CourseId: object.id,
+                                              course: object,
                                             ),
                                           ]),
                                       const SizedBox(height: 10.0),
@@ -170,7 +170,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                       niveau: previous['niveau'],
                                       filiere: _selectedFiliere?.idFiliere,
                                       option: "professeur",
-                                      CourseId: previous.id,
+                                      course: previous,
                                     ),
                                     const SizedBox(
                                       width: 20.0,

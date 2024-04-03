@@ -1,5 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Methods/pdfHelper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,8 +12,10 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class SeeSeanceAttendanceProf extends StatefulWidget {
   final String seanceId;
+  final DocumentSnapshot course;
 
-  const SeeSeanceAttendanceProf({Key? key, required this.seanceId})
+  const SeeSeanceAttendanceProf(
+      {Key? key, required this.seanceId, required this.course})
       : super(key: key);
 
   @override
@@ -20,6 +27,7 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
   int nombreTotalEtudiants = 0;
   int nombreDePresences = 0;
   double pourcentageDePresence = 0.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +74,7 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                     return const NoResultWidget();
                   }
 
+                  DocumentSnapshot seance = snapshot.data!;
                   Map<String, dynamic>? presenceEtudiants =
                       snapshot.data!.get('presenceEtudiant');
                   String date =
@@ -142,6 +151,22 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                         backgroundColor: Colors.grey,
                         progressColor: AppColors.secondaryColor,
                       ),
+                      const SizedBox(height: 15),
+                      IconButton(
+                          iconSize: 50,
+                          onPressed: () async {
+                            PDFHelper pdfHelper = PDFHelper();
+                            Uint8List pdfBytes =
+                                await pdfHelper.buildGeneralPdf(
+                                    seance, widget.course, context);
+                            await pdfHelper.savePdf(
+                                pdfBytes,
+                                '${widget.course['nomCours']}- ${widget.course['niveau']}- ${DateFormat('EEEE, d MMMM yyyy, hh:mm', 'fr').format(seance['dateSeance'].toDate())}',
+                                context);
+                          },
+                          icon: const Icon(Icons.print,
+                              color: AppColors.secondaryColor)),
+                      const Text("Imprimer"),
                       const SizedBox(height: 15),
                       SizedBox(
                         width: double.infinity,

@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OneCoursePage extends StatefulWidget {
-  String CourseId;
+  DocumentSnapshot course;
 
-  OneCoursePage({required this.CourseId});
+  OneCoursePage({required this.course});
 
   @override
   State<OneCoursePage> createState() => _OneCoursePageState();
@@ -20,7 +20,7 @@ class _OneCoursePageState extends State<OneCoursePage> {
   bool dataIsloaded = false;
   late DocumentSnapshot course;
   Future loadCourseData() async {
-    course = await get_Data().getCourseById(widget.CourseId, context);
+    course = await get_Data().getCourseById(widget.course.id, context);
 
     setState(() {
       dataIsloaded = true;
@@ -84,7 +84,7 @@ class _OneCoursePageState extends State<OneCoursePage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  CreateSeancePage(Courseid: widget.CourseId)),
+                                  CreateSeancePage(course: widget.course)),
                         );
                       },
                       child: Text("Démarrer une nouvelle séance",
@@ -102,7 +102,7 @@ class _OneCoursePageState extends State<OneCoursePage> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ListOfOneCourseSeancePage(
-                                    CourseId: widget.CourseId,
+                                    course: widget.course,
                                   )),
                         );
                       },

@@ -98,7 +98,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                                               niveau: previous['niveau'],
                                               filiere: etudiant['filiere'],
                                               option: "etudiant",
-                                              CourseId: previous.id,
+                                              course: previous,
                                             ),
                                             const SizedBox(
                                               width: 20.0,
@@ -108,7 +108,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                                               niveau: object['niveau'],
                                               filiere: etudiant['filiere'],
                                               option: "etudiant",
-                                              CourseId: object.id,
+                                              course: object,
                                             ),
                                           ]),
                                       const SizedBox(height: 10.0),
@@ -119,18 +119,18 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                                   }
                                 }
                                 if (identical(previous, null) == false) {
-                                  myWidgets.add(Row(children: [
-                                    CourseCard(
-                                      name: previous['nomCours'],
-                                      niveau: previous['niveau'],
-                                      filiere: etudiant['filiere'],
-                                      option: "etudiant",
-                                      CourseId: previous.id,
-                                    ),
-                                    const SizedBox(
-                                      width: 20.0,
-                                    ),
-                                  ]));
+                                  myWidgets.add(Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        CourseCard(
+                                          name: previous['nomCours'],
+                                          niveau: previous['niveau'],
+                                          filiere: etudiant['filiere'],
+                                          option: "etudiant",
+                                          course: previous,
+                                        ),
+                                      ]));
                                 }
 
                                 return courseList(myWidgets);

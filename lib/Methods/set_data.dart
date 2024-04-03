@@ -562,8 +562,8 @@ class set_Data {
         "statut": "2",
         "dateCreation": dateCreation
       });
-      if (!context.mounted) return;
       Navigator.pop(context);
+      Helper().succesMessage(context);
     } catch (e) {
       print(e);
       Navigator.pop(context);
@@ -619,7 +619,8 @@ class set_Data {
   }
 //METHODES DES SEANCES
 
-  Future createSeance(idCours, dateSeance, BuildContext context) async {
+  Future createSeance(
+      DocumentSnapshot course, dateSeance, BuildContext context) async {
     showDialog(
         context: context,
         builder: (context) => const Center(
@@ -628,7 +629,8 @@ class set_Data {
     try {
       Map<String, bool> presenceEtudiantsMap = {};
 
-      DocumentSnapshot cours = await get_Data().getCourseById(idCours, context);
+      DocumentSnapshot cours =
+          await get_Data().getCourseById(course.id, context);
 
       final List<QueryDocumentSnapshot> etudiantDoc = await get_Data()
           .getEtudiantsOfAFiliereAndNiveau(cours['filiereId'], cours['niveau']);
@@ -661,7 +663,7 @@ class set_Data {
       }
 
       var x = await FirebaseFirestore.instance.collection('seance').add({
-        'idCours': idCours.toString().trim(),
+        'idCours': course.id.toString().trim(),
         'dateSeance': dateSeance,
         'presenceEtudiant': presenceEtudiantsMap,
         'isActive': false,
@@ -673,7 +675,9 @@ class set_Data {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => ListOfOneCourseSeancePage(CourseId: idCours)),
+            builder: (context) => ListOfOneCourseSeancePage(
+                  course: course,
+                )),
       );
     } catch (e) {
       Navigator.pop(context);
