@@ -23,7 +23,7 @@ class _CourseCardState extends State<CourseCard> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 5.0),
-      width: 160,
+      width: 140,
       height: 175,
       decoration: BoxDecoration(
         color: AppColors.secondaryColor,
@@ -48,7 +48,7 @@ class _CourseCardState extends State<CourseCard> {
                       '${widget.filiere} ${widget.niveau}',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
+                        fontSize: 18.0,
                         color: Colors.white,
                       ),
                     )

@@ -1,6 +1,7 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/etudiant/etudiant_dashboard.dart';
+import 'package:easy_attend/Screens/etudiant/giveQRattendance.dart';
 import 'package:easy_attend/Screens/etudiant/makeAquery.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,10 @@ class _EtudiantHomeState extends State<EtudiantHome> {
         text: 'Faire une requete',
         icon: Icons.query_stats,
         tap: const MakeQuery()),
+    MenuItems(
+        text: 'Scanner une présence',
+        icon: Icons.qr_code_scanner,
+        tap: GiveQrAttendancePage()),
     // MenuItems(text: 'Paramètres', icon: Icons.settings, tap: teacherSetting()),
   ];
   @override

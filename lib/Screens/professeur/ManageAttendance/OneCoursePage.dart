@@ -124,12 +124,15 @@ class _OneCoursePageState extends State<OneCoursePage> {
                                   listOfStudentsOfACourse(course: course)),
                         );
                       },
-                      child: Text("Consulter la présence d'un seul étudiant",
-                          style: GoogleFonts.poppins(
-                            color: AppColors.secondaryColor,
-                            fontSize: FontSize.small,
-                            fontWeight: FontWeight.bold,
-                          ))),
+                      child: Text(
+                        "Consulter la présence d'un seul étudiant",
+                        style: GoogleFonts.poppins(
+                          color: AppColors.secondaryColor,
+                          fontSize: FontSize.small,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      )),
                 ],
               ),
             ));

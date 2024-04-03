@@ -571,7 +571,53 @@ class set_Data {
     }
   }
 
-  //METHODES DES SEANCES
+//Mettre à jour présence
+
+  Future<void> updatePresenceEtudiant(String seanceId, String etudiantId,
+      bool present, BuildContext context) async {
+    try {
+      showDialog(
+          context: context,
+          builder: (context) => const Center(
+                child: CircularProgressIndicator(),
+              ));
+
+      // Récupérer le document existant
+      DocumentSnapshot seanceSnapshot = await FirebaseFirestore.instance
+          .collection('seance')
+          .doc(seanceId)
+          .get();
+
+      // Vérifier si le document existe
+      if (seanceSnapshot.exists) {
+        // Récupérer la liste des présences
+        Map<String, dynamic>? presenceEtudiant =
+            seanceSnapshot.get('presenceEtudiant');
+
+        presenceEtudiant ??= {};
+
+        // Rechercher l'étudiant dans la liste et mettre à jour sa présence
+        if (presenceEtudiant.containsKey(etudiantId)) {
+          presenceEtudiant[etudiantId] = present;
+        }
+
+        // Mettre à jour le document Firebase avec les nouvelles données
+        await FirebaseFirestore.instance
+            .collection('seance')
+            .doc(seanceId)
+            .update({
+          'presenceEtudiant': presenceEtudiant,
+        });
+
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      print('Erreur lors de la mise à jour de la présence de l\'étudiant : $e');
+      Navigator.pop(context);
+      Helper().ErrorMessage(context);
+    }
+  }
+//METHODES DES SEANCES
 
   Future createSeance(idCours, dateSeance, BuildContext context) async {
     showDialog(

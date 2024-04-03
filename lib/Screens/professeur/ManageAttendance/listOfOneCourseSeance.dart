@@ -147,7 +147,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                         children: [
                                                           Text(
                                                             DateFormat(
-                                                                    'EEEE, d MMMM yyyy, hh:mm',
+                                                                    'EEEE, d MMM yy, hh:mm',
                                                                     'fr')
                                                                 .format(seanceData[
                                                                         'dateSeance']
@@ -158,7 +158,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                     .secondaryColor,
                                                                 fontSize:
                                                                     FontSize
-                                                                        .medium,
+                                                                        .small,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w600),

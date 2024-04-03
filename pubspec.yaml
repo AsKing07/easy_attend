@@ -59,6 +59,7 @@ dependencies:
   qr_flutter: ^4.1.0
   lottie: ^2.7.0
   dialogs: ^0.0.7
+  flutter_barcode_scanner: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +88,8 @@ flutter:
     - assets/admin.jpg
     - assets/search.svg
     - assets/qrAnim.json
+    - assets/failed.json
+    - assets/done.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
