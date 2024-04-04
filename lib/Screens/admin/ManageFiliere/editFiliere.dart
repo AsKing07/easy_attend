@@ -6,6 +6,7 @@ import 'package:easy_attend/Methods/set_data.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ModifierFilierePage extends StatefulWidget {
@@ -100,7 +101,7 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
                   child: Text(
                     "Modifier les informations de la filière ",
                     style: GoogleFonts.poppins(
-                        color: AppColors.primaryColor,
+                        color: AppColors.secondaryColor,
                         fontSize: FontSize.medium,
                         fontWeight: FontWeight.w600),
                   ),
@@ -223,7 +224,7 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
                         ),
                       ]),
                       const SizedBox(height: 16),
-                      ElevatedButton(
+                      GFButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             if (niveauxSelectionnes.isNotEmpty) {
@@ -242,7 +243,14 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
                             }
                           }
                         },
-                        child: const Text('Modifier la filière'),
+                        text: "Modifier la filière",
+                        textStyle: GoogleFonts.poppins(
+                          color: AppColors.white,
+                          fontSize: FontSize.large,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        shape: GFButtonShape.pills,
+                        fullWidthButton: true,
                       ),
                     ],
                   ),

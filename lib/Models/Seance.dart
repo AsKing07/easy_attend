@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Seance {
@@ -8,7 +6,7 @@ class Seance {
   Timestamp dateSeance;
   String seanceCode;
   List<Object>? presenceEtudiant = [];
-  Bool isActive;
+  bool isActive;
 
   Seance(
       {this.idSeance,

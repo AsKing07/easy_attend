@@ -1,6 +1,7 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/professeur/profMethods/auth_methods_prof.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginProf extends StatefulWidget {
@@ -35,11 +36,11 @@ class _LoginProfState extends State<LoginProf> {
                         fontWeight: FontWeight.w600),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 7),
+                    padding: const EdgeInsets.only(top: 7),
                     child: Text(
                       "Connectez-vous à votre compte professeur!",
                       style: GoogleFonts.poppins(
-                          color: AppColors.primaryColor,
+                          color: AppColors.secondaryColor,
                           fontSize: FontSize.medium,
                           fontWeight: FontWeight.w600),
                     ),
@@ -49,6 +50,16 @@ class _LoginProfState extends State<LoginProf> {
                       key: _formKey,
                       child: Column(
                         children: [
+                          const Center(
+                            child: Text(
+                              "Section Professeur",
+                              style: TextStyle(
+                                  color: AppColors.secondaryColor,
+                                  fontSize: FontSize.xLarge,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
                           //Email
                           TextFormField(
                               controller: _emailController,
@@ -130,7 +141,7 @@ class _LoginProfState extends State<LoginProf> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Padding(
-                              padding: EdgeInsets.only(top: 12),
+                              padding: const EdgeInsets.only(top: 12),
                               child: GestureDetector(
                                 onTap: () {
                                   //                Navigator.push(context,
@@ -151,7 +162,7 @@ class _LoginProfState extends State<LoginProf> {
                           const SizedBox(
                             height: 50,
                           ),
-                          ElevatedButton(
+                          GFButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 await auth_methods_prof().logProfIn(
@@ -160,17 +171,19 @@ class _LoginProfState extends State<LoginProf> {
                                     context);
                               }
                             },
-                            child: Text("Connexion",
-                                style: GoogleFonts.poppins(
-                                  color: AppColors.secondaryColor,
-                                  fontSize: FontSize.medium,
-                                  fontWeight: FontWeight.bold,
-                                )),
+                            text: "Connexion",
+                            textStyle: GoogleFonts.poppins(
+                              color: AppColors.white,
+                              fontSize: FontSize.medium,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            shape: GFButtonShape.pills,
+                            fullWidthButton: true,
                           ),
                         ],
                       )),
                   Padding(
-                    padding: EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.only(top: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -188,7 +201,7 @@ class _LoginProfState extends State<LoginProf> {
                           child: Text(
                             "Inscrivez-vous",
                             style: GoogleFonts.poppins(
-                                color: AppColors.primaryColor,
+                                color: AppColors.secondaryColor,
                                 fontWeight: FontWeight.w600,
                                 fontSize: FontSize.medium),
                           ),

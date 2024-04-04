@@ -164,18 +164,18 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                   }
                                 }
                                 if (identical(previous, null) == false) {
-                                  myWidgets.add(Row(children: [
-                                    CourseCard(
-                                      name: previous['nomCours'],
-                                      niveau: previous['niveau'],
-                                      filiere: _selectedFiliere?.idFiliere,
-                                      option: "professeur",
-                                      course: previous,
-                                    ),
-                                    const SizedBox(
-                                      width: 20.0,
-                                    ),
-                                  ]));
+                                  myWidgets.add(Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        CourseCard(
+                                          name: previous['nomCours'],
+                                          niveau: previous['niveau'],
+                                          filiere: _selectedFiliere?.idFiliere,
+                                          option: "professeur",
+                                          course: previous,
+                                        ),
+                                      ]));
                                 }
 
                                 return createCourseList(myWidgets);

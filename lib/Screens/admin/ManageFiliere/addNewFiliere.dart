@@ -1,7 +1,6 @@
 // ignore_for_file: camel_case_types, library_private_types_in_public_api
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
@@ -82,7 +81,7 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                   child: Text(
                     "Entrez les informations de la filière ",
                     style: GoogleFonts.poppins(
-                        color: AppColors.primaryColor,
+                        color: AppColors.secondaryColor,
                         fontSize: FontSize.medium,
                         fontWeight: FontWeight.w600),
                   ),
@@ -97,10 +96,10 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                         TextFormField(
                             controller: _nomController,
                             validator: (value) {
-                              if (_nomController.text.isEmpty ||
-                                  _nomController.text == null) {
+                              if (_nomController.text.isEmpty) {
                                 return "Ce champ est obligatoire";
                               }
+                              return null;
                             },
                             keyboardType: TextInputType.text,
                             style:
@@ -137,10 +136,10 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                         TextFormField(
                             controller: _idController,
                             validator: (value) {
-                              if (_idController.text.isEmpty ||
-                                  _idController.text == null) {
+                              if (_idController.text.isEmpty) {
                                 return "Ce champ est obligatoire";
                               }
+                              return null;
                             },
                             keyboardType: TextInputType.text,
                             style:
@@ -215,7 +214,7 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                         const SizedBox(
                           height: 50,
                         ),
-                        ElevatedButton(
+                        GFButton(
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               if (niveauxSelectionnes.isNotEmpty) {
@@ -234,12 +233,14 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                               }
                             }
                           },
-                          child: Text("Ajouter la filière",
-                              style: GoogleFonts.poppins(
-                                color: AppColors.secondaryColor,
-                                fontSize: FontSize.medium,
-                                fontWeight: FontWeight.bold,
-                              )),
+                          text: "Ajouter la filière",
+                          textStyle: GoogleFonts.poppins(
+                            color: AppColors.white,
+                            fontSize: FontSize.large,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          shape: GFButtonShape.pills,
+                          fullWidthButton: true,
                         ),
                       ],
                     )),

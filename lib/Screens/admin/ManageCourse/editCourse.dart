@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
@@ -7,6 +9,7 @@ import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Models/Professeur.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditCoursePage extends StatefulWidget {
@@ -34,7 +37,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
         await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
-    docsFiliere.forEach((doc) {
+    for (var doc in docsFiliere) {
       Filiere filiere = Filiere(
         idDoc: doc.id,
         nomFiliere: doc["nomFiliere"],
@@ -46,7 +49,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
       );
 
       fil.add(filiere);
-    });
+    }
 
     setState(() {
       Allfilieres.addAll(fil);
@@ -58,7 +61,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
         await get_Data().getActifTeacherData();
     List<Prof> profs = [];
 
-    docsProfs.forEach((doc) {
+    for (var doc in docsProfs) {
       Prof prof = Prof(
           idDoc: doc.id,
           nom: doc['nom'],
@@ -68,7 +71,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
           statut: doc['statut']);
 
       profs.add(prof);
-    });
+    }
 
     setState(() {
       AllProfs.addAll(profs);
@@ -87,8 +90,6 @@ class _EditCoursePageState extends State<EditCoursePage> {
       professeurId: docCourse['professeurId'],
       filiereId: docCourse['filiereId'],
     );
-    print(
-        '${course.idCours} , ${course.nomCours}, ${course.filiereId} , ${course.niveau} , ${course.professeurId}');
 
     setState(() {
       currentCourse = course;
@@ -149,7 +150,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                   child: Text(
                     "Entrez les informations du cours ",
                     style: GoogleFonts.poppins(
-                        color: AppColors.primaryColor,
+                        color: AppColors.secondaryColor,
                         fontSize: FontSize.medium,
                         fontWeight: FontWeight.w600),
                   ),
@@ -184,7 +185,9 @@ class _EditCoursePageState extends State<EditCoursePage> {
                           );
                         }).toList(),
                         decoration: const InputDecoration(
-                            labelText: 'Choisissez la filière'),
+                          labelText: 'Choisissez la filière',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                       const SizedBox(
                         height: 16,
@@ -211,7 +214,10 @@ class _EditCoursePageState extends State<EditCoursePage> {
                             child: Text(value),
                           );
                         }).toList(),
-                        hint: const Text('Choisissez le niveau'),
+                        decoration: const InputDecoration(
+                          labelText: 'Choisissez le niveau',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                       const SizedBox(
                         height: 16,
@@ -241,7 +247,9 @@ class _EditCoursePageState extends State<EditCoursePage> {
                           );
                         }).toList(),
                         decoration: const InputDecoration(
-                            labelText: 'Choisissez le professeur'),
+                          labelText: 'Choisissez le professeur',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
 
                       const SizedBox(
@@ -251,10 +259,10 @@ class _EditCoursePageState extends State<EditCoursePage> {
                       TextFormField(
                           controller: _nomCoursController,
                           validator: (value) {
-                            if (_nomCoursController.text.isEmpty ||
-                                _nomCoursController.text == null) {
+                            if (_nomCoursController.text.isEmpty) {
                               return "Ce champ est obligatoire";
                             }
+                            return null;
                           },
                           keyboardType: TextInputType.text,
                           style:
@@ -291,10 +299,10 @@ class _EditCoursePageState extends State<EditCoursePage> {
                       TextFormField(
                           controller: _idCoursController,
                           validator: (value) {
-                            if (_idCoursController.text.isEmpty ||
-                                _idCoursController.text == null) {
+                            if (_idCoursController.text.isEmpty) {
                               return "Ce champ est obligatoire";
                             }
+                            return null;
                           },
                           keyboardType: TextInputType.text,
                           style:
@@ -329,7 +337,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                         height: 50,
                       ),
 
-                      ElevatedButton(
+                      GFButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             // Créer le cours
@@ -354,13 +362,15 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                 toastDuration: 6);
                           }
                         },
-                        child: Text("Modifier le cours",
-                            style: GoogleFonts.poppins(
-                              color: AppColors.secondaryColor,
-                              fontSize: FontSize.medium,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      )
+                        text: "Modifier le cours",
+                        textStyle: GoogleFonts.poppins(
+                          color: AppColors.white,
+                          fontSize: FontSize.large,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        shape: GFButtonShape.pills,
+                        fullWidthButton: true,
+                      ),
                     ],
                   ),
                 )

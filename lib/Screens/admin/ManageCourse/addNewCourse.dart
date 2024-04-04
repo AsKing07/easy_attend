@@ -9,6 +9,7 @@ import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Models/Professeur.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddNewCoursePage extends StatefulWidget {
@@ -126,7 +127,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                 child: Text(
                   "Entrez les informations du cours ",
                   style: GoogleFonts.poppins(
-                      color: AppColors.primaryColor,
+                      color: AppColors.secondaryColor,
                       fontSize: FontSize.medium,
                       fontWeight: FontWeight.w600),
                 ),
@@ -154,7 +155,9 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                         );
                       }).toList(),
                       decoration: const InputDecoration(
-                          labelText: 'Choisissez la filière'),
+                        labelText: 'Choisissez la filière',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     const SizedBox(
                       height: 16,
@@ -202,7 +205,9 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                               );
                             }).toList(),
                             decoration: const InputDecoration(
-                                labelText: 'Choisissez le professeur'),
+                              labelText: 'Choisissez le professeur',
+                              border: OutlineInputBorder(),
+                            ),
                           )
                         : const SizedBox(),
 
@@ -222,6 +227,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                               if (_nomCoursController.text.isEmpty) {
                                 return "Ce champ est obligatoire";
                               }
+                              return null;
                             },
                             keyboardType: TextInputType.text,
                             style:
@@ -269,6 +275,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                               if (_idCoursController.text.isEmpty) {
                                 return "Ce champ est obligatoire";
                               }
+                              return null;
                             },
                             keyboardType: TextInputType.text,
                             style:
@@ -302,13 +309,12 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                     const SizedBox(
                       height: 50,
                     ),
-
-                    ElevatedButton(
+                    GFButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          if (_selectedFiliere!.nomFiliere.isEmpty &&
-                              _selectedProf!.nom.isEmpty &&
-                              _selectedNiveau != null) {
+                          if (_selectedFiliere == null ||
+                              _selectedProf == null ||
+                              _selectedNiveau == null) {
                             GFToast.showToast(
                                 "Tous les champs sont requis", context,
                                 backgroundColor: Colors.white,
@@ -322,18 +328,20 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                                 filiereId: _selectedFiliere!.idDoc,
                                 niveau: _selectedNiveau,
                                 professeurId: _selectedProf!.idDoc);
-                            print(cours);
+
                             await set_Data().ajouterCours(cours, context);
                           }
                         }
                       },
-                      child: Text("Ajouter le cours",
-                          style: GoogleFonts.poppins(
-                            color: AppColors.secondaryColor,
-                            fontSize: FontSize.medium,
-                            fontWeight: FontWeight.bold,
-                          )),
-                    )
+                      text: "Créer Cours",
+                      textStyle: GoogleFonts.poppins(
+                        color: AppColors.white,
+                        fontSize: FontSize.large,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      shape: GFButtonShape.pills,
+                      fullWidthButton: true,
+                    ),
                   ],
                 ),
               )

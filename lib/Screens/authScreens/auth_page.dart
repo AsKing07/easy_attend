@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Screens/admin/login_admin.dart';
-import 'package:easy_attend/Screens/admin/signup_admin.dart';
 import 'package:easy_attend/Screens/etudiant/login_etudiant.dart';
 import 'package:easy_attend/Screens/professeur/login_prof.dart';
+import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 
@@ -15,7 +16,6 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  final TextEditingController _pinController = TextEditingController();
   String _selectedRole = 'Administrateur';
   String _selectedSchool = 'Selectionner une école';
 
@@ -33,7 +33,6 @@ class _AuthPageState extends State<AuthPage> {
     final List<String> schools = [];
     for (var doc in snapshot.docs) {
       schools.add(doc.id);
-      print(doc);
     }
     setState(() {
       _schools = schools;
@@ -61,9 +60,13 @@ class _AuthPageState extends State<AuthPage> {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const LoginProf()));
           break;
-        case 'Étudiant':
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const LoginStudent()));
+        case 'Etudiant':
+          bool estTelephone = screenSize().isPhone(context);
+          estTelephone
+              ? Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const LoginStudent()))
+              : GFToast.showToast("D", context);
+
           break;
         default:
           GFToast.showToast('Vous devez au moins sélectionner un rôle', context,
@@ -78,7 +81,30 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Authentification')),
+      appBar: AppBar(
+        title: const Text('Authentification'),
+        actions: screenSize()
+                .isWeb() // Vérifier si l'application est en cours d'exécution dans un navigateur web
+            ? [
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return WarningWidget(
+                          title: "Information",
+                          content:
+                              "Les étudiants doivent se procurer l'application mobile",
+                          height: 150,
+                        );
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.info),
+                ),
+              ]
+            : null, // Ne rien afficher si ce n'est pas sur le web
+      ),
       body: Container(
         color: AppColors.backgroundColor,
         child: Center(
@@ -88,6 +114,22 @@ class _AuthPageState extends State<AuthPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(50, 0, 50, 100),
+                  child: Text(
+                    "Easy Attend",
+                    style: TextStyle(
+                        fontSize: FontSize.xxLarge,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.secondaryColor),
+                  ),
+                ),
+                const Text(
+                  'Bienvenue ! Veuillez sélectionner votre école et votre rôle.',
+                  style: TextStyle(
+                      fontSize: FontSize.large, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16.0),
                 DropdownButtonFormField<String>(
                   value: _selectedSchool,
                   onChanged: (String? value) {
@@ -106,7 +148,9 @@ class _AuthPageState extends State<AuthPage> {
                       )
                       .toList(),
                   decoration: const InputDecoration(
-                      labelText: 'Choisissez votre école'),
+                    labelText: 'Choisissez votre école',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 const SizedBox(height: 16.0),
                 const SizedBox(height: 16.0),
@@ -117,7 +161,12 @@ class _AuthPageState extends State<AuthPage> {
                       _selectedRole = value!;
                     });
                   },
-                  items: <String>['Administrateur', 'Professeur', 'Étudiant']
+                  items: <String>[
+                    'Administrateur',
+                    'Professeur',
+                    if (!screenSize().isWeb() && screenSize().isAndroid())
+                      'Etudiant',
+                  ]
                       .map<DropdownMenuItem<String>>(
                         (String value) => DropdownMenuItem<String>(
                           value: value,
@@ -125,8 +174,10 @@ class _AuthPageState extends State<AuthPage> {
                         ),
                       )
                       .toList(),
-                  decoration:
-                      const InputDecoration(labelText: 'Choisissez votre rôle'),
+                  decoration: const InputDecoration(
+                    labelText: 'Choisissez votre rôle',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 const SizedBox(height: 32.0),
                 GFButton(

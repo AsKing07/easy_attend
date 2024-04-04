@@ -1,7 +1,9 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:easy_attend/Screens/admin/signup_admin.dart';
+import 'package:easy_attend/Screens/changePassword.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginAdmin extends StatefulWidget {
@@ -20,11 +22,12 @@ class _LoginAdminState extends State<LoginAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: SingleChildScrollView(
+        backgroundColor: AppColors.backgroundColor,
+        body: SingleChildScrollView(
           child: Padding(
               padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
-              child: Column(
+              child: Center(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
@@ -36,11 +39,11 @@ class _LoginAdminState extends State<LoginAdmin> {
                         fontWeight: FontWeight.w600),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 7),
+                    padding: const EdgeInsets.only(top: 7),
                     child: Text(
                       "Connectez-vous à votre compte admin!",
                       style: GoogleFonts.poppins(
-                          color: AppColors.primaryColor,
+                          color: AppColors.secondaryColor,
                           fontSize: FontSize.medium,
                           fontWeight: FontWeight.w600),
                     ),
@@ -50,6 +53,16 @@ class _LoginAdminState extends State<LoginAdmin> {
                       key: _formKey,
                       child: Column(
                         children: [
+                          const Center(
+                            child: Text(
+                              "Section Administrateur",
+                              style: TextStyle(
+                                  color: AppColors.secondaryColor,
+                                  fontSize: FontSize.xLarge,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
                           //Email
                           TextFormField(
                               controller: _emailController,
@@ -131,12 +144,14 @@ class _LoginAdminState extends State<LoginAdmin> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: Padding(
-                              padding: EdgeInsets.only(top: 12),
+                              padding: const EdgeInsets.only(top: 12),
                               child: GestureDetector(
                                 onTap: () {
-                                  //                Navigator.push(context,
-                                  // MaterialPageRoute(builder: (context) => const LostPassword()));
-                                  //
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChangePassword()));
                                 },
                                 child: Text(
                                   "Mot de passe oublié?",
@@ -152,7 +167,7 @@ class _LoginAdminState extends State<LoginAdmin> {
                           const SizedBox(
                             height: 50,
                           ),
-                          ElevatedButton(
+                          GFButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 await auth_methods_admin().logAdminIn(
@@ -161,17 +176,19 @@ class _LoginAdminState extends State<LoginAdmin> {
                                     context);
                               }
                             },
-                            child: Text("Connexion",
-                                style: GoogleFonts.poppins(
-                                  color: AppColors.secondaryColor,
-                                  fontSize: FontSize.medium,
-                                  fontWeight: FontWeight.bold,
-                                )),
+                            text: "Connexion",
+                            textStyle: GoogleFonts.poppins(
+                              color: AppColors.white,
+                              fontSize: FontSize.medium,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            shape: GFButtonShape.pills,
+                            fullWidthButton: true,
                           ),
                         ],
                       )),
                   Padding(
-                    padding: EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.only(top: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -193,7 +210,7 @@ class _LoginAdminState extends State<LoginAdmin> {
                           child: Text(
                             "Inscrivez-vous",
                             style: GoogleFonts.poppins(
-                                color: AppColors.primaryColor,
+                                color: AppColors.secondaryColor,
                                 fontWeight: FontWeight.w600,
                                 fontSize: FontSize.medium),
                           ),
@@ -203,6 +220,6 @@ class _LoginAdminState extends State<LoginAdmin> {
                   )
                 ],
               ))),
-    );
+        ));
   }
 }

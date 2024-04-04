@@ -2,6 +2,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/etudiant/etudiantMethods/connexion_methods_etudiant.dart';
 import 'package:easy_attend/Screens/professeur/profMethods/auth_methods_prof.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginStudent extends StatefulWidget {
@@ -40,7 +41,7 @@ class _LoginStudentState extends State<LoginStudent> {
                     child: Text(
                       "Connectez-vous à votre compte étudiant!",
                       style: GoogleFonts.poppins(
-                          color: AppColors.primaryColor,
+                          color: AppColors.secondaryColor,
                           fontSize: FontSize.medium,
                           fontWeight: FontWeight.w600),
                     ),
@@ -50,6 +51,16 @@ class _LoginStudentState extends State<LoginStudent> {
                       key: _formKey,
                       child: Column(
                         children: [
+                          const Center(
+                            child: Text(
+                              "Section Etudiant",
+                              style: TextStyle(
+                                  color: AppColors.secondaryColor,
+                                  fontSize: FontSize.xLarge,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
                           //Email
                           TextFormField(
                               controller: _emailController,
@@ -148,7 +159,7 @@ class _LoginStudentState extends State<LoginStudent> {
                           const SizedBox(
                             height: 50,
                           ),
-                          ElevatedButton(
+                          GFButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 await auth_methods_etudiant().logStudentIn(
@@ -157,12 +168,14 @@ class _LoginStudentState extends State<LoginStudent> {
                                     context);
                               }
                             },
-                            child: Text("Connexion",
-                                style: GoogleFonts.poppins(
-                                  color: AppColors.secondaryColor,
-                                  fontSize: FontSize.medium,
-                                  fontWeight: FontWeight.bold,
-                                )),
+                            text: "Connexion",
+                            textStyle: GoogleFonts.poppins(
+                              color: AppColors.white,
+                              fontSize: FontSize.medium,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            shape: GFButtonShape.pills,
+                            fullWidthButton: true,
                           ),
                         ],
                       )),
@@ -180,12 +193,12 @@ class _LoginStudentState extends State<LoginStudent> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            // auth_methods_prof().requestProfAccount(context);
+                            auth_methods_prof().requestProfAccount(context);
                           },
                           child: Text(
                             "Inscrivez-vous",
                             style: GoogleFonts.poppins(
-                                color: AppColors.primaryColor,
+                                color: AppColors.secondaryColor,
                                 fontWeight: FontWeight.w600,
                                 fontSize: FontSize.medium),
                           ),
