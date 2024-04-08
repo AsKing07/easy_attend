@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison, unused_catch_clause, camel_case_types
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
@@ -6,14 +6,18 @@ import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+
+import '../../../Config/styles.dart';
 
 class auth_methods_etudiant {
   Future logStudentIn(
       String email, String password, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(

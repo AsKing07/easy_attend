@@ -29,21 +29,21 @@ Future checkLocalisation() async {
 
   if (!serviceEnabled) {
     loc.Location.instance.requestService();
-    print("Les services de géolocalisation sont désactivés");
+    // print("Les services de géolocalisation sont désactivés");
   }
 
   permission = await Geolocator.checkPermission();
 
-  if (permission == LocationPermission.deniedForever) {
-    print(
-        "Les autorisations de localisation sont définitivement refusées, nous ne pouvons pas demander d'autorisations.");
-  }
+  // if (permission == LocationPermission.deniedForever) {
+  //   // print(
+  //   //     "Les autorisations de localisation sont définitivement refusées, nous ne pouvons pas demander d'autorisations.");
+  // }
 
   if (permission == LocationPermission.denied) {
     permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      print('Les autorisations de localisation sont refusées');
-    }
+    // if (permission == LocationPermission.denied) {
+    //   print('Les autorisations de localisation sont refusées');
+    // }
   }
 }
 
@@ -75,18 +75,18 @@ class SplashScreen extends StatelessWidget {
               Text(
                 "Easy",
                 style: TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 30,
-                    letterSpacing: 10.0,
-                    fontFamily: 'HomemadeApple'),
+                  color: AppColors.primaryColor,
+                  fontSize: 30,
+                  letterSpacing: 10.0,
+                ),
               ),
               Text(
                 "Attend",
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    letterSpacing: 10.0,
-                    fontFamily: 'HomemadeApple'),
+                  color: Colors.white,
+                  fontSize: 30,
+                  letterSpacing: 10.0,
+                ),
               ),
             ],
           ),

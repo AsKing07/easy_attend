@@ -1,8 +1,9 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, camel_case_types, no_leading_underscores_for_local_identifiers, non_constant_identifier_names
 
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/admin/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
@@ -14,15 +15,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:excel/excel.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:universal_html/html.dart' as html;
 
 class auth_methods_admin {
-  static Future<UserCredential> register(String email, String password) async {
-    FirebaseApp app = await Firebase.initializeApp(
-        name: 'Secondary', options: Firebase.app().options);
-    UserCredential userCredential = await FirebaseAuth.instanceFor(app: app)
+  static Future<UserCredential> register(
+      String email, String password, FirebaseApp? app) async {
+    UserCredential userCredential = await FirebaseAuth.instanceFor(app: app!)
         .createUserWithEmailAndPassword(email: email, password: password);
 
-    await app.delete();
+    // await app.delete();
     return Future.sync(() => userCredential);
   }
 
@@ -31,8 +33,9 @@ class auth_methods_admin {
       String phone, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
       // Création de l'utilisateur
@@ -63,7 +66,7 @@ class auth_methods_admin {
           MaterialPageRoute(builder: (context) => const AdminHome()),
         );
       } else {
-        print('Impossible d\'obtenir l\'UID de l\'utilisateur.');
+        // print('Impossible d\'obtenir l\'UID de l\'utilisateur.');
       }
     } catch (e) {
       Navigator.pop(context);
@@ -79,12 +82,12 @@ class auth_methods_admin {
               toastDuration: 6);
         } else {
           // Gérer les autres erreurs Firebase
-          print('Une erreur s\'est produite lors de l\'inscription : $e');
+          // print('Une erreur s\'est produite lors de l\'inscription : $e');
           Helper().ErrorMessage(context);
         }
       } else {
         // Gérer les autres erreurs
-        print('Une erreur s\'est produite lors de l\'inscription : $e');
+        // print('Une erreur s\'est produite lors de l\'inscription : $e');
         Helper().ErrorMessage(context);
       }
     }
@@ -94,15 +97,16 @@ class auth_methods_admin {
   Future logAdminIn(String email, String password, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
-      final data = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email.trim(),
         password: password,
       );
-      final uid = await FirebaseAuth.instance.currentUser!.uid;
+      final uid = FirebaseAuth.instance.currentUser!.uid;
       var userSnapshot =
           await FirebaseFirestore.instance.collection("admin").doc(uid).get();
 
@@ -117,7 +121,6 @@ class auth_methods_admin {
         FirebaseAuth.instance.signOut();
       }
     } on FirebaseAuthException catch (e) {
-      print(e);
       Navigator.pop(context);
       if (e.code == 'network-request-failed') {
         GFToast.showToast('Veuillez vérifier votre connexion internet', context,
@@ -137,14 +140,18 @@ class auth_methods_admin {
       String phone, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
-      print(FirebaseAuth.instance.currentUser!.uid);
+      // print(FirebaseAuth.instance.currentUser!.uid);
+      FirebaseApp firebaseApp = await Firebase.initializeApp(
+          name: 'Secondary', options: Firebase.app().options);
 
       // Création du prof
-      UserCredential userCredential = await register(email, password);
+      UserCredential userCredential =
+          await register(email, password, firebaseApp);
       // await FirebaseAuth.instance.createUserWithEmailAndPassword(
       //   email: email.trim(),
       //   password: password.trim(),
@@ -153,7 +160,7 @@ class auth_methods_admin {
       // Obtention de l'UID du prof
       String? uid = userCredential.user?.uid;
 
-      print(FirebaseAuth.instance.currentUser!.uid);
+      // print(FirebaseAuth.instance.currentUser!.uid);
 
       if (uid != null) {
         // Ajout des détails du prof
@@ -172,7 +179,7 @@ class auth_methods_admin {
           },
         );
       } else {
-        print('Impossible d\'obtenir l\'UID de l\'utilisateur.');
+        // print('Impossible d\'obtenir l\'UID de l\'utilisateur.');
       }
     } catch (e) {
       Navigator.pop(context);
@@ -188,12 +195,12 @@ class auth_methods_admin {
               toastDuration: 6);
         } else {
           // Gérer les autres erreurs Firebase
-          print('Une erreur s\'est produite lors de l\'inscription : $e');
+          // print('Une erreur s\'est produite lors de l\'inscription : $e');
           Helper().ErrorMessage(context);
         }
       } else {
         // Gérer les autres erreurs
-        print('Une erreur s\'est produite lors de l\'inscription : $e');
+        // print('Une erreur s\'est produite lors de l\'inscription : $e');
         Helper().ErrorMessage(context);
       }
     }
@@ -206,8 +213,9 @@ class auth_methods_admin {
     try {
       showDialog(
           context: context,
-          builder: (context) => const Center(
-                child: CircularProgressIndicator(),
+          builder: (context) => Center(
+                child: LoadingAnimationWidget.hexagonDots(
+                    color: AppColors.secondaryColor, size: 200),
               ));
 
       final docSnapshot = await FirebaseFirestore.instance
@@ -227,13 +235,11 @@ class auth_methods_admin {
           },
         );
       } else {
+        FirebaseApp firebaseApp = await Firebase.initializeApp(
+            name: 'Secondary', options: Firebase.app().options);
         // Création de l'etudiant
-        UserCredential userCredential =
-            await register(etudiant.email!.trim(), etudiant.password!.trim());
-        // await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        //   email: etudiant.email.trim(),
-        //   password: etudiant.password.trim(),
-        // );
+        UserCredential userCredential = await register(
+            etudiant.email!.trim(), etudiant.password!.trim(), firebaseApp);
 
         // Obtention de l'UID de l'étudiant
         String? uid = userCredential.user?.uid;
@@ -255,7 +261,7 @@ class auth_methods_admin {
             Helper().succesMessage(context);
           }).catchError((error) {
             // Une erreur s'est produite lors de l'ajout du cours
-            print(error);
+            // print(error);
             Navigator.pop(context);
             Helper().ErrorMessage(context);
           });
@@ -275,12 +281,12 @@ class auth_methods_admin {
               toastDuration: 6);
         } else {
           // Gérer les autres erreurs Firebase
-          print('Une erreur s\'est produite lors de l\'inscription : $e');
+          // print('Une erreur s\'est produite lors de l\'inscription : $e');
           Helper().ErrorMessage(context);
         }
       } else {
         // Gérer les autres erreurs
-        print('Une erreur s\'est produite lors de l\'inscription : $e');
+        // print('Une erreur s\'est produite lors de l\'inscription : $e');
         Helper().ErrorMessage(context);
       }
     }
@@ -288,7 +294,7 @@ class auth_methods_admin {
 
 //Ajout d'un étudiant récupérer depuis un fichier excel
   Future<void> addStudentTookFromExcel(
-      Etudiant etudiant, BuildContext context) async {
+      Etudiant etudiant, BuildContext context, FirebaseApp? app) async {
     final docSnapshot = await FirebaseFirestore.instance
         .collection('etudiant')
         .where('matricule', isEqualTo: etudiant.matricule)
@@ -297,7 +303,7 @@ class auth_methods_admin {
     if (docSnapshot.docs.isEmpty) {
       // Création de l'etudiant
       UserCredential userCredential =
-          await register(etudiant.email!.trim(), etudiant.password!.trim());
+          await register(etudiant.email!.trim(), etudiant.password!, app!);
 
       String? uid = userCredential.user?.uid;
 
@@ -317,16 +323,19 @@ class auth_methods_admin {
     }
   }
 
-//Add multiple Students from excel
+//Add multiple Students from excel on android
   Future<void> addMultipleStudent(String filePath, BuildContext context) async {
     final bytes = File(filePath).readAsBytesSync();
     final excel = Excel.decodeBytes(bytes);
     final sheet = excel.tables[excel.tables.keys.first];
+    int totalAjoute = 0;
+    int totalErreur = 0;
 
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
 
     // Vérifiez que les colonnes attendues sont présentes dans le fichier Excel
@@ -361,8 +370,108 @@ class auth_methods_admin {
         },
       );
     } else {
+      FirebaseApp firebaseApp = await Firebase.initializeApp(
+          name: 'Secondary', options: Firebase.app().options);
       for (var i = 1; i < sheet.rows.length; i++) {
+        final row = sheet.rows[i];
+        final filiereName = row[6]!.value.toString();
+
+        QuerySnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
+            .instance
+            .collection('filiere')
+            .where('nomFiliere', isEqualTo: filiereName.toUpperCase())
+            .limit(1)
+            .get();
+        String idFiliere = doc.docs.first.id;
+        // print(idFiliere);
+        // print(filiereName);
+
+        final etudiant = Etudiant(
+            matricule: row[0]!.value.toString().toUpperCase().trim(),
+            nom: row[1]!.value.toString().toUpperCase().trim(),
+            prenom: row[2]!.value.toString().toUpperCase().trim(),
+            email: row[3]!.value.toString().trim(),
+            password: row[4]!.value.toString().trim(),
+            phone: row[5]!.value.toString().toUpperCase().trim(),
+            idFiliere: idFiliere.trim(),
+            filiere: row[6]!.value.toString().toUpperCase().trim(),
+            niveau: row[7]!.value.toString().toUpperCase().trim(),
+            statut: "1");
+
         try {
+          await addStudentTookFromExcel(etudiant, context, firebaseApp);
+          totalAjoute++;
+          // print(              "Matricule: ${etudiant.matricule} Nom: ${etudiant.nom} Prénom: ${etudiant.prenom} Email: ${etudiant.email} Password: ${etudiant.password}  Phone: ${etudiant.phone}  ID Filière: ${etudiant.idFiliere} Filière: ${etudiant.filiere} Niveau: ${etudiant.niveau} Statut: ${etudiant.statut}   ");
+        } catch (e) {
+          totalErreur++;
+          // print('An error occurred while adding from Excel: $e');
+        }
+      }
+
+      if (totalErreur > 0) {
+        Navigator.pop(context);
+        Helper().show_custom_message(
+            'L\'opération s\'est déroulée avec $totalErreur erreurs. \n $totalAjoute étudiants ajouté ',
+            220,
+            context);
+      } else {
+        // print(totalAjoute);
+        Navigator.pop(context);
+        Helper().succesMessage(context);
+      }
+    }
+  }
+
+//Add multiple Students from excel on web
+  Future<void> addMultipleStudentFromWeb(
+      html.Blob fileBlob, BuildContext context) async {
+    final reader = html.FileReader();
+    int totalAjoute = 0;
+    int totalErreur = 0;
+    reader.onLoadEnd.listen((event) async {
+      final bytes = reader.result as List<int>;
+      final excel = Excel.decodeBytes(bytes);
+      final sheet = excel.tables[excel.tables.keys.first];
+
+      showDialog(
+        context: context,
+        builder: (context) => Center(
+          child: LoadingAnimationWidget.hexagonDots(
+              color: AppColors.secondaryColor, size: 200),
+        ),
+      );
+
+      // Check if the expected columns are present in the Excel file
+      final expectedColumns = [
+        'Matricule',
+        'Nom',
+        'Prenom',
+        'Email',
+        'Password',
+        'Phone',
+        'Filiere',
+        'Niveau'
+      ];
+      final headerRow = sheet!.rows.first
+          .map((cell) => cell!.value.toString().trim())
+          .toList();
+
+      if (!headerRow.every((cell) => expectedColumns.contains(cell))) {
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return myErrorWidget(
+              content:
+                  "Le fichier Excel ne contient pas les colonnes attendues.",
+              height: 160,
+            );
+          },
+        );
+      } else {
+        FirebaseApp firebaseApp = await Firebase.initializeApp(
+            name: 'Secondary', options: Firebase.app().options);
+        for (var i = 1; i < sheet.rows.length; i++) {
           final row = sheet.rows[i];
           final filiereName = row[6]!.value.toString();
 
@@ -373,42 +482,43 @@ class auth_methods_admin {
               .limit(1)
               .get();
           String idFiliere = doc.docs.first.id;
-          print(idFiliere);
-          print(filiereName);
 
           final etudiant = Etudiant(
-              matricule: row[0]!.value.toString().toUpperCase().trim(),
-              nom: row[1]!.value.toString().toUpperCase().trim(),
-              prenom: row[2]!.value.toString().toUpperCase().trim(),
-              email: row[3]!.value.toString().trim(),
-              password: row[4]!.value.toString().trim(),
-              phone: row[5]!.value.toString().toUpperCase().trim(),
-              idFiliere: idFiliere.trim(),
-              filiere: row[6]!.value.toString().toUpperCase().trim(),
-              niveau: row[7]!.value.toString().toUpperCase().trim(),
-              statut: "1");
-
-          await addStudentTookFromExcel(etudiant, context);
-        } catch (e) {
-          Navigator.pop(context);
-          print(
-              'Une erreur s\'est produite lors de l\'ajout depuis excel : $e');
-          // Helper().ErrorMessage(context);
-          showDialog(
-            context: context,
-            builder: (context) {
-              return myErrorWidget(
-                  content:
-                      "L'opération s'est déroulée avec des erreurs. Veuillez vérifier le résultat",
-                  height: 160);
-            },
+            matricule: row[0]!.value.toString().toUpperCase().trim(),
+            nom: row[1]!.value.toString().toUpperCase().trim(),
+            prenom: row[2]!.value.toString().toUpperCase().trim(),
+            email: row[3]!.value.toString().trim(),
+            password: row[4]!.value.toString().trim(),
+            phone: row[5]!.value.toString().toUpperCase().trim(),
+            idFiliere: idFiliere.trim(),
+            filiere: row[6]!.value.toString().toUpperCase().trim(),
+            niveau: row[7]!.value.toString().toUpperCase().trim(),
+            statut: "1",
           );
+          try {
+            await addStudentTookFromExcel(etudiant, context, firebaseApp);
+            totalAjoute++;
+            // print(                "Matricule: ${etudiant.matricule} Nom: ${etudiant.nom} Prénom: ${etudiant.prenom} Email: ${etudiant.email} Password: ${etudiant.password}  Phone: ${etudiant.phone}  ID Filière: ${etudiant.idFiliere} Filière: ${etudiant.filiere} Niveau: ${etudiant.niveau} Statut: ${etudiant.statut}   ");
+          } catch (e) {
+            totalErreur++;
+            // print('An error occurred while adding from Excel: $e');
+          }
+        }
+
+        if (totalErreur > 0) {
+          Navigator.pop(context);
+          Helper().show_custom_message(
+              'L\'opération s\'est déroulée avec $totalErreur erreurs. \n $totalAjoute étudiants ajouté ',
+              220,
+              context);
+        } else {
+          Navigator.pop(context);
+          Helper().succesMessage(context);
         }
       }
+    });
 
-      Navigator.pop(context);
-      Helper().succesMessage(context);
-    }
+    reader.readAsArrayBuffer(fileBlob);
   }
 
 //HELPER
@@ -419,7 +529,7 @@ class auth_methods_admin {
       'prenom': prenom,
       'email': email,
       'phone': phone,
-      'statut': statut != null ? statut : "1"
+      'statut': statut ?? "1"
     });
   }
 

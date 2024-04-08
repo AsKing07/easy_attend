@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, camel_case_types
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,7 +44,7 @@ class get_Data {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final DocumentSnapshot x =
         await FirebaseFirestore.instance.collection("admin").doc(uid).get();
-    print(uid);
+    // print(uid);
 
     return x;
   }
@@ -55,7 +55,7 @@ class get_Data {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final DocumentSnapshot x =
         await FirebaseFirestore.instance.collection("etudiant").doc(uid).get();
-    print(uid);
+    // print(uid);
 
     return x;
   }
@@ -89,7 +89,7 @@ class get_Data {
   }
 
   Future getEtudiantsOfAFiliere(String idFiliere) async {
-    print(idFiliere);
+    // print(idFiliere);
     var data = await FirebaseFirestore.instance
         .collection("etudiant")
         .where('idFiliere', isEqualTo: idFiliere)
@@ -100,7 +100,7 @@ class get_Data {
 
   Future getEtudiantsOfAFiliereAndNiveau(
       String idFiliere, String niveau) async {
-    print(idFiliere);
+    // print(idFiliere);
     var data = await FirebaseFirestore.instance
         .collection("etudiant")
         .where('idFiliere', isEqualTo: idFiliere)
@@ -116,7 +116,7 @@ class get_Data {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     final DocumentSnapshot x =
         await FirebaseFirestore.instance.collection("prof").doc(uid).get();
-    print(uid);
+    // print(uid);
 
     return x;
   }

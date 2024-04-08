@@ -1,5 +1,8 @@
+// ignore_for_file: file_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
@@ -9,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 class EditProfPage extends StatefulWidget {
   final String profId;
 
-  EditProfPage({required this.profId});
+  const EditProfPage({super.key, required this.profId});
 
   @override
   State<EditProfPage> createState() => _EditProfPageState();
@@ -22,6 +25,7 @@ class _EditProfPageState extends State<EditProfPage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
 
+  @override
   void dispose() {
     _nomController.dispose();
     _prenomController.dispose();
@@ -79,168 +83,345 @@ class _EditProfPageState extends State<EditProfPage> {
               icon: const Icon(Icons.info)),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              Text(
-                "Modification de professeur",
-                style: GoogleFonts.poppins(
-                    color: AppColors.textColor,
-                    fontSize: FontSize.xxLarge,
-                    fontWeight: FontWeight.w600),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 7),
-                child: Text(
-                  "Modifier les informations du professeur ",
-                  style: GoogleFonts.poppins(
-                      color: AppColors.primaryColor,
-                      fontSize: FontSize.medium,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-              const SizedBox(height: 70),
-              Form(
-                key: _formKey,
+      body: !screenSize().isWeb()
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextFormField(
-                        controller: _nomController,
-                        validator: (value) {
-                          if (_nomController.text.isEmpty ||
-                              _nomController.text == null) {
-                            return "Ce champ est obligatoire";
-                          }
-                        },
-                        keyboardType: TextInputType.text,
-                        style: GoogleFonts.poppins(color: AppColors.textColor),
-                        decoration: InputDecoration(
-                          labelText: 'Nom du prof',
-                          prefixIcon: const Icon(Icons.school),
-                          contentPadding: const EdgeInsets.only(top: 10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 3.0,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 3.0,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                                color: Color(0xff9DD1F1), width: 3.0),
-                          ),
-                        )),
                     const SizedBox(
-                      height: 16,
+                      height: 20,
                     ),
-                    TextFormField(
-                        controller: _prenomController,
-                        validator: (value) {
-                          if (_phoneController.text.isEmpty ||
-                              _phoneController.text == null) {
-                            return "Ce champ est obligatoire";
-                          }
-                        },
-                        keyboardType: TextInputType.text,
-                        style: GoogleFonts.poppins(color: AppColors.textColor),
-                        decoration: InputDecoration(
-                          labelText: 'Prénom du prof',
-                          prefixIcon: const Icon(Icons.school),
-                          contentPadding: const EdgeInsets.only(top: 10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 3.0,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 3.0,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                                color: Color(0xff9DD1F1), width: 3.0),
-                          ),
-                        )),
-                    const SizedBox(
-                      height: 16,
+                    Text(
+                      "Modification de professeur",
+                      style: GoogleFonts.poppins(
+                          color: AppColors.textColor,
+                          fontSize: FontSize.xxLarge,
+                          fontWeight: FontWeight.w600),
                     ),
-                    TextFormField(
-                        controller: _phoneController,
-                        validator: (value) {
-                          if (_phoneController.text.isEmpty ||
-                              _phoneController.text == null) {
-                            return "Ce champ est obligatoire";
-                          }
-                        },
-                        keyboardType: TextInputType.phone,
-                        style: GoogleFonts.poppins(color: AppColors.textColor),
-                        decoration: InputDecoration(
-                          labelText: 'Téléphone',
-                          prefixIcon: const Icon(Icons.phone),
-                          contentPadding: const EdgeInsets.only(top: 10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 3.0,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.red,
-                              width: 3.0,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                                color: Color(0xff9DD1F1), width: 3.0),
-                          ),
-                        )),
-                    const SizedBox(
-                      height: 16,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7),
+                      child: Text(
+                        "Modifier les informations du professeur ",
+                        style: GoogleFonts.poppins(
+                            color: AppColors.primaryColor,
+                            fontSize: FontSize.medium,
+                            fontWeight: FontWeight.w600),
+                      ),
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          await set_Data().modifierProfByAdmin(
-                              widget.profId,
-                              _nomController.text,
-                              _prenomController.text,
-                              _phoneController.text,
-                              context);
-                        }
-                      },
-                      child: const Text('Modifier le professseur'),
-                    ),
+                    const SizedBox(height: 70),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                              controller: _nomController,
+                              validator: (value) {
+                                if (_nomController.text.isEmpty) {
+                                  return "Ce champ est obligatoire";
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.text,
+                              style: GoogleFonts.poppins(
+                                  color: AppColors.textColor),
+                              decoration: InputDecoration(
+                                labelText: 'Nom du prof',
+                                prefixIcon: const Icon(Icons.school),
+                                contentPadding: const EdgeInsets.only(top: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xff9DD1F1), width: 3.0),
+                                ),
+                              )),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          TextFormField(
+                              controller: _prenomController,
+                              validator: (value) {
+                                if (_phoneController.text.isEmpty) {
+                                  return "Ce champ est obligatoire";
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.text,
+                              style: GoogleFonts.poppins(
+                                  color: AppColors.textColor),
+                              decoration: InputDecoration(
+                                labelText: 'Prénom du prof',
+                                prefixIcon: const Icon(Icons.school),
+                                contentPadding: const EdgeInsets.only(top: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xff9DD1F1), width: 3.0),
+                                ),
+                              )),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          TextFormField(
+                              controller: _phoneController,
+                              validator: (value) {
+                                if (_phoneController.text.isEmpty) {
+                                  return "Ce champ est obligatoire";
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.phone,
+                              style: GoogleFonts.poppins(
+                                  color: AppColors.textColor),
+                              decoration: InputDecoration(
+                                labelText: 'Téléphone',
+                                prefixIcon: const Icon(Icons.phone),
+                                contentPadding: const EdgeInsets.only(top: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xff9DD1F1), width: 3.0),
+                                ),
+                              )),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                await set_Data().modifierProfByAdmin(
+                                    widget.profId,
+                                    _nomController.text,
+                                    _prenomController.text,
+                                    _phoneController.text,
+                                    context);
+                              }
+                            },
+                            child: const Text('Modifier le professseur'),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
+              ),
+            )
+          :
+          //web view
+          Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      "Modification de professeur",
+                      style: GoogleFonts.poppins(
+                          color: AppColors.textColor,
+                          fontSize: FontSize.xxLarge,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 7),
+                      child: Text(
+                        "Modifier les informations du professeur ",
+                        style: GoogleFonts.poppins(
+                            color: AppColors.primaryColor,
+                            fontSize: FontSize.medium,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    const SizedBox(height: 70),
+                    Form(
+                        key: _formKey,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                              maxWidth: 400), // Définir la largeur maximale
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                  controller: _nomController,
+                                  validator: (value) {
+                                    if (_nomController.text.isEmpty) {
+                                      return "Ce champ est obligatoire";
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  style: GoogleFonts.poppins(
+                                      color: AppColors.textColor),
+                                  decoration: InputDecoration(
+                                    labelText: 'Nom du prof',
+                                    prefixIcon: const Icon(Icons.school),
+                                    contentPadding:
+                                        const EdgeInsets.only(top: 10),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xff9DD1F1), width: 3.0),
+                                    ),
+                                  )),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              TextFormField(
+                                  controller: _prenomController,
+                                  validator: (value) {
+                                    if (_phoneController.text.isEmpty) {
+                                      return "Ce champ est obligatoire";
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  style: GoogleFonts.poppins(
+                                      color: AppColors.textColor),
+                                  decoration: InputDecoration(
+                                    labelText: 'Prénom du prof',
+                                    prefixIcon: const Icon(Icons.school),
+                                    contentPadding:
+                                        const EdgeInsets.only(top: 10),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xff9DD1F1), width: 3.0),
+                                    ),
+                                  )),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              TextFormField(
+                                  controller: _phoneController,
+                                  validator: (value) {
+                                    if (_phoneController.text.isEmpty) {
+                                      return "Ce champ est obligatoire";
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.phone,
+                                  style: GoogleFonts.poppins(
+                                      color: AppColors.textColor),
+                                  decoration: InputDecoration(
+                                    labelText: 'Téléphone',
+                                    prefixIcon: const Icon(Icons.phone),
+                                    contentPadding:
+                                        const EdgeInsets.only(top: 10),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xff9DD1F1), width: 3.0),
+                                    ),
+                                  )),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    await set_Data().modifierProfByAdmin(
+                                        widget.profId,
+                                        _nomController.text,
+                                        _prenomController.text,
+                                        _phoneController.text,
+                                        context);
+                                  }
+                                },
+                                child: const Text('Modifier le professseur'),
+                              ),
+                            ],
+                          ),
+                        ))
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }

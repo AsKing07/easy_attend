@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, file_names, avoid_unnecessary_containers
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
@@ -10,6 +10,8 @@ import 'package:lottie/lottie.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 class GiveQrAttendancePage extends StatefulWidget {
+  const GiveQrAttendancePage({super.key});
+
   @override
   State<GiveQrAttendancePage> createState() => _GiveQrAttendancePageState();
 }
@@ -127,7 +129,7 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
                 );
               });
         } catch (e) {
-          print(e);
+          // print(e);
         }
       }
     } else {

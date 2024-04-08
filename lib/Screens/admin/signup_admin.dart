@@ -1,7 +1,8 @@
+// ignore_for_file: sized_box_for_whitespace
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 
@@ -185,9 +186,7 @@ class _SignUpAdminState extends State<SignUpAdmin> {
                             ),
                           ),
                           validator: (value) {
-                            if (value!.isEmpty ||
-                                !value.contains('@') ||
-                                value == null) {
+                            if (value!.isEmpty || !value.contains('@')) {
                               return 'S\'il vous plâit entrez votre email';
                             }
                             return null;
@@ -307,15 +306,6 @@ class _SignUpAdminState extends State<SignUpAdmin> {
                               return 'Entrez un mot de passe de 6 caractères au moins';
                             }
                             if (value != _passwordController.text) {
-                              print(_passwordController.text);
-                              print(value);
-                              print(_confirmPasswordController.text);
-                              // GFToast.showToast(
-                              //     'Les mots de passes ne sont pas identiques',
-                              //     context,
-                              //     backgroundColor: Colors.white,
-                              //     textStyle: const TextStyle(color: Colors.red),
-                              //     toastDuration: 3);
                               return 'Les mots de passe ne sont pas identiques';
                             }
 

@@ -1,16 +1,27 @@
+// ignore_for_file: must_be_immutable, non_constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 
 class HelperDrawer extends StatefulWidget {
   List<MenuItems> items;
   Function changePage;
   String nom;
+  String? AppVersion;
   HelperDrawer(
-      {required this.items, required this.changePage, required this.nom});
+      {Key? key,
+      required this.items,
+      required this.changePage,
+      required this.nom,
+      String? AppVersion})
+      : super(key: key) {
+    this.AppVersion = AppVersion ?? "N/A";
+  }
 
   @override
   State<HelperDrawer> createState() => _HelperDrawerState();
@@ -22,8 +33,16 @@ class _HelperDrawerState extends State<HelperDrawer> {
 
   @override
   void initState() {
-    super.initState();
     _loadUserName();
+    _getAppVersion();
+    super.initState();
+  }
+
+  Future<void> _getAppVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      widget.AppVersion = packageInfo.version;
+    });
   }
 
   Future<void> _loadUserName() async {
@@ -31,6 +50,7 @@ class _HelperDrawerState extends State<HelperDrawer> {
         .collection(widget.nom.toLowerCase())
         .doc(user!.uid)
         .get();
+
     setState(() {
       if (x.exists) {
         name = '${x['nom']}  ${x['prenom']}';
@@ -53,13 +73,14 @@ class _HelperDrawerState extends State<HelperDrawer> {
             child: Padding(
               padding: const EdgeInsets.only(top: 15.0),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const CircleAvatar(
                     backgroundImage: AssetImage("assets/admin.jpg"),
-                    radius: 35.0,
+                    radius: 30.0,
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 8,
                   ),
                   Text(
                     name,
@@ -67,6 +88,40 @@ class _HelperDrawerState extends State<HelperDrawer> {
                       fontWeight: FontWeight.bold,
                       fontSize: FontSize.medium,
                       color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Center(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              auth_methods_admin().logUserOut(context);
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.logout,
+                                  color: AppColors.white,
+                                  size: 21,
+                                ),
+                                Text(
+                                  "Deconnexion",
+                                  style: TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: FontSize.small,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   )
                 ],
@@ -83,45 +138,11 @@ class _HelperDrawerState extends State<HelperDrawer> {
               ),
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                              child: Padding(
-                            padding: const EdgeInsets.only(left: 30),
-                            child: GestureDetector(
-                              onTap: () {
-                                auth_methods_admin().logUserOut(context);
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.logout,
-                                    color: AppColors.textColor,
-                                    size: 21,
-                                  ),
-                                  Text(
-                                    "Deconnexion",
-                                    style: TextStyle(
-                                        color: AppColors.textColor,
-                                        fontSize: FontSize.small,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ))
-                        ],
-                      ),
-                    ],
-                  ))
-            ],
+          Center(
+            child: Text(
+              'Version: ${widget.AppVersion}',
+              style: const TextStyle(color: AppColors.textColor),
+            ),
           )
         ],
       )),
@@ -135,18 +156,21 @@ Widget menuItem(MenuItems item, Function changePage, BuildContext context) {
       Navigator.pop(context);
       changePage(item);
     },
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
-      child: Row(
-        children: [
-          Expanded(
-            child: Icon(
-              item.icon,
-              size: 21,
-              color: AppColors.textColor,
+    child: Container(
+      color:
+          item.isSelected ? Colors.grey.withOpacity(0.2) : Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
+        child: Row(
+          children: [
+            Expanded(
+              child: Icon(
+                item.icon,
+                size: 21,
+                color: AppColors.textColor,
+              ),
             ),
-          ),
-          Expanded(
+            Expanded(
               flex: 3,
               child: Text(
                 item.text,
@@ -154,8 +178,10 @@ Widget menuItem(MenuItems item, Function changePage, BuildContext context) {
                     color: AppColors.textColor,
                     fontSize: FontSize.small,
                     fontWeight: FontWeight.bold),
-              )),
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );

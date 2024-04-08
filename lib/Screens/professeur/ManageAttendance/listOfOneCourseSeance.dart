@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable, file_names, non_constant_identifier_names, sized_box_for_whitespace
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
@@ -11,14 +13,16 @@ import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ListOfOneCourseSeancePage extends StatefulWidget {
   DocumentSnapshot course;
 
-  ListOfOneCourseSeancePage({required this.course});
+  ListOfOneCourseSeancePage({super.key, required this.course});
   @override
   State<ListOfOneCourseSeancePage> createState() =>
       _ListOfOneCourseSeancePageState();
@@ -136,7 +140,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                             ),
                                             child: Padding(
                                               padding: const EdgeInsets.only(
-                                                  left: 30.0),
+                                                  left: 30.0, right: 30),
                                               child: Column(
                                                 children: [
                                                   const SizedBox(
@@ -269,12 +273,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                           FontWeight
                                                                               .w400),
                                                                 )
-                                                              : ElevatedButton(
-                                                                  style: const ButtonStyle(
-                                                                      fixedSize:
-                                                                          MaterialStatePropertyAll(Size(
-                                                                              280,
-                                                                              30))),
+                                                              : GFButton(
                                                                   onPressed:
                                                                       () async {
                                                                     Navigator
@@ -288,120 +287,160 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                               )),
                                                                     );
                                                                   },
-                                                                  child: const Text(
-                                                                      "Consulter la présence déjà prise")),
-                                                          ElevatedButton(
-                                                              style: const ButtonStyle(
-                                                                  fixedSize:
-                                                                      MaterialStatePropertyAll(Size(
-                                                                          280,
-                                                                          30))),
-                                                              onPressed:
-                                                                  () async {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                      builder: (context) => TakeManualAttendance(
-                                                                          seanceId: seance
-                                                                              .id,
-                                                                          courseId: widget
-                                                                              .course
-                                                                              .id)),
-                                                                );
-                                                              },
-                                                              child: const Text(
-                                                                  "PRESENCE MANUELLE")),
-                                                          ElevatedButton(
-                                                              style: const ButtonStyle(
-                                                                  fixedSize:
-                                                                      MaterialStatePropertyAll(Size(
-                                                                          280,
-                                                                          30))),
-                                                              onPressed:
-                                                                  () async {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                      builder: (context) =>
-                                                                          TakeQrAttendancePage(
-                                                                              seanceId: seance.id)),
-                                                                );
-                                                              },
-                                                              child: const Text(
+                                                                  text:
+                                                                      "Consulter la présence déjà prise",
+                                                                  textStyle: const TextStyle(
+                                                                      color: AppColors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          FontSize
+                                                                              .large,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                  shape:
+                                                                      GFButtonShape
+                                                                          .pills,
+                                                                  fullWidthButton:
+                                                                      true,
+                                                                ),
+                                                          GFButton(
+                                                            onPressed:
+                                                                () async {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder: (context) => TakeManualAttendance(
+                                                                        seanceId:
+                                                                            seance
+                                                                                .id,
+                                                                        courseId: widget
+                                                                            .course
+                                                                            .id)),
+                                                              );
+                                                            },
+                                                            text:
+                                                                "PRESENCE MANUELLE",
+                                                            textStyle: const TextStyle(
+                                                                color: AppColors
+                                                                    .white,
+                                                                fontSize:
+                                                                    FontSize
+                                                                        .large,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            shape: GFButtonShape
+                                                                .pills,
+                                                            fullWidthButton:
+                                                                true,
+                                                          ),
+                                                          GFButton(
+                                                            onPressed:
+                                                                () async {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder: (context) =>
+                                                                        TakeQrAttendancePage(
+                                                                            seanceId:
+                                                                                seance.id)),
+                                                              );
+                                                            },
+                                                            text:
                                                                 "PRESENCE CODE QR",
-                                                              )),
-                                                          ElevatedButton(
-                                                              style: const ButtonStyle(
-                                                                  fixedSize:
-                                                                      MaterialStatePropertyAll(Size(
-                                                                          280,
-                                                                          30)),
-                                                                  backgroundColor:
-                                                                      MaterialStatePropertyAll(
-                                                                          AppColors
-                                                                              .redColor)),
-                                                              onPressed:
-                                                                  () async {
-                                                                showDialog(
-                                                                  context:
-                                                                      context,
-                                                                  builder:
-                                                                      (context) =>
-                                                                          AlertDialog(
-                                                                    title:
-                                                                        const Row(
-                                                                      children: [
-                                                                        Icon(
-                                                                          Icons
-                                                                              .warning,
-                                                                          color:
-                                                                              Colors.orange,
-                                                                        ),
-                                                                        SizedBox(
-                                                                            width:
-                                                                                10),
-                                                                        Text(
-                                                                          "Supprimer la séance",
-                                                                          style: TextStyle(
-                                                                              fontWeight: FontWeight.bold,
-                                                                              fontSize: 20.0,
-                                                                              color: Colors.orange),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    content:
-                                                                        const Text(
-                                                                            'Êtes-vous sûr de vouloir supprimer cette séance ?'),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.of(context)
-                                                                              .pop();
-                                                                        },
-                                                                        child: const Text(
-                                                                            'Annuler'),
+                                                            textStyle: const TextStyle(
+                                                                color: AppColors
+                                                                    .white,
+                                                                fontSize:
+                                                                    FontSize
+                                                                        .large,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            shape: GFButtonShape
+                                                                .pills,
+                                                            fullWidthButton:
+                                                                true,
+                                                          ),
+                                                          GFButton(
+                                                            color:
+                                                                GFColors.DANGER,
+                                                            onPressed:
+                                                                () async {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) =>
+                                                                        AlertDialog(
+                                                                  title:
+                                                                      const Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                        Icons
+                                                                            .warning,
+                                                                        color: Colors
+                                                                            .red,
                                                                       ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () async {
-                                                                          await set_Data().deleteSeance(
-                                                                              seance.id,
-                                                                              context);
-                                                                        },
-                                                                        child: const Text(
-                                                                            'Supprimer'),
+                                                                      SizedBox(
+                                                                          width:
+                                                                              10),
+                                                                      Text(
+                                                                        "Supprimer la séance",
+                                                                        style: TextStyle(
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize:
+                                                                                20.0,
+                                                                            color:
+                                                                                Colors.red),
                                                                       ),
                                                                     ],
                                                                   ),
-                                                                );
-                                                              },
-                                                              child: const Text(
+                                                                  content:
+                                                                      const Text(
+                                                                          'Êtes-vous sûr de vouloir supprimer cette séance ?'),
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                      },
+                                                                      child: const Text(
+                                                                          'Annuler'),
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () async {
+                                                                        await set_Data().deleteSeance(
+                                                                            seance.id,
+                                                                            context);
+                                                                      },
+                                                                      child: const Text(
+                                                                          'Supprimer'),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            },
+                                                            text:
                                                                 "Supprimer la séance",
-                                                                style: TextStyle(
-                                                                    color: AppColors
-                                                                        .white),
-                                                              )),
+                                                            textStyle: const TextStyle(
+                                                                color: AppColors
+                                                                    .white,
+                                                                fontSize:
+                                                                    FontSize
+                                                                        .large,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                            shape: GFButtonShape
+                                                                .pills,
+                                                            fullWidthButton:
+                                                                true,
+                                                          ),
                                                         ],
                                                       )),
                                                 ],
@@ -419,8 +458,9 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                               Helper().ErrorMessage(context);
                               return const SizedBox();
                             } else {
-                              return const Center(
-                                child: CircularProgressIndicator(),
+                              return Center(
+                                child: LoadingAnimationWidget.hexagonDots(
+                                    color: AppColors.secondaryColor, size: 200),
                               );
                             }
                           },

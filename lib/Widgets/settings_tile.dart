@@ -1,0 +1,58 @@
+import 'package:easy_attend/Config/styles.dart';
+import 'package:flutter/material.dart';
+
+class SettingsTile extends StatelessWidget {
+  final Color color;
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+  const SettingsTile(
+      {Key? key,
+      required this.color,
+      required this.icon,
+      required this.title,
+      required this.onTap})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            color: color,
+          ),
+          child: Icon(
+            icon,
+            color: AppColors.secondaryColor,
+          ),
+        ),
+        const SizedBox(
+          width: 15,
+        ),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const Spacer(),
+        InkWell(
+          onTap: onTap,
+          child: Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: Colors.blue[50],
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: const Icon(Icons.chevron_right_outlined),
+          ),
+        )
+      ],
+    );
+  }
+}

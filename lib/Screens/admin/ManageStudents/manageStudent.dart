@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, file_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
@@ -10,6 +10,7 @@ import 'package:easy_attend/Screens/admin/ManageStudents/student_trashed.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ManageStudentPage extends StatefulWidget {
   const ManageStudentPage({super.key});
@@ -28,8 +29,16 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
         children: [
           Container(
             color: AppColors.secondaryColor,
+            width: double.infinity,
             height: 80,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: MediaQuery.of(context).size.width >= 1024
+                  ? MediaQuery.of(context).size.width * 0.2
+                  : MediaQuery.of(context).size.width >= 600
+                      ? MediaQuery.of(context).size.width * 0.05
+                      : 10,
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -63,12 +72,25 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                       value: value,
                       child: Text(
                         value,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: FontSize.large),
                       ),
                     );
                   }).toList(),
                 ),
               ],
             ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const Text(
+            "Gestion des Etudiants",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.secondaryColor,
+                fontSize: FontSize.large),
           ),
           Expanded(
               child: StreamBuilder<QuerySnapshot>(
@@ -85,7 +107,9 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                 if (snapshot.data!.docs
                     .isEmpty) // Afficher un message si aucun résultat n'est trouvé
                 {
-                  return const NoResultWidget();
+                  return const SingleChildScrollView(
+                    child: NoResultWidget(),
+                  );
                 } else {
                   final etudiants = snapshot.data!.docs;
                   return ListView.builder(
@@ -107,18 +131,6 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove_red_eye_sharp),
-                                onPressed: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //       builder: (context) => EditStudentPage(
-                                  //             studentId: etudiant.id,
-                                  //           )),
-                                  // );
-                                },
-                              ),
                               IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
@@ -188,8 +200,9 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
               } else if (snapshot.hasError) {
                 return const NoResultWidget();
               } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
+                return Center(
+                  child: LoadingAnimationWidget.hexagonDots(
+                      color: AppColors.secondaryColor, size: 200),
                 );
               }
             },
@@ -304,7 +317,8 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TrashStudentPage()),
+                    MaterialPageRoute(
+                        builder: (context) => const TrashStudentPage()),
                   );
                 },
               ),

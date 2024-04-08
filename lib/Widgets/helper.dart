@@ -1,8 +1,22 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/my_success_widget.dart';
+import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:flutter/material.dart';
 
 class Helper {
+  void show_custom_message(
+      String message, double height, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return WarningWidget(
+            title: "Information", content: message, height: height);
+      },
+    );
+  }
+
   void succesMessage(BuildContext context) {
     showDialog(
       context: context,

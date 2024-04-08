@@ -34,7 +34,7 @@ class _WarningWidgetState extends State<WarningWidget> {
                     Icons.warning,
                     color: Colors.orange,
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Text(
                     widget.title,
                     style: const TextStyle(

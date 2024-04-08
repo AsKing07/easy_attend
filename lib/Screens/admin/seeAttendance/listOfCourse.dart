@@ -1,9 +1,12 @@
+// ignore_for_file: file_names, camel_case_types, prefer_typing_uninitialized_variables, non_constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class listOfCourse extends StatefulWidget {
   const listOfCourse({super.key});
@@ -29,7 +32,7 @@ class _listOfCourseState extends State<listOfCourse> {
         await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
-    docsFiliere.forEach((doc) {
+    for (var doc in docsFiliere) {
       Filiere filiere = Filiere(
         idDoc: doc.id,
         nomFiliere: doc["nomFiliere"],
@@ -41,7 +44,7 @@ class _listOfCourseState extends State<listOfCourse> {
       );
 
       fil.add(filiere);
-    });
+    }
 
     setState(() {
       Allfilieres.addAll(fil);
@@ -59,8 +62,9 @@ class _listOfCourseState extends State<listOfCourse> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: !dataIsLoaded
-          ? const Center(
-              child: CircularProgressIndicator(),
+          ? Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             )
           : Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -102,18 +106,22 @@ class _listOfCourseState extends State<listOfCourse> {
                     _selectedFiliere == null
                         ? const Center(
                             child: Text(
-                                'Sélectionnez une filière pour afficher vos cours attribués'),
+                                'Sélectionnez une filière pour afficher les cours de la filière uniquement'),
                           )
                         : StreamBuilder(
-                            stream: FirebaseFirestore.instance
-                                .collection('cours')
-                                .where('filiereId',
-                                    isEqualTo: _selectedFiliere?.idDoc)
-                                .snapshots(),
+                            stream: _selectedFiliere == null
+                                ? FirebaseFirestore.instance
+                                    .collection('cours')
+                                    .snapshots()
+                                : FirebaseFirestore.instance
+                                    .collection('cours')
+                                    .where('filiereId',
+                                        isEqualTo: _selectedFiliere?.idDoc)
+                                    .snapshots(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 int length = snapshot.data!.docs.length;
-                                var previous = null;
+                                var previous;
                                 myWidgets.clear();
                                 for (int i = 0; i < length; i++) {
                                   var object = snapshot.data!.docs[i];
@@ -151,25 +159,27 @@ class _listOfCourseState extends State<listOfCourse> {
                                   }
                                 }
                                 if (identical(previous, null) == false) {
-                                  myWidgets.add(Row(children: [
-                                    CourseCard(
-                                      name: previous['nomCours'],
-                                      niveau: previous['niveau'],
-                                      filiere: _selectedFiliere?.idFiliere,
-                                      option: "admin",
-                                      course: previous,
-                                    ),
-                                    const SizedBox(
-                                      width: 20.0,
-                                    ),
-                                  ]));
+                                  myWidgets.add(Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        CourseCard(
+                                          name: previous['nomCours'],
+                                          niveau: previous['niveau'],
+                                          filiere: _selectedFiliere?.idFiliere,
+                                          option: "admin",
+                                          course: previous,
+                                        ),
+                                      ]));
                                 }
 
                                 return courseList(myWidgets);
                               } else {
-                                return const Material(
+                                return Material(
                                   child: Center(
-                                    child: CircularProgressIndicator(),
+                                    child: LoadingAnimationWidget.hexagonDots(
+                                        color: AppColors.secondaryColor,
+                                        size: 200),
                                   ),
                                 );
                               }

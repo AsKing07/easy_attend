@@ -1,9 +1,12 @@
+// ignore_for_file: non_constant_identifier_names, file_names, prefer_typing_uninitialized_variables
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ProfDashboard extends StatefulWidget {
   const ProfDashboard({super.key});
@@ -38,7 +41,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
         await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
-    docsFiliere.forEach((doc) {
+    for (var doc in docsFiliere) {
       Filiere filiere = Filiere(
         idDoc: doc.id,
         nomFiliere: doc["nomFiliere"],
@@ -50,7 +53,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
       );
 
       fil.add(filiere);
-    });
+    }
 
     setState(() {
       Allfilieres.addAll(fil);
@@ -69,8 +72,9 @@ class _ProfDashboardState extends State<ProfDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: !dataIsLoaded
-          ? const Center(
-              child: CircularProgressIndicator(),
+          ? Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             )
           : Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -126,7 +130,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 int length = snapshot.data!.docs.length;
-                                var previous = null;
+                                var previous;
                                 myWidgets.clear();
                                 for (int i = 0; i < length; i++) {
                                   var object = snapshot.data!.docs[i];
@@ -180,9 +184,11 @@ class _ProfDashboardState extends State<ProfDashboard> {
 
                                 return createCourseList(myWidgets);
                               } else {
-                                return const Material(
+                                return Material(
                                   child: Center(
-                                    child: CircularProgressIndicator(),
+                                    child: LoadingAnimationWidget.hexagonDots(
+                                        color: AppColors.secondaryColor,
+                                        size: 200),
                                   ),
                                 );
                               }

@@ -1,15 +1,16 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, camel_case_types, unused_local_variable
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Cours.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/listOfOneCourseSeance.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class set_Data {
 //METHODES DES FILIERES
@@ -19,8 +20,9 @@ class set_Data {
       String nom, String id, List<String> niveaux, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 300),
             ));
 
     final docSnapshot =
@@ -43,7 +45,6 @@ class set_Data {
         Helper().succesMessage(context);
       }).catchError((error) {
         // Une erreur s'est produite lors de l'ajout de la filière
-        print(error);
         Navigator.pop(context);
         Helper().ErrorMessage(context);
       });
@@ -55,8 +56,9 @@ class set_Data {
       filiereId, nomFiliere, idFiliere, niveaux, BuildContext context) {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
 
     FirebaseFirestore.instance.collection('filiere').doc(filiereId).update({
@@ -69,7 +71,6 @@ class set_Data {
       Helper().succesMessage(context);
     }).catchError((error) {
       // Une erreur s'est produite lors de la modification de la filière
-      print(error);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     });
@@ -82,8 +83,9 @@ class set_Data {
   ) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Supprimez la filière de Firestore
 
@@ -92,9 +94,29 @@ class set_Data {
           .collection('filiere')
           .doc(id)
           .update({'statut': "0"});
-      //TODO: Supprimer les cours associés
-      //
-      //TODO Supprimer les  étudiants associé
+
+      //Supprimer les cours associés
+      FirebaseFirestore.instance
+          .collection('cours')
+          .where('filiereId', isEqualTo: id)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          doc.reference.update({'statut': "0"});
+        }
+      });
+
+      //Supprimer les  étudiants associé
+      FirebaseFirestore.instance
+          .collection('etudiant')
+          .where('idFiliere', isEqualTo: id)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          doc.reference.update({'statut': "0"});
+        }
+      });
+
       Navigator.pop(context);
     } catch (e) {
       Helper().ErrorMessage(context);
@@ -108,8 +130,9 @@ class set_Data {
   ) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Restaurer la filière de Firestore
 
@@ -118,9 +141,27 @@ class set_Data {
           .collection('filiere')
           .doc(id)
           .update({'statut': "1"});
-      //TODO: Restaurer les cours associés
+      //Restaurer les cours associés
+      FirebaseFirestore.instance
+          .collection('cours')
+          .where('filiereId', isEqualTo: id)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          doc.reference.update({'statut': "1"});
+        }
+      });
       //
-      //TODO Restaurer les  étudiants associé
+      //Restaurer les  étudiants associés
+      FirebaseFirestore.instance
+          .collection('etudiant')
+          .where('idFiliere', isEqualTo: id)
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          doc.reference.update({'statut': "1"});
+        }
+      });
       Navigator.pop(context);
     } catch (e) {
       Helper().ErrorMessage(context);
@@ -132,17 +173,34 @@ class set_Data {
     try {
       showDialog(
           context: context,
-          builder: (context) => const Center(
-                child: CircularProgressIndicator(),
+          builder: (context) => Center(
+                child: LoadingAnimationWidget.hexagonDots(
+                    color: AppColors.secondaryColor, size: 200),
               ));
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection("filiere").get();
 
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         doc.reference.update({'statut': "0"});
-        //TODO: Supprimer les cours associés
-        //
-        //TODO Supprimer les  étudiants associé
+      }
+      // Supprimer les cours
+      FirebaseFirestore.instance
+          .collection('cours')
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          doc.reference.update({'statut': "0"});
+        }
+      });
+
+      // Supprimer les  étudiants
+      FirebaseFirestore.instance
+          .collection('etudiant')
+          .get()
+          .then((QuerySnapshot querySnapshot) {
+        for (var doc in querySnapshot.docs) {
+          doc.reference.update({'statut': "0"});
+        }
       });
     } catch (e) {
       Helper().ErrorMessage(context);
@@ -158,8 +216,9 @@ class set_Data {
   ) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Update le statut du prof dans Firestore
 
@@ -181,8 +240,9 @@ class set_Data {
   ) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Update le statut du prof dans Firestor
 
@@ -190,9 +250,9 @@ class set_Data {
       QuerySnapshot snapshots =
           await FirebaseFirestore.instance.collection('prof').get();
 
-      snapshots.docs.forEach((document) async {
-        document.reference.update({"statut": "0"});
-      });
+      for (var document in snapshots.docs) {
+        await document.reference.update({"statut": "0"});
+      }
 
       Navigator.pop(context);
     } catch (e) {
@@ -207,8 +267,9 @@ class set_Data {
   ) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Update le statut du prof dans Firestore
 
@@ -229,8 +290,9 @@ class set_Data {
       profId, nom, prenom, phone, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
 
     FirebaseFirestore.instance.collection('prof').doc(profId).update({
@@ -243,7 +305,6 @@ class set_Data {
       Helper().succesMessage(context);
     }).catchError((error) {
       // Une erreur s'est produite lors de la modification de la filière
-      print(error);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     });
@@ -255,17 +316,17 @@ class set_Data {
   Future<void> ajouterCours(Cours cours, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
 
     final docSnapshot = await FirebaseFirestore.instance
         .collection('cours')
-        .where('idCours',
-            isEqualTo: cours.idCours.toString().toUpperCase().trim())
+        .where('idCours', isEqualTo: cours.idCours.toString().trim())
         .get();
 
-    if (docSnapshot.docs.length > 0) {
+    if (docSnapshot.docs.isNotEmpty) {
       // Le cours existe déjà, afficher un message d'erreur
       Navigator.pop(context);
       Helper().ErrorMessage(context);
@@ -273,17 +334,18 @@ class set_Data {
       // Le cours n'existe pas encore, ajouter
       await FirebaseFirestore.instance.collection('cours').add({
         'nomCours': cours.nomCours.toUpperCase().trim(),
-        'idCours': cours.idCours.toUpperCase().trim(),
+        'idCours': cours.idCours.trim(),
         'niveau': cours.niveau.toUpperCase().trim(),
         'filiereId': cours.filiereId.toString().trim(),
         'professeurId': cours.professeurId!.trim(),
+        'status': "1"
       }).then((value) {
         // Cours ajouté avec succès
         Navigator.pop(context);
         Helper().succesMessage(context);
       }).catchError((error) {
         // Une erreur s'est produite lors de l'ajout du cours
-        print(error);
+
         Navigator.pop(context);
         Helper().ErrorMessage(context);
       });
@@ -294,8 +356,9 @@ class set_Data {
   Future<void> modifierCours(Cours cours, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
 
     await FirebaseFirestore.instance
@@ -313,7 +376,6 @@ class set_Data {
       Helper().succesMessage(context);
     }).catchError((error) {
       // Une erreur s'est produite lors de la modification du cours
-      print(error);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     });
@@ -326,8 +388,9 @@ class set_Data {
   ) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Supprimez le cours de Firestore
 
@@ -346,8 +409,9 @@ class set_Data {
   ) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Supprimez les cours de Firestore
 
@@ -355,9 +419,9 @@ class set_Data {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection("cours").get();
 
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         doc.reference.delete();
-      });
+      }
 
       Navigator.pop(context);
     } catch (e) {
@@ -371,8 +435,9 @@ class set_Data {
       idFiliere, niveau, matricule, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
 
     final docSnapshot = await FirebaseFirestore.instance
@@ -406,7 +471,6 @@ class set_Data {
         Helper().succesMessage(context);
       }).catchError((error) {
         // Une erreur s'est produite lors de la modification
-        print(error);
         Navigator.pop(context);
         Helper().ErrorMessage(context);
       });
@@ -417,8 +481,9 @@ class set_Data {
   Future<void> deleteOneStudent(id, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Update le statut de l'étudiant dans  Firestore
 
@@ -440,17 +505,17 @@ class set_Data {
   ) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
 
     try {
       QuerySnapshot snapshots =
           await FirebaseFirestore.instance.collection('etudiant').get();
-
-      snapshots.docs.forEach((document) async {
-        document.reference.update({"statut": "0"});
-      });
+      for (var document in snapshots.docs) {
+        await document.reference.update({"statut": "0"});
+      }
 
       Navigator.pop(context);
     } catch (e) {
@@ -462,8 +527,9 @@ class set_Data {
   Future<void> restoreOneStudent(id, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     // Update le statut de l'étudiant dans  Firestore
 
@@ -485,8 +551,9 @@ class set_Data {
   Future<void> approuverRequete(idRequete, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
       await FirebaseFirestore.instance
@@ -506,8 +573,9 @@ class set_Data {
   Future<void> desapprouverRequete(idRequete, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
       await FirebaseFirestore.instance
@@ -527,8 +595,9 @@ class set_Data {
   Future<void> mettreEnAttenteRequete(idRequete, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
       await FirebaseFirestore.instance
@@ -549,8 +618,9 @@ class set_Data {
       dateCreation, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
       await FirebaseFirestore.instance.collection("requete").doc(idAuteur).set({
@@ -565,7 +635,6 @@ class set_Data {
       Navigator.pop(context);
       Helper().succesMessage(context);
     } catch (e) {
-      print(e);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     }
@@ -578,8 +647,9 @@ class set_Data {
     try {
       showDialog(
           context: context,
-          builder: (context) => const Center(
-                child: CircularProgressIndicator(),
+          builder: (context) => Center(
+                child: LoadingAnimationWidget.hexagonDots(
+                    color: AppColors.secondaryColor, size: 200),
               ));
 
       // Récupérer le document existant
@@ -612,7 +682,6 @@ class set_Data {
         Navigator.pop(context);
       }
     } catch (e) {
-      print('Erreur lors de la mise à jour de la présence de l\'étudiant : $e');
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     }
@@ -623,8 +692,9 @@ class set_Data {
       DocumentSnapshot course, dateSeance, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     try {
       Map<String, bool> presenceEtudiantsMap = {};
@@ -637,7 +707,7 @@ class set_Data {
 
       List<Etudiant> etudiants = [];
 
-      etudiantDoc.forEach((doc) {
+      for (var doc in etudiantDoc) {
         final etudiant = Etudiant(
             uid: doc.id,
             matricule: doc['matricule'],
@@ -650,7 +720,7 @@ class set_Data {
             statut: doc['statut']);
 
         etudiants.add(etudiant);
-      });
+      }
 
       List<Map<String, dynamic>> presenceEtudiant =
           List.generate(etudiants.length, (index) {
@@ -706,8 +776,9 @@ class set_Data {
   Future deleteSeance(idSeance, BuildContext context) async {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(),
+        builder: (context) => Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             ));
     await FirebaseFirestore.instance
         .collection('seance')

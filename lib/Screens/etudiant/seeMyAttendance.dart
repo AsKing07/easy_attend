@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, camel_case_types, must_be_immutable, file_names
 
 import 'dart:typed_data';
 
@@ -10,12 +10,13 @@ import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class seeMyAttendance extends StatefulWidget {
   DocumentSnapshot course;
 
-  seeMyAttendance({required this.course});
+  seeMyAttendance({super.key, required this.course});
 
   @override
   State<seeMyAttendance> createState() => _seeOneStudentAttendanceState();
@@ -59,8 +60,9 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
         title: const Text('Ma Présence'),
       ),
       body: !dataIsLoaded
-          ? const Center(
-              child: CircularProgressIndicator(),
+          ? Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 200),
             )
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
@@ -70,7 +72,10 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: LoadingAnimationWidget.hexagonDots(
+                        color: AppColors.secondaryColor, size: 200),
+                  );
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text('Erreur: ${snapshot.error}'));
@@ -90,7 +95,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                     (nombreDePresences / nombreTotalSeances);
 
                 List<DataRow> rows = [];
-                snapshot.data!.docs.forEach((seance) {
+                for (var seance in snapshot.data!.docs) {
                   Map<String, dynamic> data =
                       seance.data() as Map<String, dynamic>;
                   String date = DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr')
@@ -109,7 +114,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                             style: TextStyle(color: AppColors.redColor),
                           )),
                   ]));
-                });
+                }
                 return SingleChildScrollView(
                     child: Column(
                   children: [

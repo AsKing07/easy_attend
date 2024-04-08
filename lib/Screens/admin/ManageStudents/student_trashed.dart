@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class TrashStudentPage extends StatefulWidget {
   const TrashStudentPage({super.key});
@@ -38,7 +41,7 @@ class _TrashStudentPageState extends State<TrashStudentPage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data!.docs.isEmpty) {
-                    return NoResultWidget();
+                    return const NoResultWidget();
                   } else {
                     final etudiants = snapshot.data!.docs;
                     return ListView.builder(
@@ -115,10 +118,11 @@ class _TrashStudentPageState extends State<TrashStudentPage> {
                   }
                 } else if (snapshot.hasError) {
                   Helper().ErrorMessage(context);
-                  return SizedBox();
+                  return const SizedBox();
                 } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Center(
+                    child: LoadingAnimationWidget.hexagonDots(
+                        color: AppColors.secondaryColor, size: 200),
                   );
                 }
               },

@@ -1,16 +1,20 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously, file_names
+
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/addNewFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/editFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/filiere_trashed.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/helper.dart';
-import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ManageFilierePage extends StatefulWidget {
+  const ManageFilierePage({super.key});
+
   @override
   _ManageFilierePageState createState() => _ManageFilierePageState();
 }
@@ -24,13 +28,19 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
       body: Column(
         children: [
           Container(
+            width: double.infinity,
             color: AppColors.secondaryColor,
             height: 80,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: MediaQuery.of(context).size.width >= 1024
+                  ? MediaQuery.of(context).size.width * 0.2
+                  : MediaQuery.of(context).size.width >= 600
+                      ? MediaQuery.of(context).size.width * 0.05
+                      : 10,
+            ),
             child: SearchBar(
-              leading: const Icon(
-                Icons.search,
-              ),
+              leading: const Icon(Icons.search),
               hintText: "Rechercher",
               onChanged: (value) {
                 setState(() {
@@ -38,6 +48,16 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                 });
               },
             ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const Text(
+            "Gestion des filières",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.secondaryColor,
+                fontSize: FontSize.large),
           ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
@@ -47,7 +67,7 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                   .where('nomFiliere',
                       isGreaterThanOrEqualTo: searchText.toUpperCase())
                   .where('nomFiliere',
-                      isLessThanOrEqualTo: searchText.toUpperCase() + '\uf8ff')
+                      isLessThanOrEqualTo: '${searchText.toUpperCase()}\uf8ff')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
@@ -138,10 +158,11 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                   }
                 } else if (snapshot.hasError) {
                   Helper().ErrorMessage(context);
-                  return SizedBox();
+                  return const SizedBox();
                 } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Center(
+                    child: LoadingAnimationWidget.hexagonDots(
+                        color: AppColors.secondaryColor, size: 200),
                   );
                 }
               },
@@ -238,7 +259,8 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TrashFilierePage()),
+                    MaterialPageRoute(
+                        builder: (context) => const TrashFilierePage()),
                   );
                 },
               ),

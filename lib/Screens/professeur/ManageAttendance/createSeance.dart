@@ -1,20 +1,21 @@
+// ignore_for_file: must_be_immutable, file_names, unused_local_variable
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Methods/get_data.dart';
-import 'package:easy_attend/Methods/set_data.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
+import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Methods/get_data.dart';
+import 'package:easy_attend/Methods/set_data.dart';
+
 class CreateSeancePage extends StatefulWidget {
   DocumentSnapshot course;
 
-  CreateSeancePage({required this.course});
+  CreateSeancePage({super.key, required this.course});
 
   @override
   State<CreateSeancePage> createState() => _CreateSeancePageState();
@@ -24,17 +25,16 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
   final dateTimeController = TextEditingController();
 
   DateTime _dateTime = DateTime.now();
-  Time _time = Time(hour: 9, minute: 0);
 
   bool dataIsloaded = false;
   late DocumentSnapshot course;
 
-  Future<Null> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await DatePicker.showDateTimePicker(context,
         showTitleActions: true,
         locale: LocaleType.fr,
         minTime: DateTime.now(),
-        maxTime: DateTime.now().add(new Duration(days: 365)));
+        maxTime: DateTime.now().add(const Duration(days: 365)));
     if (picked != null && picked != _dateTime) {
       setState(() {
         _dateTime = picked;
@@ -62,8 +62,6 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
 
   @override
   Widget build(BuildContext context) {
-    String? uid = FirebaseAuth.instance.currentUser?.uid;
-
     return !dataIsloaded
         ? const SizedBox()
         : Scaffold(
@@ -78,8 +76,7 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
                 ),
               ),
             ),
-            body: Padding(
-              padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+            body: Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -93,6 +90,7 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
                         color: AppColors.textColor,
                         fontSize: FontSize.xxLarge,
                         fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
                   ),
                   Text(
                     "${course['nomCours']}  - ${course['niveau']} ",
@@ -115,12 +113,15 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
                       _selectDate(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondaryColor,
+                      backgroundColor: GFColors.PRIMARY,
                     ),
                     child: dateTimeController.text.isEmpty
                         ? const Text(
                             "Sélectionner",
-                            style: TextStyle(color: AppColors.white),
+                            style: TextStyle(
+                                color: AppColors.white,
+                                fontSize: FontSize.large,
+                                fontWeight: FontWeight.bold),
                           )
                         : Text(
                             dateTimeController.text,
@@ -131,6 +132,9 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: GFColors.PRIMARY,
+                      ),
                       onPressed: () async {
                         if (dateTimeController.text.isEmpty) {
                           GFToast.showToast(
@@ -142,8 +146,8 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
                       },
                       child: Text("Créer la séance",
                           style: GoogleFonts.poppins(
-                            color: AppColors.secondaryColor,
-                            fontSize: FontSize.medium,
+                            color: AppColors.white,
+                            fontSize: FontSize.large,
                             fontWeight: FontWeight.bold,
                           )))
                 ],

@@ -1,12 +1,15 @@
+// ignore_for_file: file_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:expandable/expandable.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ManageQueriesPage extends StatefulWidget {
   const ManageQueriesPage({Key? key}) : super(key: key);
@@ -35,7 +38,10 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
         child: Padding(
           padding: const EdgeInsets.all(30.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: !screenSize().isWeb()
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 "Gestion des requêtes",
@@ -56,7 +62,8 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
               ),
               const SizedBox(height: 30),
               Wrap(
-                spacing: 8,
+                alignment: WrapAlignment.center,
+                spacing: !screenSize().isWeb() ? 8 : 32,
                 children: statutDisponibles.map((item) {
                   return FilterChip(
                     label: Text(item['nom'] as String),
@@ -72,6 +79,10 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                   );
                 }).toList(),
               ),
+              const SizedBox(
+                height: 16,
+              ),
+              // ignore: sized_box_for_whitespace
               Container(
                 height: MediaQuery.of(context).size.height -
                     180, // Définir la hauteur en fonction de la taille de l'écran
@@ -98,162 +109,183 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                   query.data() as Map<String, dynamic>;
 
                               return Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  boxShadow: const [
-                                    BoxShadow(
-                                        color: AppColors.shadow,
-                                        blurRadius: 100,
-                                        spreadRadius: 5,
-                                        offset: Offset(0, 60)),
-                                  ],
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: AppColors.white,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 30.0),
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      ExpandablePanel(
-                                        header: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              queryData['type'].toString(),
-                                              style: const TextStyle(
-                                                  color:
-                                                      AppColors.secondaryColor,
-                                                  fontSize: FontSize.large,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                            Container(
-                                              child: queryData['statut'] == "1"
-                                                  ? const Icon(
-                                                      Icons.check,
-                                                      color:
-                                                          AppColors.greenColor,
-                                                    )
-                                                  : queryData['statut'] == "2"
-                                                      ? const Icon(Icons.sync,
-                                                          color: AppColors
-                                                              .studColor)
-                                                      : const Icon(Icons.cancel,
-                                                          color: AppColors
-                                                              .redColor),
-                                            )
-                                          ],
-                                        ),
-                                        collapsed: Text(
-                                          queryData['sujet'].toString(),
-                                          softWrap: true,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                              fontSize: FontSize.medium,
-                                              color: AppColors.textColor,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                        expanded: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Auteur : ${query['auteur']}",
-                                              softWrap: true,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color: AppColors.textColor,
-                                                  fontWeight: FontWeight.w400),
-                                            ),
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            Text(
-                                              "Détails: \n  ${queryData['details']}",
-                                              softWrap: true,
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color: AppColors.textColor,
-                                                  fontWeight: FontWeight.w400),
-                                            ),
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            ElevatedButton(
-                                                style: const ButtonStyle(
-                                                    fixedSize:
-                                                        MaterialStatePropertyAll(
-                                                            Size(280, 30))),
-                                                onPressed: () async {
-                                                  // Approuver la requete
-                                                  await set_Data()
-                                                      .approuverRequete(
-                                                          query.id, context);
-                                                  setState(() {
-                                                    selectedFilter = "1";
-                                                    filter['valeur'] = "1";
-                                                  });
-                                                },
-                                                child: const Text("Approuver")),
-                                            ElevatedButton(
-                                                style: const ButtonStyle(
-                                                    fixedSize:
-                                                        MaterialStatePropertyAll(
-                                                            Size(280, 30))),
-                                                onPressed: () async {
-                                                  // Désapprouver la requete
-                                                  await set_Data()
-                                                      .desapprouverRequete(
-                                                          query.id, context);
-                                                  setState(() {
-                                                    selectedFilter = "0";
-                                                    filter['valeur'] = "0";
-                                                  });
-                                                },
-                                                child:
-                                                    const Text("Désapprouver")),
-                                            ElevatedButton(
-                                                style: const ButtonStyle(
-                                                    fixedSize:
-                                                        MaterialStatePropertyAll(
-                                                            Size(280, 30))),
-                                                onPressed: () async {
-                                                  // mettre en attente la requete
-                                                  await set_Data()
-                                                      .mettreEnAttenteRequete(
-                                                          query.id, context);
-                                                  setState(() {
-                                                    selectedFilter = "2";
-                                                    filter['valeur'] = "2";
-                                                  });
-                                                },
-                                                child: const Text(
-                                                    "Mettre en attente"))
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    boxShadow: const [
+                                      BoxShadow(
+                                          color: AppColors.shadow,
+                                          blurRadius: 100,
+                                          spreadRadius: 5,
+                                          offset: Offset(0, 60)),
                                     ],
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: AppColors.white,
                                   ),
-                                ),
-                              );
+                                  child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 30.0, right: 30),
+                                      child: Column(children: [
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        ExpandablePanel(
+                                          header: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                queryData['type'].toString(),
+                                                style: const TextStyle(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    fontSize: FontSize.large,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                              Container(
+                                                child: queryData['statut'] ==
+                                                        "1"
+                                                    ? const Icon(
+                                                        Icons.check,
+                                                        color: AppColors
+                                                            .greenColor,
+                                                      )
+                                                    : queryData['statut'] == "2"
+                                                        ? const Icon(Icons.sync,
+                                                            color: AppColors
+                                                                .studColor)
+                                                        : const Icon(
+                                                            Icons.cancel,
+                                                            color: AppColors
+                                                                .redColor),
+                                              )
+                                            ],
+                                          ),
+                                          collapsed: Text(
+                                            queryData['sujet'].toString(),
+                                            softWrap: true,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                                fontSize: FontSize.medium,
+                                                color: AppColors.textColor,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          expanded: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Auteur : ${query['auteur']}",
+                                                  softWrap: true,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color:
+                                                          AppColors.textColor,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Text(
+                                                  "Détails: \n  ${queryData['details']}",
+                                                  softWrap: true,
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      color:
+                                                          AppColors.textColor,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                GFButton(
+                                                  onPressed: () async {
+                                                    // Approuver la requete
+                                                    await set_Data()
+                                                        .approuverRequete(
+                                                            query.id, context);
+                                                    setState(() {
+                                                      selectedFilter = "1";
+                                                      filter['valeur'] = "1";
+                                                    });
+                                                  },
+                                                  text: "Approuver",
+                                                  textStyle: const TextStyle(
+                                                      color: AppColors.white,
+                                                      fontSize: FontSize.large,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  shape: GFButtonShape.pills,
+                                                  fullWidthButton: true,
+                                                ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                GFButton(
+                                                  onPressed: () async {
+                                                    // Désapprouver la requete
+                                                    await set_Data()
+                                                        .desapprouverRequete(
+                                                            query.id, context);
+                                                    setState(() {
+                                                      selectedFilter = "0";
+                                                      filter['valeur'] = "0";
+                                                    });
+                                                  },
+                                                  text: "Désapprouver",
+                                                  textStyle: const TextStyle(
+                                                      color: AppColors.white,
+                                                      fontSize: FontSize.large,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  shape: GFButtonShape.pills,
+                                                  fullWidthButton: true,
+                                                ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                GFButton(
+                                                  onPressed: () async {
+                                                    // mettre en attente la requete
+                                                    await set_Data()
+                                                        .mettreEnAttenteRequete(
+                                                            query.id, context);
+                                                    setState(() {
+                                                      selectedFilter = "2";
+                                                      filter['valeur'] = "2";
+                                                    });
+                                                  },
+                                                  text: "Mettre en attente",
+                                                  textStyle: const TextStyle(
+                                                      color: AppColors.white,
+                                                      fontSize: FontSize.large,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  shape: GFButtonShape.pills,
+                                                  fullWidthButton: true,
+                                                ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                              ]),
+                                        ),
+                                      ])));
                             });
                       }
                     } else if (snapshot.hasError) {
                       return const NoResultWidget();
                     } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
+                      return Center(
+                        child: LoadingAnimationWidget.hexagonDots(
+                            color: AppColors.secondaryColor, size: 200),
                       );
                     }
                   },

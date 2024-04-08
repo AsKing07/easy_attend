@@ -1,15 +1,14 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, file_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
-import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dialogs/dialogs/message_dialog.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MakeQuery extends StatefulWidget {
   const MakeQuery({super.key});
@@ -55,7 +54,7 @@ class _MakeQueryState extends State<MakeQuery> {
         queryFromDB = query['details'];
       });
     } catch (e) {
-      print(e);
+      // print(e);
     }
   }
 
@@ -70,7 +69,8 @@ class _MakeQueryState extends State<MakeQuery> {
     return Scaffold(
         body: !dataIsLoaded
             ? Center(
-                child: CircularProgressIndicator(),
+                child: LoadingAnimationWidget.hexagonDots(
+                    color: AppColors.secondaryColor, size: 200),
               )
             : SingleChildScrollView(
                 child: Padding(
@@ -79,7 +79,7 @@ class _MakeQueryState extends State<MakeQuery> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                           "Vous ne pouvez avoir qu'une seule requête en cours de traitement"),
                       const SizedBox(
                         height: 30,

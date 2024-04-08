@@ -1,9 +1,12 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, file_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class EtudiantDashboard extends StatefulWidget {
   const EtudiantDashboard({super.key});
@@ -33,13 +36,6 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
     });
   }
 
-  // Future loadFiliere(String idFiliere) async {
-  //   final x = await get_Data().getFiliereById(idFiliere, context);
-  //   setState(() {
-  //     filiere = x;
-  //   });
-  // }
-
   @override
   void initState() {
     loadStudent();
@@ -50,8 +46,9 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: !dataIsLoaded
-            ? const Center(
-                child: CircularProgressIndicator(),
+            ? Center(
+                child: LoadingAnimationWidget.hexagonDots(
+                    color: AppColors.secondaryColor, size: 200),
               )
             : Padding(
                 padding:
@@ -83,7 +80,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                                 return const NoResultWidget();
                               } else {
                                 int length = snapshot.data!.docs.length;
-                                var previous = null;
+                                var previous;
                                 myWidgets.clear();
                                 for (int i = 0; i < length; i++) {
                                   var object = snapshot.data!.docs[i];
@@ -136,9 +133,11 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                                 return courseList(myWidgets);
                               }
                             } else {
-                              return const Material(
+                              return Material(
                                 child: Center(
-                                  child: CircularProgressIndicator(),
+                                  child: LoadingAnimationWidget.hexagonDots(
+                                      color: AppColors.secondaryColor,
+                                      size: 200),
                                 ),
                               );
                             }

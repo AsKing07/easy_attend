@@ -27,7 +27,6 @@ class _AuthPageState extends State<AuthPage> {
     _loadSchools();
   }
 
-//Charger les écoles
   Future<void> _loadSchools() async {
     final snapshot = await FirebaseFirestore.instance.collection('pins').get();
     final List<String> schools = [];
@@ -36,7 +35,6 @@ class _AuthPageState extends State<AuthPage> {
     }
     setState(() {
       _schools = schools;
-      // Ajouter 'Selectionner une école' à la liste des écoles
       _schools.insert(0, 'Selectionner une école');
       _schools.remove('adminPin');
     });
@@ -45,34 +43,33 @@ class _AuthPageState extends State<AuthPage> {
   void _validateAndRedirect() {
     if (_selectedSchool.isEmpty ||
         _selectedSchool == "Selectionner une école") {
-      GFToast.showToast('Vous devez au moins sélectionner une école', context,
-          backgroundColor: Colors.white,
-          textStyle: const TextStyle(color: Colors.red),
-          toastDuration: 3);
+      GFToast.showToast(
+          "Vous devez au moins sélectionner une école",
+          backgroundColor: AppColors.redColor,
+          context,
+          toastDuration: 6);
     } else {
       switch (_selectedRole) {
         case 'Administrateur':
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const LoginAdmin()));
-
           break;
         case 'Professeur':
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const LoginProf()));
           break;
         case 'Etudiant':
-          bool estTelephone = screenSize().isPhone(context);
-          estTelephone
-              ? Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LoginStudent()))
-              : GFToast.showToast("D", context);
-
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const LoginStudent()));
           break;
         default:
-          GFToast.showToast('Vous devez au moins sélectionner un rôle', context,
-              backgroundColor: Colors.white,
-              textStyle: const TextStyle(color: Colors.red),
-              toastDuration: 3);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Vous devez au moins sélectionner un rôle'),
+              duration: Duration(seconds: 3),
+              backgroundColor: Colors.red,
+            ),
+          );
           break;
       }
     }
@@ -119,9 +116,10 @@ class _AuthPageState extends State<AuthPage> {
                   child: Text(
                     "Easy Attend",
                     style: TextStyle(
-                        fontSize: FontSize.xxLarge,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.secondaryColor),
+                      fontSize: FontSize.xxLarge,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondaryColor,
+                    ),
                   ),
                 ),
                 const Text(
@@ -130,63 +128,68 @@ class _AuthPageState extends State<AuthPage> {
                       fontSize: FontSize.large, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  value: _selectedSchool,
-                  onChanged: (String? value) {
-                    if (value != 'Selectionner une école') {
-                      setState(() {
-                        _selectedSchool = value!;
-                      });
-                    }
-                  },
-                  items: _schools
-                      .map<DropdownMenuItem<String>>(
-                        (String school) => DropdownMenuItem<String>(
-                          value: school,
-                          child: Text(school),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: Column(
+                    children: [
+                      DropdownButtonFormField<String>(
+                        value: _selectedSchool,
+                        onChanged: (String? value) {
+                          if (value != 'Selectionner une école') {
+                            setState(() {
+                              _selectedSchool = value!;
+                            });
+                          }
+                        },
+                        items: _schools
+                            .map<DropdownMenuItem<String>>(
+                              (String school) => DropdownMenuItem<String>(
+                                value: school,
+                                child: Text(school),
+                              ),
+                            )
+                            .toList(),
+                        decoration: const InputDecoration(
+                          labelText: 'Choisissez votre école',
+                          border: OutlineInputBorder(),
                         ),
-                      )
-                      .toList(),
-                  decoration: const InputDecoration(
-                    labelText: 'Choisissez votre école',
-                    border: OutlineInputBorder(),
+                      ),
+                      const SizedBox(height: 32.0),
+                      DropdownButtonFormField<String>(
+                        value: _selectedRole,
+                        onChanged: (String? value) {
+                          setState(() {
+                            _selectedRole = value!;
+                          });
+                        },
+                        items: <String>[
+                          'Administrateur',
+                          'Professeur',
+                          if (!screenSize().isWeb() && screenSize().isAndroid())
+                            'Etudiant'
+                        ]
+                            .map<DropdownMenuItem<String>>(
+                              (String value) => DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              ),
+                            )
+                            .toList(),
+                        decoration: const InputDecoration(
+                          labelText: 'Choisissez votre rôle',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 32.0),
+                      GFButton(
+                        onPressed: _validateAndRedirect,
+                        text: "Valider",
+                        shape: GFButtonShape.pills,
+                        fullWidthButton: true,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16.0),
-                const SizedBox(height: 16.0),
-                DropdownButtonFormField<String>(
-                  value: _selectedRole,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _selectedRole = value!;
-                    });
-                  },
-                  items: <String>[
-                    'Administrateur',
-                    'Professeur',
-                    if (!screenSize().isWeb() && screenSize().isAndroid())
-                      'Etudiant',
-                  ]
-                      .map<DropdownMenuItem<String>>(
-                        (String value) => DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        ),
-                      )
-                      .toList(),
-                  decoration: const InputDecoration(
-                    labelText: 'Choisissez votre rôle',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 32.0),
-                GFButton(
-                  onPressed: _validateAndRedirect,
-                  text: "Valider",
-                  shape: GFButtonShape.pills,
-                  fullWidthButton: true,
-                ),
-                const SizedBox(height: 16.0),
               ],
             ),
           ),

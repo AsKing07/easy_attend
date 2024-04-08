@@ -1,13 +1,16 @@
+// ignore_for_file: camel_case_types, file_names, must_be_immutable
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/seeOneStudentAttendance.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class listOfStudentsOfACourse extends StatefulWidget {
   DocumentSnapshot<Object?> course;
-  listOfStudentsOfACourse({required this.course});
+  listOfStudentsOfACourse({super.key, required this.course});
 
   @override
   State<listOfStudentsOfACourse> createState() =>
@@ -92,8 +95,9 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
               } else if (snapshot.hasError) {
                 return const NoResultWidget();
               } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
+                return Center(
+                  child: LoadingAnimationWidget.hexagonDots(
+                      color: AppColors.secondaryColor, size: 200),
                 );
               }
             },

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, file_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
@@ -9,6 +9,7 @@ import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ManageCoursePage extends StatefulWidget {
   const ManageCoursePage({super.key});
@@ -27,7 +28,15 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
           Container(
             color: AppColors.secondaryColor,
             height: 80,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: MediaQuery.of(context).size.width >= 1024
+                  ? MediaQuery.of(context).size.width * 0.2
+                  : MediaQuery.of(context).size.width >= 600
+                      ? MediaQuery.of(context).size.width * 0.05
+                      : 10,
+            ),
             child: SearchBar(
               leading: const Icon(
                 Icons.search,
@@ -40,6 +49,16 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
               },
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
+          const Text(
+            "Gestion des cours",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.secondaryColor,
+                fontSize: FontSize.large),
+          ),
           Expanded(
               child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
@@ -47,7 +66,8 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                 .where('nomCours',
                     isGreaterThanOrEqualTo: searchText.toUpperCase())
                 .where('nomCours',
-                    isLessThanOrEqualTo: searchText.toUpperCase() + '\uf8ff')
+                    isLessThanOrEqualTo: '${searchText.toUpperCase()}\uf8ff')
+                .where('statut', isEqualTo: "1")
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -138,10 +158,11 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                 }
               } else if (snapshot.hasError) {
                 Helper().ErrorMessage(context);
-                return SizedBox();
+                return const SizedBox();
               } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
+                return Center(
+                  child: LoadingAnimationWidget.hexagonDots(
+                      color: AppColors.secondaryColor, size: 200),
                 );
               }
             },

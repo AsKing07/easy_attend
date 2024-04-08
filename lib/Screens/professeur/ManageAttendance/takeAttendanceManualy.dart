@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, must_be_immutable, file_names, non_constant_identifier_names, empty_catches
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
@@ -8,10 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class TakeManualAttendance extends StatefulWidget {
   String seanceId, courseId;
-  TakeManualAttendance({required this.seanceId, required this.courseId});
+  TakeManualAttendance(
+      {super.key, required this.seanceId, required this.courseId});
 
   @override
   State<TakeManualAttendance> createState() => _TakeManualAttendanceState();
@@ -33,8 +35,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
               course['filiereId'], course['niveau']);
 
       List<Etudiant> etudiants = [];
-      print(etudiantDoc.length);
-      etudiantDoc.forEach((doc) {
+      for (var doc in etudiantDoc) {
         final etudiant = Etudiant(
             uid: doc.id,
             matricule: doc['matricule'],
@@ -47,7 +48,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
             statut: doc['statut']);
 
         etudiants.add(etudiant);
-      });
+      }
       DocumentSnapshot se = await FirebaseFirestore.instance
           .collection('seance')
           .doc(widget.seanceId)
@@ -61,9 +62,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
         });
         dataIsloaded = true;
       });
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   Future<void> loadCourseSeance() async {
@@ -78,8 +77,9 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
     try {
       showDialog(
           context: context,
-          builder: (context) => const Center(
-                child: CircularProgressIndicator(),
+          builder: (context) => Center(
+                child: LoadingAnimationWidget.hexagonDots(
+                    color: AppColors.secondaryColor, size: 200),
               ));
       // Récupérer l'ID de la séance
       String seanceId = widget.seanceId;
@@ -90,8 +90,6 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
         presenceEtudiantsMap[AllEtudiant[i].uid!] =
             presenceEtudiant[i]['present'];
       }
-      print(presenceEtudiantsMap);
-      print(presenceEtudiant);
 
       // Mettre à jour le document Firebase
       await FirebaseFirestore.instance
@@ -109,9 +107,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
           content: Text('Présence enregistrée avec succès'),
         ),
       );
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   @override
@@ -126,8 +122,9 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
   @override
   Widget build(BuildContext context) {
     return dataIsloaded == false
-        ? const Center(
-            child: CircularProgressIndicator(),
+        ? Center(
+            child: LoadingAnimationWidget.hexagonDots(
+                color: AppColors.secondaryColor, size: 200),
           )
         : Scaffold(
             appBar: AppBar(

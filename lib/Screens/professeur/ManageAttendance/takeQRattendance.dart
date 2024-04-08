@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, must_be_immutable, avoid_unnecessary_containers
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
@@ -9,7 +11,7 @@ import 'package:lottie/lottie.dart';
 
 class TakeQrAttendancePage extends StatefulWidget {
   String seanceId;
-  TakeQrAttendancePage({required this.seanceId});
+  TakeQrAttendancePage({super.key, required this.seanceId});
   @override
   State<TakeQrAttendancePage> createState() => _TakeQrAttendancePageState();
 }
@@ -78,7 +80,11 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                     thickness: 2,
                                   ),
                                 ),
-                                Lottie.asset('assets/qrAnim.json'),
+                                ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 350),
+                                  child: Lottie.asset('assets/qrAnim.json'),
+                                ),
                                 const SizedBox(height: 10),
                                 const Text(
                                   '1. Lancez la séance de présence.',
@@ -122,6 +128,7 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Center(
+                                    child: SingleChildScrollView(
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                         20, 20, 20, 0),
@@ -131,7 +138,7 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                       size: 300.0,
                                     ),
                                   ),
-                                ),
+                                )),
                                 const SizedBox(
                                   height: 40,
                                 ),

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, file_names
 
 import 'dart:typed_data';
 
@@ -8,6 +8,7 @@ import 'package:easy_attend/Methods/pdfHelper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class SeeSeanceAttendanceProf extends StatefulWidget {
@@ -63,7 +64,10 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: LoadingAnimationWidget.hexagonDots(
+                          color: AppColors.secondaryColor, size: 200),
+                    );
                   }
 
                   if (snapshot.hasError) {
@@ -83,7 +87,11 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                   if (presenceEtudiants == null || presenceEtudiants.isEmpty) {
                     return const Center(
                         child: Text(
-                            'Aucune présence enregistrée pour cette séance'));
+                      'Aucune présence enregistrée pour cette séance',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: FontSize.xxLarge),
+                    ));
                   }
                   nombreTotalEtudiants = presenceEtudiants.length;
                   nombreDePresences = presenceEtudiants.values
@@ -130,20 +138,29 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                   });
                   return Column(
                     children: [
-                      Text(date),
+                      Text(date,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: FontSize.xxLarge)),
                       const SizedBox(
                         height: 10,
                       ),
                       CircularPercentIndicator(
-                        footer:
+                        footer: Column(
+                          children: [
                             Text("$nombreTotalEtudiants Etudiants au total"),
+                            Text("$nombreDePresences présents"),
+                            Text(
+                                "${nombreTotalEtudiants - nombreDePresences} absents"),
+                          ],
+                        ),
                         radius: 130.0,
                         animation: true,
                         animationDuration: 1200,
                         lineWidth: 15.0,
                         percent: pourcentageDePresence,
                         center: Text(
-                          '${(pourcentageDePresence * 100).toString().substring(0, 5)}% de présence',
+                          '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20.0),
                         ),

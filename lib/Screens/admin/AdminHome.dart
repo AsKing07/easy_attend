@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/manageCourse.dart';
@@ -7,6 +9,7 @@ import 'package:easy_attend/Screens/admin/ManageQueries/manageQueries.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/manageStudent.dart';
 import 'package:easy_attend/Screens/admin/admin_Dashboard.dart';
 import 'package:easy_attend/Screens/admin/seeAttendance/listOfCourse.dart';
+import 'package:easy_attend/Screens/settings_screen.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -19,22 +22,21 @@ class AdminHome extends StatefulWidget {
 
 class _AdminHomeState extends State<AdminHome> {
   MenuItems currentPage = MenuItems(
-      text: 'Dashboard',
-      icon: Icons.dashboard_outlined,
-      tap: const AdminDashboard());
+    text: 'Dashboard',
+    icon: Icons.dashboard_outlined,
+    tap: const AdminDashboard(),
+    isSelected: true, // Par défaut, la page d'accueil est sélectionnée
+  );
   List<MenuItems> items = [
     MenuItems(
-        text: 'Paramètres',
-        icon: Icons.settings,
-        tap: const ManageCoursePage()),
-    MenuItems(
-        text: 'Dashboard',
-        icon: Icons.dashboard_outlined,
-        tap: const AdminDashboard()),
+      text: 'Dashboard',
+      icon: Icons.dashboard_outlined,
+      tap: const AdminDashboard(),
+    ),
     MenuItems(
         text: 'Gérer les filières',
         icon: Icons.school,
-        tap: ManageFilierePage()),
+        tap: const ManageFilierePage()),
     MenuItems(
         text: 'Gérer les professeurs',
         icon: Icons.person_3,
@@ -55,6 +57,12 @@ class _AdminHomeState extends State<AdminHome> {
         text: 'Gérer les présences',
         icon: Icons.assignment_turned_in_sharp,
         tap: const listOfCourse()),
+    MenuItems(
+        text: 'Paramètres',
+        icon: Icons.settings,
+        tap: SettingsScreen(
+          nom: "Admin",
+        )),
   ];
 
   @override
@@ -62,9 +70,12 @@ class _AdminHomeState extends State<AdminHome> {
     return Scaffold(
       drawer: HelperDrawer(
         items: items,
-        changePage: (page) {
+        changePage: (MenuItems page) {
           setState(() {
             currentPage = page;
+            for (var item in items) {
+              item.isSelected = (item == page);
+            }
           });
         },
         nom: "Admin",
@@ -73,7 +84,7 @@ class _AdminHomeState extends State<AdminHome> {
         backgroundColor: AppColors.secondaryColor,
         foregroundColor: Colors.white,
         title: Text(
-          '${currentPage.text}',
+          currentPage.text,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: FontSize.medium,

@@ -1,12 +1,16 @@
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
+
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class TrashFilierePage extends StatefulWidget {
+  const TrashFilierePage({super.key});
+
   @override
   _TrashFilierePageState createState() => _TrashFilierePageState();
 }
@@ -42,7 +46,7 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
                   if (snapshot.data!.docs
                       .isEmpty) // Afficher un message si aucun résultat n'est trouvé
                   {
-                    return NoResultWidget();
+                    return const NoResultWidget();
                   } else {
                     final filieres = snapshot.data!.docs;
 
@@ -84,7 +88,7 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
                                         ],
                                       ),
                                       content: const Text(
-                                          'Êtes-vous sûr de vouloir restaurer cette filière ?  '),
+                                          'Êtes-vous sûr de vouloir restaurer cette filière ?  Les étudiants et cours seront également restaurés! '),
                                       actions: [
                                         TextButton(
                                           onPressed: () {
@@ -94,7 +98,7 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
                                         ),
                                         TextButton(
                                           onPressed: () async {
-                                            // Supprimez la filière de Firestore
+                                            // Restaurer la filière de Firestore
                                             await set_Data().restoreFiliere(
                                                 filiere.id, context);
                                             Navigator.of(context).pop();
@@ -113,15 +117,13 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
                     );
                   }
                 } else if (snapshot.hasError) {
-                  // return
-                  //  Text('Erreur: ${snapshot.error}'
-                  //  );
                   return myErrorWidget(
                       content: "Une erreur innatendue s'est produite",
                       height: 40);
                 } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Center(
+                    child: LoadingAnimationWidget.hexagonDots(
+                        color: AppColors.secondaryColor, size: 200),
                   );
                 }
               },

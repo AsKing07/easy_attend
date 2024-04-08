@@ -1,16 +1,19 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use, file_names, unused_local_variable,
+
+import 'package:universal_html/html.dart' as html;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Widgets/helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
+import 'dart:io' as io;
 import 'package:path_provider/path_provider.dart';
 
 class PDFHelper {
@@ -176,7 +179,7 @@ class PDFHelper {
 
     nombreTotalSeances = seancesSnapshot.docs.length;
 
-    seancesSnapshot.docs.forEach((seance) {
+    for (var seance in seancesSnapshot.docs) {
       Map<String, dynamic> data = seance.data() as Map<String, dynamic>;
       String date = DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr')
           .format(data['dateSeance'].toDate());
@@ -198,7 +201,7 @@ class PDFHelper {
                 style: TextStyle(color: AppColors.redColor),
               )),
       ]));
-    });
+    }
 
     // Load the image from assets
     final Uint8List image =
@@ -258,8 +261,8 @@ class PDFHelper {
                       pw.Text((row.cells[1].child as Text).data ?? '',
                           style:
                               (row.cells[1].child as Text).data == "Présent(e)"
-                                  ? pw.TextStyle(color: PdfColors.green)
-                                  : pw.TextStyle(color: PdfColors.red)),
+                                  ? const pw.TextStyle(color: PdfColors.green)
+                                  : const pw.TextStyle(color: PdfColors.red)),
                     ],
                 ],
               ),
@@ -274,26 +277,49 @@ class PDFHelper {
 
   Future<void> savePdf(
       Uint8List pdfBytes, String uniqueName, BuildContext context) async {
-    final granted = await requestStoragePermissions();
     String fileName = formatFileName(uniqueName);
 
     try {
-      if (Platform.isAndroid) {
+      if (kIsWeb) {
+        // Générer un lien de téléchargement
+        final blob = html.Blob([pdfBytes], 'application/pdf');
+        final url = html.Url.createObjectUrlFromBlob(blob);
+
+        // Ouvrir le PDF dans un nouvel onglet du navigateur
+        html.window.open(url, '_blank');
+
+        // Créer un lien de téléchargement dans le navigateur
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute('download', fileName)
+          ..click();
+
+        // Libérer l'URL de l'objet blob
+        html.Url.revokeObjectUrl(url);
+
+        // Afficher une notification à l'utilisateur
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PDF téléchargé avec succès'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else if (io.Platform.isAndroid) {
+        final granted = await requestStoragePermissions();
+
         if (granted) {
-          // Get the list of external storage directories
-          Directory generalDownloadDir = Directory(
+          // Récupère la liste des répertoires de stockage externes
+          io.Directory generalDownloadDir = io.Directory(
               '/storage/emulated/0/Download'); // THIS WORKS for android only !!!!!!
 
           final String path = '${generalDownloadDir.path}/$fileName';
-          print('path: $path');
 
           // Save the Pdf file
-          final File file = File(path);
+          final io.File file = io.File(path);
           await file.writeAsBytes(pdfBytes);
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('PDF enregistré à: $path'),
-            duration: Duration(seconds: 10),
+            duration: const Duration(seconds: 10),
           ));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -303,20 +329,22 @@ class PDFHelper {
           ));
         }
       } else {
+        final granted = await requestStoragePermissions();
+
         // IOS
         if (granted) {
-          // Get the application documents directory path for iOS (may need later functionality to
-          // be added to save directly in files)
+          // Récupère le chemin du répertoire des documents d'application pour iOS (peut nécessiter des fonctionnalités ultérieures pour
+// être ajouté pour enregistrer directement dans les fichiers)
           final directories = await getApplicationDocumentsDirectory();
           final path = '${directories.path}/$fileName';
 
           // Save the Pdf file
-          final File file = File(path);
+          final io.File file = io.File(path);
           await file.writeAsBytes(pdfBytes);
 
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('PDF enregistré à: $path'),
-            duration: Duration(seconds: 10),
+            duration: const Duration(seconds: 10),
           ));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -329,15 +357,22 @@ class PDFHelper {
     } catch (e) {
       Helper().ErrorMessage(context);
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          duration: const Duration(seconds: 100),
+        ),
+      );
+
       throw Exception(e);
     }
   }
 
-  //for student, it will be studentName to save a file uniquely, while for admin and teacher,
-  // it will be selected date of a session
+//pour l'étudiant, ce sera studentName pour enregistrer un fichier de manière unique, tandis que pour l'administrateur et l'enseignant,
+// la date d'une session sera sélectionnée
 
   String formatFileName(String uniqueName) {
-    //perform string manipulation to generate a valid filename
+    // effectue une manipulation de chaîne pour générer un nom de fichier valide
     uniqueName = uniqueName.replaceAll(' ', '-');
     uniqueName = uniqueName.replaceAll(':', '-');
     String fileName = '$uniqueName-rapportPresence.pdf';
@@ -347,7 +382,6 @@ class PDFHelper {
   static Future<bool> requestStoragePermissions() async {
     await Permission.storage.request();
     var status = await Permission.storage.status;
-    print(status);
     if (!status.isGranted) {
       status = await Permission.manageExternalStorage.request();
     }

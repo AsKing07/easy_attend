@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/painting/text_style.dart';
 
 // colors to use in app
 class AppColors {

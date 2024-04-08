@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable, file_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
@@ -10,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 class OneCoursePage extends StatefulWidget {
   DocumentSnapshot course;
 
-  OneCoursePage({required this.course});
+  OneCoursePage({super.key, required this.course});
 
   @override
   State<OneCoursePage> createState() => _OneCoursePageState();
@@ -49,7 +51,8 @@ class _OneCoursePageState extends State<OneCoursePage> {
                 ),
               ),
             ),
-            body: Padding(
+            body: Center(
+                child: Padding(
               padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,8 +80,8 @@ class _OneCoursePageState extends State<OneCoursePage> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
-                      style:
-                          ElevatedButton.styleFrom(fixedSize: Size(1000, 40)),
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(1000, 40)),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -95,8 +98,8 @@ class _OneCoursePageState extends State<OneCoursePage> {
                           ))),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                      style:
-                          ElevatedButton.styleFrom(fixedSize: Size(1000, 40)),
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(1000, 40)),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -114,8 +117,8 @@ class _OneCoursePageState extends State<OneCoursePage> {
                           ))),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                      style:
-                          ElevatedButton.styleFrom(fixedSize: Size(1000, 40)),
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(1000, 40)),
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -135,6 +138,7 @@ class _OneCoursePageState extends State<OneCoursePage> {
                       )),
                 ],
               ),
-            ));
+            )),
+          );
   }
 }
