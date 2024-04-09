@@ -219,99 +219,83 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                             height: 40,
                           ),
 
-                          _selectedProf != null
-                              ? TextFormField(
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _nomCoursController.text = value;
-                                    });
-                                  },
-                                  controller: _nomCoursController,
-                                  validator: (value) {
-                                    if (_nomCoursController.text.isEmpty) {
-                                      return "Ce champ est obligatoire";
-                                    }
-                                    return null;
-                                  },
-                                  keyboardType: TextInputType.text,
-                                  style: GoogleFonts.poppins(
-                                      color: AppColors.textColor),
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        'Nom du cours (Par exemple "Base de données Avancées")',
-                                    prefixIcon: const Icon(Icons.school),
-                                    contentPadding:
-                                        const EdgeInsets.only(top: 10),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: const BorderSide(
-                                        color: Colors.grey,
-                                        width: 3.0,
-                                      ),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: const BorderSide(
-                                        color: Colors.red,
-                                        width: 3.0,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
-                                    ),
-                                  ))
-                              : const SizedBox(),
+                          TextFormField(
+                              controller: _nomCoursController,
+                              validator: (value) {
+                                if (_nomCoursController.text.isEmpty) {
+                                  return "Ce champ est obligatoire";
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.text,
+                              style: GoogleFonts.poppins(
+                                  color: AppColors.textColor),
+                              decoration: InputDecoration(
+                                labelText:
+                                    'Nom du cours (Par exemple "Base de données Avancées")',
+                                prefixIcon: const Icon(Icons.school),
+                                contentPadding: const EdgeInsets.only(top: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xff9DD1F1), width: 3.0),
+                                ),
+                              )),
 
                           const SizedBox(
                             height: 20,
                           ),
 
-                          _nomCoursController.text.isNotEmpty
-                              ? TextFormField(
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _idCoursController.text = value;
-                                    });
-                                  },
-                                  controller: _idCoursController,
-                                  validator: (value) {
-                                    if (_idCoursController.text.isEmpty) {
-                                      return "Ce champ est obligatoire";
-                                    }
-                                    return null;
-                                  },
-                                  keyboardType: TextInputType.text,
-                                  style: GoogleFonts.poppins(
-                                      color: AppColors.textColor),
-                                  decoration: InputDecoration(
-                                    labelText:
-                                        'Identifiant du cours (Par exemple "BDA")',
-                                    prefixIcon: const Icon(Icons.school),
-                                    contentPadding:
-                                        const EdgeInsets.only(top: 10),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: const BorderSide(
-                                        color: Colors.grey,
-                                        width: 3.0,
-                                      ),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: const BorderSide(
-                                        color: Colors.red,
-                                        width: 3.0,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
-                                    ),
-                                  ))
-                              : const SizedBox(),
+                          TextFormField(
+                              controller: _idCoursController,
+                              validator: (value) {
+                                if (_idCoursController.text.isEmpty) {
+                                  return "Ce champ est obligatoire";
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.text,
+                              style: GoogleFonts.poppins(
+                                  color: AppColors.textColor),
+                              decoration: InputDecoration(
+                                labelText:
+                                    'Identifiant du cours (Par exemple "BDA")',
+                                prefixIcon: const Icon(Icons.school),
+                                contentPadding: const EdgeInsets.only(top: 10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xff9DD1F1), width: 3.0),
+                                ),
+                              )),
                           const SizedBox(
                             height: 50,
                           ),
@@ -474,107 +458,85 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                                 height: 40,
                               ),
 
-                              _selectedProf != null
-                                  ? TextFormField(
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _nomCoursController.text = value;
-                                        });
-                                      },
-                                      controller: _nomCoursController,
-                                      validator: (value) {
-                                        if (_nomCoursController.text.isEmpty) {
-                                          return "Ce champ est obligatoire";
-                                        }
-                                        return null;
-                                      },
-                                      keyboardType: TextInputType.text,
-                                      style: GoogleFonts.poppins(
-                                          color: AppColors.textColor),
-                                      decoration: InputDecoration(
-                                        labelText:
-                                            'Nom du cours (Par exemple "Base de données Avancées")',
-                                        prefixIcon: const Icon(Icons.school),
-                                        contentPadding:
-                                            const EdgeInsets.only(top: 10),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          borderSide: const BorderSide(
-                                            color: Colors.grey,
-                                            width: 3.0,
-                                          ),
-                                        ),
-                                        errorBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          borderSide: const BorderSide(
-                                            color: Colors.red,
-                                            width: 3.0,
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          borderSide: const BorderSide(
-                                              color: Color(0xff9DD1F1),
-                                              width: 3.0),
-                                        ),
-                                      ))
-                                  : const SizedBox(),
+                              TextFormField(
+                                  controller: _nomCoursController,
+                                  validator: (value) {
+                                    if (_nomCoursController.text.isEmpty) {
+                                      return "Ce champ est obligatoire";
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  style: GoogleFonts.poppins(
+                                      color: AppColors.textColor),
+                                  decoration: InputDecoration(
+                                    labelText:
+                                        'Nom du cours (Par exemple "Base de données Avancées")',
+                                    prefixIcon: const Icon(Icons.school),
+                                    contentPadding:
+                                        const EdgeInsets.only(top: 10),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xff9DD1F1), width: 3.0),
+                                    ),
+                                  )),
 
                               const SizedBox(
                                 height: 20,
                               ),
 
-                              _nomCoursController.text.isNotEmpty
-                                  ? TextFormField(
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _idCoursController.text = value;
-                                        });
-                                      },
-                                      controller: _idCoursController,
-                                      validator: (value) {
-                                        if (_idCoursController.text.isEmpty) {
-                                          return "Ce champ est obligatoire";
-                                        }
-                                        return null;
-                                      },
-                                      keyboardType: TextInputType.text,
-                                      style: GoogleFonts.poppins(
-                                          color: AppColors.textColor),
-                                      decoration: InputDecoration(
-                                        labelText:
-                                            'Identifiant du cours (Par exemple "BDA")',
-                                        prefixIcon: const Icon(Icons.school),
-                                        contentPadding:
-                                            const EdgeInsets.only(top: 10),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          borderSide: const BorderSide(
-                                            color: Colors.grey,
-                                            width: 3.0,
-                                          ),
-                                        ),
-                                        errorBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          borderSide: const BorderSide(
-                                            color: Colors.red,
-                                            width: 3.0,
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          borderSide: const BorderSide(
-                                              color: Color(0xff9DD1F1),
-                                              width: 3.0),
-                                        ),
-                                      ))
-                                  : const SizedBox(),
+                              TextFormField(
+                                  controller: _idCoursController,
+                                  validator: (value) {
+                                    if (_idCoursController.text.isEmpty) {
+                                      return "Ce champ est obligatoire";
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.text,
+                                  style: GoogleFonts.poppins(
+                                      color: AppColors.textColor),
+                                  decoration: InputDecoration(
+                                    labelText:
+                                        'Identifiant du cours (Par exemple "BDA")',
+                                    prefixIcon: const Icon(Icons.school),
+                                    contentPadding:
+                                        const EdgeInsets.only(top: 10),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xff9DD1F1), width: 3.0),
+                                    ),
+                                  )),
                               const SizedBox(
                                 height: 50,
                               ),

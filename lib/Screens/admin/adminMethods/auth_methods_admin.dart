@@ -302,24 +302,26 @@ class auth_methods_admin {
 
     if (docSnapshot.docs.isEmpty) {
       // Création de l'etudiant
-      UserCredential userCredential =
-          await register(etudiant.email!.trim(), etudiant.password!, app!);
+      try {
+        UserCredential userCredential =
+            await register(etudiant.email!.trim(), etudiant.password!, app!);
 
-      String? uid = userCredential.user?.uid;
+        String? uid = userCredential.user?.uid;
 
-      if (uid != null) {
-        // L'étudiant n'existe pas encore, ajouter
-        await FirebaseFirestore.instance.collection('etudiant').doc(uid).set({
-          'nom': etudiant.nom.toUpperCase().trim(),
-          'prenom': etudiant.prenom.toUpperCase().trim(),
-          'matricule': etudiant.matricule.toUpperCase().trim(),
-          'phone': etudiant.phone.toUpperCase().trim(),
-          'filiere': etudiant.filiere.toUpperCase().trim(),
-          'idFiliere': etudiant.idFiliere!.trim(),
-          'niveau': etudiant.niveau.toUpperCase().trim(),
-          'statut': etudiant.statut.toUpperCase().trim(),
-        });
-      }
+        if (uid != null) {
+          // L'étudiant n'existe pas encore, ajouter
+          await FirebaseFirestore.instance.collection('etudiant').doc(uid).set({
+            'nom': etudiant.nom.toUpperCase().trim(),
+            'prenom': etudiant.prenom.toUpperCase().trim(),
+            'matricule': etudiant.matricule.toUpperCase().trim(),
+            'phone': etudiant.phone.toUpperCase().trim(),
+            'filiere': etudiant.filiere.toUpperCase().trim(),
+            'idFiliere': etudiant.idFiliere!.trim(),
+            'niveau': etudiant.niveau.toUpperCase().trim(),
+            'statut': etudiant.statut.toUpperCase().trim(),
+          });
+        }
+      } catch (e) {}
     }
   }
 
@@ -373,32 +375,32 @@ class auth_methods_admin {
       FirebaseApp firebaseApp = await Firebase.initializeApp(
           name: 'Secondary', options: Firebase.app().options);
       for (var i = 1; i < sheet.rows.length; i++) {
-        final row = sheet.rows[i];
-        final filiereName = row[6]!.value.toString();
-
-        QuerySnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
-            .instance
-            .collection('filiere')
-            .where('nomFiliere', isEqualTo: filiereName.toUpperCase())
-            .limit(1)
-            .get();
-        String idFiliere = doc.docs.first.id;
-        // print(idFiliere);
-        // print(filiereName);
-
-        final etudiant = Etudiant(
-            matricule: row[0]!.value.toString().toUpperCase().trim(),
-            nom: row[1]!.value.toString().toUpperCase().trim(),
-            prenom: row[2]!.value.toString().toUpperCase().trim(),
-            email: row[3]!.value.toString().trim(),
-            password: row[4]!.value.toString().trim(),
-            phone: row[5]!.value.toString().toUpperCase().trim(),
-            idFiliere: idFiliere.trim(),
-            filiere: row[6]!.value.toString().toUpperCase().trim(),
-            niveau: row[7]!.value.toString().toUpperCase().trim(),
-            statut: "1");
-
         try {
+          final row = sheet.rows[i];
+          final filiereName = row[6]!.value.toString();
+
+          QuerySnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
+              .instance
+              .collection('filiere')
+              .where('nomFiliere', isEqualTo: filiereName.toUpperCase())
+              .limit(1)
+              .get();
+          String idFiliere = doc.docs.first.id;
+          // print(idFiliere);
+          // print(filiereName);
+
+          final etudiant = Etudiant(
+              matricule: row[0]!.value.toString().toUpperCase().trim(),
+              nom: row[1]!.value.toString().toUpperCase().trim(),
+              prenom: row[2]!.value.toString().toUpperCase().trim(),
+              email: row[3]!.value.toString().trim(),
+              password: row[4]!.value.toString().trim(),
+              phone: row[5]!.value.toString().toUpperCase().trim(),
+              idFiliere: idFiliere.trim(),
+              filiere: row[6]!.value.toString().toUpperCase().trim(),
+              niveau: row[7]!.value.toString().toUpperCase().trim(),
+              statut: "1");
+
           await addStudentTookFromExcel(etudiant, context, firebaseApp);
           totalAjoute++;
           // print(              "Matricule: ${etudiant.matricule} Nom: ${etudiant.nom} Prénom: ${etudiant.prenom} Email: ${etudiant.email} Password: ${etudiant.password}  Phone: ${etudiant.phone}  ID Filière: ${etudiant.idFiliere} Filière: ${etudiant.filiere} Niveau: ${etudiant.niveau} Statut: ${etudiant.statut}   ");
@@ -411,7 +413,7 @@ class auth_methods_admin {
       if (totalErreur > 0) {
         Navigator.pop(context);
         Helper().show_custom_message(
-            'L\'opération s\'est déroulée avec $totalErreur erreurs. \n $totalAjoute étudiants ajouté ',
+            'L\'opération s\'est déroulée avec $totalErreur erreurs. \n $totalAjoute étudiants ajouté(s) ',
             220,
             context);
       } else {
@@ -472,30 +474,31 @@ class auth_methods_admin {
         FirebaseApp firebaseApp = await Firebase.initializeApp(
             name: 'Secondary', options: Firebase.app().options);
         for (var i = 1; i < sheet.rows.length; i++) {
-          final row = sheet.rows[i];
-          final filiereName = row[6]!.value.toString();
-
-          QuerySnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
-              .instance
-              .collection('filiere')
-              .where('nomFiliere', isEqualTo: filiereName.toUpperCase())
-              .limit(1)
-              .get();
-          String idFiliere = doc.docs.first.id;
-
-          final etudiant = Etudiant(
-            matricule: row[0]!.value.toString().toUpperCase().trim(),
-            nom: row[1]!.value.toString().toUpperCase().trim(),
-            prenom: row[2]!.value.toString().toUpperCase().trim(),
-            email: row[3]!.value.toString().trim(),
-            password: row[4]!.value.toString().trim(),
-            phone: row[5]!.value.toString().toUpperCase().trim(),
-            idFiliere: idFiliere.trim(),
-            filiere: row[6]!.value.toString().toUpperCase().trim(),
-            niveau: row[7]!.value.toString().toUpperCase().trim(),
-            statut: "1",
-          );
           try {
+            final row = sheet.rows[i];
+            final filiereName = row[6]!.value.toString();
+
+            QuerySnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
+                .instance
+                .collection('filiere')
+                .where('nomFiliere', isEqualTo: filiereName.toUpperCase())
+                .limit(1)
+                .get();
+            String idFiliere = doc.docs.first.id;
+
+            final etudiant = Etudiant(
+              matricule: row[0]!.value.toString().toUpperCase().trim(),
+              nom: row[1]!.value.toString().toUpperCase().trim(),
+              prenom: row[2]!.value.toString().toUpperCase().trim(),
+              email: row[3]!.value.toString().trim(),
+              password: row[4]!.value.toString().trim(),
+              phone: row[5]!.value.toString().toUpperCase().trim(),
+              idFiliere: idFiliere.trim(),
+              filiere: row[6]!.value.toString().toUpperCase().trim(),
+              niveau: row[7]!.value.toString().toUpperCase().trim(),
+              statut: "1",
+            );
+
             await addStudentTookFromExcel(etudiant, context, firebaseApp);
             totalAjoute++;
             // print(                "Matricule: ${etudiant.matricule} Nom: ${etudiant.nom} Prénom: ${etudiant.prenom} Email: ${etudiant.email} Password: ${etudiant.password}  Phone: ${etudiant.phone}  ID Filière: ${etudiant.idFiliere} Filière: ${etudiant.filiere} Niveau: ${etudiant.niveau} Statut: ${etudiant.statut}   ");
@@ -508,7 +511,7 @@ class auth_methods_admin {
         if (totalErreur > 0) {
           Navigator.pop(context);
           Helper().show_custom_message(
-              'L\'opération s\'est déroulée avec $totalErreur erreurs. \n $totalAjoute étudiants ajouté ',
+              'L\'opération s\'est déroulée avec $totalErreur erreurs. \n $totalAjoute étudiants ajouté(s) ',
               220,
               context);
         } else {

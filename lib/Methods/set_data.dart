@@ -338,7 +338,7 @@ class set_Data {
         'niveau': cours.niveau.toUpperCase().trim(),
         'filiereId': cours.filiereId.toString().trim(),
         'professeurId': cours.professeurId!.trim(),
-        'status': "1"
+        'statut': "1"
       }).then((value) {
         // Cours ajouté avec succès
         Navigator.pop(context);
