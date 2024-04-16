@@ -5,6 +5,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
+import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -22,9 +23,13 @@ class _listOfCourseState extends State<listOfCourse> {
   Filiere? _selectedFiliere;
 
   Widget courseList(List<Widget> myWidget) {
-    return Column(
-      children: [for (var w in myWidget) w],
-    );
+    if (myWidget.isNotEmpty) {
+      return Column(
+        children: [for (var w in myWidget) w],
+      );
+    } else {
+      return const Center(child: NoResultWidget());
+    }
   }
 
   Future<void> loadAllActifFilieres() async {

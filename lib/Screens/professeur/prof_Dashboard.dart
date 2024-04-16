@@ -5,6 +5,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
+import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -23,9 +24,13 @@ class _ProfDashboardState extends State<ProfDashboard> {
   Filiere? _selectedFiliere;
 
   Widget createCourseList(List<Widget> myWidget) {
-    return Column(
-      children: [for (var w in myWidget) w],
-    );
+    if (myWidget.isNotEmpty) {
+      return Column(
+        children: [for (var w in myWidget) w],
+      );
+    } else {
+      return const Center(child: NoResultWidget());
+    }
   }
 
   void loadProf() async {
@@ -62,7 +67,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
 
   @override
   void initState() {
-    // Récupérez les données de le prof à partir de Firebase
+    // Récupérez les données dU prof à partir de Firebase
     loadProf();
     loadAllActifFilieres();
     super.initState();
@@ -84,12 +89,13 @@ class _ProfDashboardState extends State<ProfDashboard> {
                     const SizedBox(height: 15.0),
                     // ignore: prefer_const_constructors
                     Text(
-                      'Sélectionnez un cours pour gérer la présence',
+                      'Sélectionnez un de vos cours pour gérer la présence',
                       style: const TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
                         color: AppColors.secondaryColor,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20.0),
                     //Dropdown Filieres
