@@ -18,24 +18,24 @@ class SettingsTile extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 50,
-          height: 50,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25),
             color: color,
           ),
           child: Icon(
             icon,
-            color: AppColors.secondaryColor,
+            color: AppColors.white,
           ),
         ),
         const SizedBox(
-          width: 15,
+          width: 10,
         ),
         Text(
           title,
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
         ),

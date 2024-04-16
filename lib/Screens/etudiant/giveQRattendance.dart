@@ -28,9 +28,11 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
         .limit(1)
         .get();
 
-    final seanceDoc = x.docs.first;
+    int taille = x.docs.length;
 
-    if (seanceDoc.exists) {
+    if (taille > 0) {
+      final seanceDoc = x.docs.first;
+
       if (seanceDoc['isActive'] == false) {
         showDialog(
             context: context,
@@ -205,10 +207,12 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Center(
       child: Container(
-          child: Center(
+          child: SingleChildScrollView(
               child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 12, right: 12, top: 20),
@@ -219,6 +223,7 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
                       color: AppColors.textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 26)),
+              textAlign: TextAlign.center,
             ),
           ),
           const Padding(
@@ -234,16 +239,19 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
           const Text(
             '1. Tenez le téléphone en position verticale.',
             style: TextStyle(fontSize: 16),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 5),
           const Text(
             '2.Centrez le code QR sur le cadre de la caméra',
             style: TextStyle(fontSize: 16),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 5),
           const Text(
             '3.Attendez que le pass soit scanné',
             style: TextStyle(fontSize: 16),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
           ElevatedButton(

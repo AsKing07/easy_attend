@@ -77,7 +77,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(35.0),
+                        padding: const EdgeInsets.all(5.0),
                         child: Center(
                           child: Wrap(
                             alignment: WrapAlignment.center,

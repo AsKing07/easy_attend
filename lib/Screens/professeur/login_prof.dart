@@ -208,7 +208,7 @@ class _LoginProfState extends State<LoginProf> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "Pas encore de compte ? ",
+                                    "Pas de compte ? ",
                                     style: GoogleFonts.poppins(
                                         color: AppColors.textColor,
                                         fontSize: FontSize.medium,
@@ -419,7 +419,7 @@ class _LoginProfState extends State<LoginProf> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      "Pas encore de compte ? ",
+                                      "Pas de compte ? ",
                                       style: GoogleFonts.poppins(
                                           color: AppColors.textColor,
                                           fontSize: FontSize.medium,

@@ -62,7 +62,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
       body: !dataIsLoaded
           ? Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             )
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
@@ -89,8 +89,11 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                 nombreDePresences = snapshot.data!.docs.where((seance) {
                   Map<String, dynamic> data =
                       seance.data() as Map<String, dynamic>;
-                  return data['presenceEtudiant'][etudiant.id];
+                  // Vérifiez si la valeur n'est pas nulle et convertissez-la en booléen
+                  return (data['presenceEtudiant'][etudiant.id] ?? false) ==
+                      true;
                 }).length;
+
                 pourcentageDePresence =
                     (nombreDePresences / nombreTotalSeances);
 
@@ -100,7 +103,8 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                       seance.data() as Map<String, dynamic>;
                   String date = DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr')
                       .format(data['dateSeance'].toDate());
-                  bool statut = data['presenceEtudiant'][etudiant.id];
+
+                  bool statut = data['presenceEtudiant'][etudiant.id] ?? false;
 
                   rows.add(DataRow(cells: [
                     DataCell(Text(date)),

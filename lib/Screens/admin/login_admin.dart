@@ -209,11 +209,14 @@ class _LoginAdminState extends State<LoginAdmin> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Pas encore de compte ? ",
+                                "Pas de compte ? ",
                                 style: GoogleFonts.poppins(
                                     color: AppColors.textColor,
                                     fontSize: FontSize.medium,
                                     fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(
+                                height: 10,
                               ),
                               GestureDetector(
                                 onTap: () {
@@ -446,6 +449,9 @@ class _LoginAdminState extends State<LoginAdmin> {
                                                     fontSize: FontSize.medium,
                                                     fontWeight:
                                                         FontWeight.w600),
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
                                               ),
                                               GestureDetector(
                                                 onTap: () {

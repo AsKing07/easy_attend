@@ -35,7 +35,7 @@ class auth_methods_admin {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       // Création de l'utilisateur
@@ -99,7 +99,7 @@ class auth_methods_admin {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -142,7 +142,7 @@ class auth_methods_admin {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       // print(FirebaseAuth.instance.currentUser!.uid);
@@ -337,7 +337,7 @@ class auth_methods_admin {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
 
     // Vérifiez que les colonnes attendues sont présentes dans le fichier Excel

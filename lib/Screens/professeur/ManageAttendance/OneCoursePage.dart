@@ -62,11 +62,12 @@ class _OneCoursePageState extends State<OneCoursePage> {
                     height: 20,
                   ),
                   Text(
-                    "Que souhaitez-vous faire",
+                    "Que souhaitez-vous faire ?",
                     style: GoogleFonts.poppins(
                         color: AppColors.textColor,
                         fontSize: FontSize.xxLarge,
                         fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 7),
@@ -110,6 +111,7 @@ class _OneCoursePageState extends State<OneCoursePage> {
                         );
                       },
                       child: Text("Gérer les présences des séances",
+                          textAlign: TextAlign.center,
                           style: GoogleFonts.poppins(
                             color: AppColors.secondaryColor,
                             fontSize: FontSize.medium,

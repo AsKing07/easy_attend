@@ -71,6 +71,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                               .collection('cours')
                               .where('filiereId',
                                   isEqualTo: etudiant['idFiliere'])
+                              .where('niveau', isEqualTo: etudiant['niveau'])
                               .snapshots(),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {

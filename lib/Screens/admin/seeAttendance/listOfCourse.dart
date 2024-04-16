@@ -64,7 +64,7 @@ class _listOfCourseState extends State<listOfCourse> {
       body: !dataIsLoaded
           ? Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             )
           : Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),

@@ -58,7 +58,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
 
     FirebaseFirestore.instance.collection('filiere').doc(filiereId).update({
@@ -85,7 +85,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Supprimez la filière de Firestore
 
@@ -132,7 +132,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Restaurer la filière de Firestore
 
@@ -218,7 +218,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Update le statut du prof dans Firestore
 
@@ -242,7 +242,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Update le statut du prof dans Firestor
 
@@ -269,7 +269,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Update le statut du prof dans Firestore
 
@@ -292,7 +292,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
 
     FirebaseFirestore.instance.collection('prof').doc(profId).update({
@@ -318,7 +318,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
 
     final docSnapshot = await FirebaseFirestore.instance
@@ -358,7 +358,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
 
     await FirebaseFirestore.instance
@@ -390,7 +390,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Supprimez le cours de Firestore
 
@@ -411,7 +411,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Supprimez les cours de Firestore
 
@@ -437,7 +437,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
 
     final docSnapshot = await FirebaseFirestore.instance
@@ -483,7 +483,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Update le statut de l'étudiant dans  Firestore
 
@@ -507,7 +507,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
 
     try {
@@ -529,7 +529,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     // Update le statut de l'étudiant dans  Firestore
 
@@ -553,7 +553,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       await FirebaseFirestore.instance
@@ -575,7 +575,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       await FirebaseFirestore.instance
@@ -597,7 +597,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       await FirebaseFirestore.instance
@@ -620,7 +620,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       await FirebaseFirestore.instance.collection("requete").doc(idAuteur).set({
@@ -649,7 +649,7 @@ class set_Data {
           context: context,
           builder: (context) => Center(
                 child: LoadingAnimationWidget.hexagonDots(
-                    color: AppColors.secondaryColor, size: 200),
+                    color: AppColors.secondaryColor, size: 100),
               ));
 
       // Récupérer le document existant
@@ -667,9 +667,11 @@ class set_Data {
         presenceEtudiant ??= {};
 
         // Rechercher l'étudiant dans la liste et mettre à jour sa présence
-        if (presenceEtudiant.containsKey(etudiantId)) {
-          presenceEtudiant[etudiantId] = present;
-        }
+        // if (presenceEtudiant.containsKey(etudiantId)) {
+        //   presenceEtudiant[etudiantId] = present;
+        // }
+
+        presenceEtudiant[etudiantId] = present;
 
         // Mettre à jour le document Firebase avec les nouvelles données
         await FirebaseFirestore.instance
@@ -694,7 +696,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       Map<String, bool> presenceEtudiantsMap = {};
@@ -778,7 +780,7 @@ class set_Data {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     await FirebaseFirestore.instance
         .collection('seance')

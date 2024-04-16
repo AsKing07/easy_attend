@@ -17,7 +17,7 @@ class auth_methods_etudiant {
         context: context,
         builder: (context) => Center(
               child: LoadingAnimationWidget.hexagonDots(
-                  color: AppColors.secondaryColor, size: 200),
+                  color: AppColors.secondaryColor, size: 100),
             ));
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(

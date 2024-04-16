@@ -49,8 +49,8 @@ class _CourseCardState extends State<CourseCard> {
             color: AppColors.secondaryColor, size: 50)
         : Container(
             margin: const EdgeInsets.only(top: 5.0),
-            width: MediaQuery.of(context).size.width > 400 ? 200 : 160,
-            height: 175,
+            width: MediaQuery.of(context).size.width > 400 ? 200 : 150,
+            height: widget.option == "admin" ? 230 : 170,
             decoration: BoxDecoration(
               color: AppColors.secondaryColor,
               borderRadius: BorderRadius.circular(15),
@@ -64,7 +64,7 @@ class _CourseCardState extends State<CourseCard> {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
               child: TextButton(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -82,7 +82,7 @@ class _CourseCardState extends State<CourseCard> {
                             '${widget.filiere} ${widget.niveau}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
+                              fontSize: 16.0,
                               color: Colors.white,
                             ),
                           ),
@@ -104,6 +104,7 @@ class _CourseCardState extends State<CourseCard> {
                         color: Colors.white,
                       ),
                     ),
+                    const SizedBox(height: 5.0),
                     widget.option == "admin"
                         ? Text(
                             'Professeur : \n ${professeur['nom']} ${professeur['prenom']}',

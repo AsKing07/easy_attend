@@ -58,8 +58,11 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                 child: Container(
                   child: Center(
                       child: !started
-                          ? Column(
+                          ? Center(
+                              child: SingleChildScrollView(
+                                  child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -71,6 +74,7 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                             color: AppColors.secondaryColor,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 26)),
+                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                                 const Padding(
@@ -86,43 +90,52 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                   child: Lottie.asset('assets/qrAnim.json'),
                                 ),
                                 const SizedBox(height: 10),
-                                const Text(
-                                  '1. Lancez la séance de présence.',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(height: 5),
-                                const Text(
-                                  '2.Les étudiants scannent le  code QR',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(height: 5),
-                                const Text(
-                                  '3. Arretez la séance de présence pour empêcher tout nouveau scan',
-                                  style: TextStyle(fontSize: 16),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 10),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    setState(() {
-                                      started = true;
-                                    });
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      '1. Lancez la séance de présence.',
+                                      style: TextStyle(fontSize: 16),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    const Text(
+                                      '2.Les étudiants scannent le  code QR',
+                                      style: TextStyle(fontSize: 16),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    const Text(
+                                      '3. Arretez la séance de présence pour empêcher tout nouveau scan',
+                                      style: TextStyle(fontSize: 16),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        setState(() {
+                                          started = true;
+                                        });
 
-                                    await set_Data().starSeance(seance.id);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: AppColors.white,
-                                    backgroundColor: AppColors.secondaryColor,
-                                  ),
-                                  child: const Text(
-                                    'Démarrer la séance',
-                                    style: TextStyle(
-                                        fontSize: FontSize.xMedium,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                ),
+                                        await set_Data().starSeance(seance.id);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        foregroundColor: AppColors.white,
+                                        backgroundColor:
+                                            AppColors.secondaryColor,
+                                      ),
+                                      child: const Text(
+                                        'Démarrer la séance',
+                                        style: TextStyle(
+                                            fontSize: FontSize.xMedium,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                    ),
+                                  ],
+                                )
                               ],
-                            )
+                            )))
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,

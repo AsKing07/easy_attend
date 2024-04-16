@@ -296,7 +296,7 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                               ),
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'S\'il vous plâit entrez un numéro valide';
+                                  return 'S\'il vous plaît entrez un numéro valide';
                                 }
                                 return null;
                               },

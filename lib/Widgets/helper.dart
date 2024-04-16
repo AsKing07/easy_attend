@@ -22,7 +22,7 @@ class Helper {
       context: context,
       builder: (context) {
         return SuccessWidget(
-            content: "L'opération a été un success!", height: 100);
+            content: "L'opération a été un success!", height: 200);
       },
     );
   }

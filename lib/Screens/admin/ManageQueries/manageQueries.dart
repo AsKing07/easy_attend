@@ -38,9 +38,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
         child: Padding(
           padding: const EdgeInsets.all(30.0),
           child: Column(
-            crossAxisAlignment: !screenSize().isWeb()
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(

@@ -176,12 +176,14 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                             child: seanceData[
                                                                     'isActive']
                                                                 ? const Icon(
+                                                                    size: 10,
                                                                     Icons
                                                                         .circle,
                                                                     color: AppColors
                                                                         .greenColor,
                                                                   )
                                                                 : const Icon(
+                                                                    size: 10,
                                                                     Icons
                                                                         .circle,
                                                                     color: AppColors
@@ -288,7 +290,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                     );
                                                                   },
                                                                   text:
-                                                                      "Consulter la présence déjà prise",
+                                                                      "Consulter la présence",
                                                                   textStyle: const TextStyle(
                                                                       color: AppColors
                                                                           .white,
@@ -392,7 +394,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                                             fontWeight: FontWeight
                                                                                 .bold,
                                                                             fontSize:
-                                                                                20.0,
+                                                                                15.0,
                                                                             color:
                                                                                 Colors.red),
                                                                       ),

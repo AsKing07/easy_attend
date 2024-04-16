@@ -77,7 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 100.0),
               SettingsTile(
-                color: const Color(0xFF080121), //Color(0xFF03010a),
+                color: AppColors.secondaryColor,
                 icon: Icons.lock,
                 title: 'Changer le mot de passe',
                 onTap: () {
@@ -96,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 40.0),
               SettingsTile(
-                color: const Color(0xFF080121), //Color(0xFF03010a),
+                color: AppColors.secondaryColor,
                 icon: Icons.person,
                 title: 'Editer vos informations',
                 onTap: () {},
