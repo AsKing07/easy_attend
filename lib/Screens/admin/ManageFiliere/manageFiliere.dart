@@ -280,6 +280,7 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                             await set_Data().deleteAllFiliere(context);
                             fetchData(); // Recharger les données après la suppression
                             Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           },
                           child: const Text('Supprimer'),
                         ),

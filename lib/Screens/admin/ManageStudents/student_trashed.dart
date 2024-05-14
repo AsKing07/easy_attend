@@ -1,21 +1,51 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
 
 class TrashStudentPage extends StatefulWidget {
-  const TrashStudentPage({super.key});
+  final Function() callback;
+
+  const TrashStudentPage({super.key, required this.callback});
 
   @override
   State<TrashStudentPage> createState() => _TrashStudentPageState();
 }
 
 class _TrashStudentPageState extends State<TrashStudentPage> {
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
+  void fetchData() async {
+    try {
+      final response = await http
+          .get(Uri.parse('$BACKEND_URL/api/student/getInactifStudentData'));
+      if (response.statusCode == 200) {
+        List<dynamic> students = jsonDecode(response.body);
+        _streamController.add(students);
+      } else {
+        throw Exception('Erreur lors de la récupération des filières');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,28 +63,24 @@ class _TrashStudentPageState extends State<TrashStudentPage> {
         body: Column(
           children: [
             Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('etudiant')
-                  .where('statut', isEqualTo: '0')
-                  .snapshots(),
+                child: StreamBuilder(
+              stream: _streamController.stream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data!.docs.isEmpty) {
+                  if (snapshot.data!.isEmpty) {
                     return const NoResultWidget();
                   } else {
-                    final etudiants = snapshot.data!.docs;
+                    final etudiants = snapshot.data!;
                     return ListView.builder(
                         itemCount: etudiants.length,
                         itemBuilder: (context, index) {
                           final etudiant = etudiants[index];
-                          final etudiantData =
-                              etudiant.data() as Map<String, dynamic>;
+
                           return ListTile(
                             title: Text(
-                                '${etudiantData['nom']}  ${etudiantData['prenom']}'),
+                                '${etudiant['nom']}  ${etudiant['prenom']}'),
                             subtitle: Text(
-                              '${etudiantData['matricule']}  ${etudiantData['filiere']} ${etudiantData['niveau']}',
+                              '${etudiant['matricule']}  ${etudiant['filiere']} ${etudiant['niveau']}',
                               style: const TextStyle(
                                   color: AppColors.secondaryColor,
                                   fontSize: FontSize.small),
@@ -101,7 +127,9 @@ class _TrashStudentPageState extends State<TrashStudentPage> {
                                               // Supprimez la filière de Firestore
                                               await set_Data()
                                                   .restoreOneStudent(
-                                                      etudiant.id, context);
+                                                      etudiant['uid'], context);
+                                              widget.callback();
+                                              fetchData();
                                               Navigator.of(context).pop();
                                             },
                                             child: const Text('Restaurer'),

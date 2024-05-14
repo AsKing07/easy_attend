@@ -39,7 +39,7 @@ class _EtudiantHomeState extends State<EtudiantHome> {
         text: 'Paramètres',
         icon: Icons.settings,
         tap: SettingsScreen(
-          nom: "Etudiant",
+          nom: "student",
         )),
   ];
   @override

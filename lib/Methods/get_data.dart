@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, camel_case_types
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -107,7 +106,7 @@ class get_Data {
 
   Future getActifStudentData() async {
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getActifStudentData'),
+      Uri.parse('$BACKEND_URL/api/student/getActifStudentData'),
     );
 
     if (response.statusCode == 200) {
@@ -359,7 +358,26 @@ class get_Data {
         List<dynamic> seances = jsonDecode(response.body);
         return seances;
       } else {
+        print(response.body);
         throw Exception('Erreur lors de la récupération des seances');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+      print(e);
+    }
+  }
+
+  Future getSeanceByCode(String code) async {
+    http.Response response;
+    try {
+      response = await http
+          .get(Uri.parse('$BACKEND_URL/api/seance/getSeanceByCode/$code'));
+
+      if (response.statusCode == 200) {
+        dynamic seance = jsonDecode(response.body);
+        return seance;
+      } else {
+        throw Exception('Erreur lors de la récupération de la seance');
       }
     } catch (e) {
       // Gérer les erreurs ici

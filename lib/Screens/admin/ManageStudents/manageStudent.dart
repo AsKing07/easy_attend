@@ -403,7 +403,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                                             "Supprimer l' étudiant",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 20.0,
+                                                fontSize: 15.0,
                                                 color: Colors.orange),
                                           ),
                                         ],
@@ -422,6 +422,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                                             // Changer le statut de l'étudiant dans Firestore
                                             await set_Data().deleteOneStudent(
                                                 etudiant['uid'], context);
+                                            fetchData();
                                             Navigator.of(context).pop();
                                           },
                                           child: const Text('Supprimer'),
@@ -554,7 +555,8 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const TrashStudentPage()),
+                        builder: (context) =>
+                            TrashStudentPage(callback: fetchData)),
                   );
                 },
               ),

@@ -22,18 +22,13 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
   void scanPass(BuildContext context) async {
     String res = await FlutterBarcodeScanner.scanBarcode(
         "#ff6666", 'Arreter le scan', true, ScanMode.QR);
-    final x = await FirebaseFirestore.instance
-        .collection('seance')
-        .where('seanceCode', isEqualTo: res)
-        .limit(1)
-        .get();
+    final x = await get_Data().getSeanceByCode(res);
+    print(x);
 
-    int taille = x.docs.length;
+    if (x != null) {
+      final seanceDoc = x;
 
-    if (taille > 0) {
-      final seanceDoc = x.docs.first;
-
-      if (seanceDoc['isActive'] == false) {
+      if (seanceDoc['isActive'] == 0) {
         showDialog(
             context: context,
             builder: (context) {
@@ -91,47 +86,48 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
             });
       } else {
         try {
-          await set_Data()
-              .updatePresenceEtudiant(seanceDoc.id, studentId, true, context);
-
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  backgroundColor: AppColors.white,
-                  scrollable: true,
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.white,
+          final bool x = await set_Data().updatePresenceEtudiant(
+              seanceDoc['seanceCode'], studentId, true, context);
+          if (x == true) {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: AppColors.white,
+                    scrollable: true,
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.white,
+                        ),
+                        child: const Text('OK'),
                       ),
-                      child: const Text('OK'),
-                    ),
-                  ],
-                  title: const Center(
-                      child: Text("Présence enregistrée",
-                          style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold))),
-                  content: Column(
-                    children: [
-                      Lottie.asset('assets/done.json', repeat: false),
-                      const SizedBox(height: 10),
-                      const Text("Votre présence a bien été enregistrée",
-                          style: TextStyle(
-                              color: AppColors.textColor,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold)),
                     ],
-                  ),
-                );
-              });
+                    title: const Center(
+                        child: Text("Présence enregistrée",
+                            style: TextStyle(
+                                color: AppColors.textColor,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold))),
+                    content: Column(
+                      children: [
+                        Lottie.asset('assets/done.json', repeat: false),
+                        const SizedBox(height: 10),
+                        const Text("Votre présence a bien été enregistrée",
+                            style: TextStyle(
+                                color: AppColors.textColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  );
+                });
+          }
         } catch (e) {
-          // print(e);
+          print(e);
         }
       }
     } else {

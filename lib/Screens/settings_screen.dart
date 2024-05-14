@@ -1,5 +1,7 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Widgets/settings_tile.dart';
@@ -7,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 import '../../Config/utils.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
 class SettingsScreen extends StatefulWidget {
   String nom;
@@ -17,21 +21,26 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final BACKEND_URL = dotenv.env['API_URL'];
+
   User? user = FirebaseAuth.instance.currentUser;
   String name = "";
   final auth = FirebaseAuth.instance;
   Future<void> _loadUserName() async {
-    final DocumentSnapshot x = await FirebaseFirestore.instance
-        .collection(widget.nom.toLowerCase())
-        .doc(user!.uid)
-        .get();
-    setState(() {
-      if (x.exists) {
-        name = '${x['nom']}  ${x['prenom']}';
-      } else {
+    http.Response response = await http.get(
+      Uri.parse('$BACKEND_URL/api/${widget.nom.toLowerCase()}/${user!.uid}'),
+    );
+
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      Map<String, dynamic> user = jsonDecode(response.body);
+      setState(() {
+        name = '${user['nom']}  ${user['prenom']}';
+      });
+    } else {
+      setState(() {
         name = widget.nom;
-      }
-    });
+      });
+    }
   }
 
   @override

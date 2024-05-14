@@ -161,6 +161,18 @@ class set_Data {
         response = await http.put(
           Uri.parse('$BACKEND_URL/api/student/restaureStudentsByFiliere/$id'),
         );
+
+        if (response.statusCode != 200) {
+          print('Erreur lors de la restauration des etudiants');
+        }
+
+        response = await http.put(
+          Uri.parse('$BACKEND_URL/api/cours/restaureCoursesByFiliere/$id'),
+        );
+
+        if (response.statusCode != 200) {
+          print('Erreur lors de la restauration des cours');
+        }
       } else {
         // La requête a échoué, gérer l'erreur ici
         print('Erreur lors de la restauration des données');
@@ -233,27 +245,6 @@ class set_Data {
       Helper().ErrorMessage(context);
     }
   }
-  // Future<void> deleteProf(
-  //   id,
-  //   BuildContext context,
-  // ) async {
-  //   showDialog(
-  //       context: context,
-  //       builder: (context) => Center(
-  //             child: LoadingAnimationWidget.hexagonDots(
-  //                 color: AppColors.secondaryColor, size: 100),
-  //           ));
-  //   // Update le statut du prof dans Firestore
-  //   try {
-  //     FirebaseFirestore.instance
-  //         .collection('prof')
-  //         .doc(id)
-  //         .update({"statut": "0"});
-  //     Navigator.pop(context);
-  //   } catch (e) {
-  //     Helper().ErrorMessage(context);
-  //   }
-  // }
 
   //Supprimer tous les prof
   Future<void> deleteAllProf(
@@ -728,8 +719,8 @@ class set_Data {
 
 //METHODES DES SEANCES
 //Mettre à jour présence
-
-  Future<void> updatePresenceEtudiant(String seanceId, String etudiantId,
+//todo
+  Future updatePresenceEtudiant(String codeSeance, String etudiantId,
       bool present, BuildContext context) async {
     try {
       showDialog(
@@ -740,16 +731,13 @@ class set_Data {
               ));
 
       // Récupérer le document existant
-      DocumentSnapshot seanceSnapshot = await FirebaseFirestore.instance
-          .collection('seance')
-          .doc(seanceId)
-          .get();
+      dynamic seance = await get_Data().getSeanceByCode(codeSeance);
 
       // Vérifier si le document existe
-      if (seanceSnapshot.exists) {
+      if (seance != null) {
         // Récupérer la liste des présences
         Map<String, dynamic>? presenceEtudiant =
-            seanceSnapshot.get('presenceEtudiant');
+            jsonDecode(seance['presenceEtudiant']);
 
         presenceEtudiant ??= {};
 
@@ -760,21 +748,72 @@ class set_Data {
 
         presenceEtudiant[etudiantId] = present;
 
-        // Mettre à jour le document Firebase avec les nouvelles données
-        await FirebaseFirestore.instance
-            .collection('seance')
-            .doc(seanceId)
-            .update({
-          'presenceEtudiant': presenceEtudiant,
-        });
+        // Mettre à jour le document avec les nouvelles données
+        http.Response response = await http.put(
+          Uri.parse('$BACKEND_URL/api/seance/updateSeancePresence'),
+          body: jsonEncode({
+            'idSeance': seance['idSeance'],
+            'presenceEtudiant': presenceEtudiant,
+          }),
+          headers: {'Content-Type': 'application/json'},
+        );
+        print(response.body);
+        if (response.statusCode == 200) {
+          Navigator.pop(context);
+          return true;
+        } else {
+          // Une erreur s'est produite
 
-        Navigator.pop(context);
+          Navigator.pop(context);
+          Helper().ErrorMessage(context);
+          return false;
+        }
       }
     } catch (e) {
+      print(e);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     }
   }
+  // Future<void> updatePresenceEtudiant(String seanceId, String etudiantId,
+  //     bool present, BuildContext context) async {
+  //   try {
+  //     showDialog(
+  //         context: context,
+  //         builder: (context) => Center(
+  //               child: LoadingAnimationWidget.hexagonDots(
+  //                   color: AppColors.secondaryColor, size: 100),
+  //             ));
+  //     // Récupérer le document existant
+  //     DocumentSnapshot seanceSnapshot = await FirebaseFirestore.instance
+  //         .collection('seance')
+  //         .doc(seanceId)
+  //         .get();
+  //     // Vérifier si le document existe
+  //     if (seanceSnapshot.exists) {
+  //       // Récupérer la liste des présences
+  //       Map<String, dynamic>? presenceEtudiant =
+  //           seanceSnapshot.get('presenceEtudiant');
+  //       presenceEtudiant ??= {};
+  //       // Rechercher l'étudiant dans la liste et mettre à jour sa présence
+  //       // if (presenceEtudiant.containsKey(etudiantId)) {
+  //       //   presenceEtudiant[etudiantId] = present;
+  //       // }
+  //       presenceEtudiant[etudiantId] = present;
+  //       // Mettre à jour le document Firebase avec les nouvelles données
+  //       await FirebaseFirestore.instance
+  //           .collection('seance')
+  //           .doc(seanceId)
+  //           .update({
+  //         'presenceEtudiant': presenceEtudiant,
+  //       });
+  //       Navigator.pop(context);
+  //     }
+  //   } catch (e) {
+  //     Navigator.pop(context);
+  //     Helper().ErrorMessage(context);
+  //   }
+  // }
 
   Future createSeance(course, dateSeance, BuildContext context) async {
     showDialog(
