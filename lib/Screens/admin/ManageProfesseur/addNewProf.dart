@@ -8,7 +8,9 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class addNewProfPage extends StatefulWidget {
-  const addNewProfPage({super.key});
+  final Function() callback;
+
+  const addNewProfPage({super.key, required this.callback});
 
   @override
   State<addNewProfPage> createState() => _addNewProfPageState();
@@ -327,6 +329,7 @@ class _addNewProfPageState extends State<addNewProfPage> {
                                     _prenomController.text,
                                     _phoneController.text,
                                     context);
+                                widget.callback();
                               }
                             },
                             text: "Ajouter Professeur",
@@ -633,6 +636,7 @@ class _addNewProfPageState extends State<addNewProfPage> {
                                         _prenomController.text,
                                         _phoneController.text,
                                         context);
+                                    widget.callback();
                                   }
                                 },
                                 text: "Ajouter Professeur",

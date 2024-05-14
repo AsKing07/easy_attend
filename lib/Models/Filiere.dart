@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Filiere {
   String idFiliere;
   String nomFiliere;
-  String statut;
+  bool statut;
   String? idDoc;
   List<String> niveaux = [];
 

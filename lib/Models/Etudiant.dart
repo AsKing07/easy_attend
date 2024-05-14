@@ -13,7 +13,7 @@ class Etudiant {
   String? idFiliere;
   String filiere;
   String niveau;
-  String statut;
+  bool statut;
 
   Etudiant({
     this.uid,

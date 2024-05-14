@@ -12,7 +12,9 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class addNewStudentPage extends StatefulWidget {
-  const addNewStudentPage({super.key});
+  final Function() callback;
+
+  const addNewStudentPage({super.key, required this.callback});
 
   @override
   State<addNewStudentPage> createState() => _addNewStudentPageState();
@@ -33,20 +35,16 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
   List<Filiere> Allfilieres = [];
 
   Future<void> loadAllActifFilieres() async {
-    List<QueryDocumentSnapshot> docsFiliere =
-        await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
       Filiere filiere = Filiere(
-        idDoc: doc.id,
-        nomFiliere: doc["nomFiliere"],
-        idFiliere: doc["idFiliere"],
-        statut: doc["statut"],
-        niveaux: List<String>.from(
-          doc['niveaux'],
-        ),
-      );
+          idDoc: doc['idFiliere'].toString(),
+          nomFiliere: doc["nomFiliere"],
+          idFiliere: doc["sigleFiliere"],
+          statut: doc["statut"] == 1,
+          niveaux: doc['niveaux'].split(','));
 
       fil.add(filiere);
     }
@@ -459,10 +457,11 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                       idFiliere: _selectedFiliere!.idDoc,
                                       filiere: _selectedFiliere!.nomFiliere,
                                       niveau: _selectedNiveau,
-                                      statut: "1");
+                                      statut: true);
 
                                   await auth_methods_admin()
                                       .addOneStudent(etu, context);
+                                  widget.callback();
                                 }
                               },
                               text: "Ajouter Etudiant",
@@ -868,10 +867,11 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                           idFiliere: _selectedFiliere!.idDoc,
                                           filiere: _selectedFiliere!.nomFiliere,
                                           niveau: _selectedNiveau,
-                                          statut: "1");
+                                          statut: true);
 
                                       await auth_methods_admin()
                                           .addOneStudent(etu, context);
+                                      widget.callback();
                                     }
                                   },
                                   text: "Ajouter Etudiant",

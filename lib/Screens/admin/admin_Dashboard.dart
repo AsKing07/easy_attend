@@ -16,7 +16,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  late DocumentSnapshot admin;
+  late var admin;
   bool dataIsLoaded = false;
 
   void loadAdmin() async {
@@ -104,53 +104,62 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                     size: 50),
                                           );
                                         } else {
-                                          return Card(
-                                            color: Colors.white,
-                                            elevation: 8.0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                            ),
-                                            child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.people,
-                                                      color:
-                                                          AppColors.studColor,
-                                                      size: 70.0,
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 20.0,
-                                                    ),
-                                                    const Text(
-                                                      "Etudiants",
-                                                      style: TextStyle(
+                                          if (snapshot.hasError) {
+                                            return Center(
+                                              child: Text(
+                                                  'Erreur lors de la récupération des étudiants actifs: ${snapshot.error}'),
+                                            );
+                                          } else {
+                                            List<dynamic> students =
+                                                snapshot.data;
+                                            return Card(
+                                              color: Colors.white,
+                                              elevation: 8.0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Column(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.people,
                                                         color:
-                                                            AppColors.textColor,
-                                                        fontSize:
-                                                            FontSize.xxLarge,
+                                                            AppColors.studColor,
+                                                        size: 70.0,
                                                       ),
-                                                    ),
-                                                    const SizedBox(
-                                                        height: 10.0),
-                                                    Text(
-                                                      snapshot.data.length
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                        color:
-                                                            AppColors.textColor,
-                                                        fontSize: 25.0,
+                                                      const SizedBox(
+                                                        height: 20.0,
                                                       ),
-                                                    ),
-                                                  ],
+                                                      const Text(
+                                                        "Etudiants",
+                                                        style: TextStyle(
+                                                          color: AppColors
+                                                              .textColor,
+                                                          fontSize:
+                                                              FontSize.xxLarge,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10.0),
+                                                      Text(
+                                                        students.length
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          color: AppColors
+                                                              .textColor,
+                                                          fontSize: 25.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          );
+                                            );
+                                          }
                                         }
                                       },
                                     ),
@@ -172,53 +181,61 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                     size: 50),
                                           );
                                         } else {
-                                          return Card(
-                                            color: Colors.white,
-                                            elevation: 8.0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                            ),
-                                            child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.person_3,
-                                                      color:
-                                                          AppColors.profColor,
-                                                      size: 70.0,
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 20.0,
-                                                    ),
-                                                    const Text(
-                                                      "Professeurs",
-                                                      style: TextStyle(
+                                          if (snapshot.hasError) {
+                                            return Center(
+                                              child: Text(
+                                                  'Erreur lors de la récupération des étudiants actifs: ${snapshot.error}'),
+                                            );
+                                          } else {
+                                            List<dynamic> profs = snapshot.data;
+
+                                            return Card(
+                                              color: Colors.white,
+                                              elevation: 8.0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Column(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.person_3,
                                                         color:
-                                                            AppColors.textColor,
-                                                        fontSize:
-                                                            FontSize.xxLarge,
+                                                            AppColors.profColor,
+                                                        size: 70.0,
                                                       ),
-                                                    ),
-                                                    const SizedBox(
-                                                        height: 10.0),
-                                                    Text(
-                                                      snapshot.data.length
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                        color:
-                                                            AppColors.textColor,
-                                                        fontSize: 25.0,
+                                                      const SizedBox(
+                                                        height: 20.0,
                                                       ),
-                                                    ),
-                                                  ],
+                                                      const Text(
+                                                        "Professeurs",
+                                                        style: TextStyle(
+                                                          color: AppColors
+                                                              .textColor,
+                                                          fontSize:
+                                                              FontSize.xxLarge,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10.0),
+                                                      Text(
+                                                        profs.length.toString(),
+                                                        style: const TextStyle(
+                                                          color: AppColors
+                                                              .textColor,
+                                                          fontSize: 25.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          );
+                                            );
+                                          }
                                         }
                                       },
                                     ),
@@ -229,73 +246,87 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(
-                                    width:
-                                        constraints.maxWidth > 800 ? 320 : 160,
-                                    height: 200,
-                                    child: FutureBuilder(
-                                      future: get_Data().getActifFiliereData(),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return Center(
-                                            child: LoadingAnimationWidget
-                                                .hexagonDots(
-                                                    color: AppColors
-                                                        .secondaryColor,
-                                                    size: 50),
-                                          );
-                                        } else {
-                                          return Card(
-                                            color: Colors.white,
-                                            elevation: 8.0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                            ),
-                                            child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.school,
-                                                      color: AppColors
-                                                          .filiereColor,
-                                                      size: 70.0,
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 20.0,
-                                                    ),
-                                                    const Text(
-                                                      "Filières",
-                                                      style: TextStyle(
-                                                        color:
-                                                            AppColors.textColor,
-                                                        fontSize:
-                                                            FontSize.xxLarge,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                        height: 10.0),
-                                                    Text(
-                                                      snapshot.data.length
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                        color:
-                                                            AppColors.textColor,
-                                                        fontSize: 25.0,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                      width: constraints.maxWidth > 800
+                                          ? 320
+                                          : 160,
+                                      height: 200,
+                                      child: FutureBuilder(
+                                        future:
+                                            get_Data().getActifFiliereData(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return Center(
+                                              child: LoadingAnimationWidget
+                                                  .hexagonDots(
+                                                color: AppColors.secondaryColor,
+                                                size: 50,
                                               ),
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
+                                            );
+                                          } else {
+                                            if (snapshot.hasError) {
+                                              return Center(
+                                                child: Text(
+                                                    'Erreur lors de la récupération des filières actives: ${snapshot.error}'),
+                                              );
+                                            } else {
+                                              List<dynamic> filiere =
+                                                  snapshot.data;
+                                              return Card(
+                                                color: Colors.white,
+                                                elevation: 8.0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Column(
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.school,
+                                                          color: AppColors
+                                                              .filiereColor,
+                                                          size: 70.0,
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 20.0,
+                                                        ),
+                                                        const Text(
+                                                          "Filières",
+                                                          style: TextStyle(
+                                                            color: AppColors
+                                                                .textColor,
+                                                            fontSize: FontSize
+                                                                .xxLarge,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 10.0,
+                                                        ),
+                                                        Text(
+                                                          filiere.length
+                                                              .toString(),
+                                                          style:
+                                                              const TextStyle(
+                                                            color: AppColors
+                                                                .textColor,
+                                                            fontSize: 25.0,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                      )),
                                   SizedBox(
                                     width:
                                         constraints.maxWidth > 800 ? 320 : 160,
@@ -313,54 +344,61 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                     size: 50),
                                           );
                                         } else {
-                                          return Card(
-                                            color: Colors.white,
-                                            elevation: 8.0,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                            ),
-                                            child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons
-                                                          .settings_applications_outlined,
-                                                      color:
-                                                          AppColors.courColor,
-                                                      size: 70.0,
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 20.0,
-                                                    ),
-                                                    const Text(
-                                                      "Cours",
-                                                      style: TextStyle(
+                                          if (snapshot.hasError) {
+                                            return Center(
+                                              child: Text(
+                                                  'Erreur lors de la récupération des cours actives: ${snapshot.error}'),
+                                            );
+                                          } else {
+                                            List<dynamic> cours = snapshot.data;
+                                            return Card(
+                                              color: Colors.white,
+                                              elevation: 8.0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Column(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons
+                                                            .settings_applications_outlined,
                                                         color:
-                                                            AppColors.textColor,
-                                                        fontSize:
-                                                            FontSize.xxLarge,
+                                                            AppColors.courColor,
+                                                        size: 70.0,
                                                       ),
-                                                    ),
-                                                    const SizedBox(
-                                                        height: 10.0),
-                                                    Text(
-                                                      snapshot.data.length
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                        color:
-                                                            AppColors.textColor,
-                                                        fontSize: 25.0,
+                                                      const SizedBox(
+                                                        height: 20.0,
                                                       ),
-                                                    ),
-                                                  ],
+                                                      const Text(
+                                                        "Cours",
+                                                        style: TextStyle(
+                                                          color: AppColors
+                                                              .textColor,
+                                                          fontSize:
+                                                              FontSize.xxLarge,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 10.0),
+                                                      Text(
+                                                        cours.length.toString(),
+                                                        style: const TextStyle(
+                                                          color: AppColors
+                                                              .textColor,
+                                                          fontSize: 25.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          );
+                                            );
+                                          }
                                         }
                                       },
                                     ),
@@ -382,6 +420,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                 size: 50),
                                       );
                                     } else {
+                                      List<dynamic> queries = snapshot.data;
                                       return Card(
                                         color: Colors.white,
                                         elevation: 8.0,
@@ -418,8 +457,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                       width: 100.0,
                                                     ),
                                                     Text(
-                                                      snapshot.data.length
-                                                          .toString(),
+                                                      queries.length.toString(),
                                                       style: const TextStyle(
                                                         color:
                                                             AppColors.textColor,

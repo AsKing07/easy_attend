@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
@@ -7,15 +10,42 @@ import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TrashProfPage extends StatefulWidget {
-  const TrashProfPage({super.key});
+  final Function() callback;
+  const TrashProfPage({super.key, required this.callback});
 
   @override
   State<TrashProfPage> createState() => _TrashProfPageState();
 }
 
 class _TrashProfPageState extends State<TrashProfPage> {
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
+  void fetchData() async {
+    try {
+      final response = await http
+          .get(Uri.parse('$BACKEND_URL/api/global/getInactifProfData'));
+      if (response.statusCode == 200) {
+        List<dynamic> profs = jsonDecode(response.body);
+        _streamController.add(profs);
+      } else {
+        throw Exception('Erreur lors de la récupération des profs');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,28 +63,23 @@ class _TrashProfPageState extends State<TrashProfPage> {
       body: Column(
         children: [
           Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("prof")
-                .where('statut', isEqualTo: '0')
-                .snapshots(),
+              child: StreamBuilder<List<dynamic>>(
+            stream: _streamController.stream,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                if (snapshot.data!.docs
+                if (snapshot.data!
                     .isEmpty) // Afficher un message si aucun résultat n'est trouvé
                 {
                   return const NoResultWidget();
                 } else {
-                  final profs = snapshot.data!.docs;
+                  List<dynamic>? profs = snapshot.data;
                   return ListView.builder(
-                      itemCount: profs.length,
+                      itemCount: profs!.length,
                       itemBuilder: (context, index) {
                         final prof = profs[index];
-                        final profData = prof.data() as Map<String, dynamic>;
 
                         return ListTile(
-                          title:
-                              Text('${profData['nom']} ${profData['prenom']}'),
+                          title: Text('${prof['nom']} ${prof['prenom']}'),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -78,7 +103,7 @@ class _TrashProfPageState extends State<TrashProfPage> {
                                             "Restaurer le professeur",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 20.0,
+                                                fontSize: 13.0,
                                                 color: Colors.orange),
                                           ),
                                         ],
@@ -94,9 +119,12 @@ class _TrashProfPageState extends State<TrashProfPage> {
                                         ),
                                         TextButton(
                                           onPressed: () async {
-                                            // Supprimez la filière de Firestore
-                                            await set_Data()
-                                                .restoreProf(prof.id, context);
+                                            // Restaurer le prof
+                                            await set_Data().restoreProf(
+                                                prof['uid'], context);
+                                            fetchData();
+                                            widget.callback();
+
                                             Navigator.of(context).pop();
                                           },
                                           child: const Text('Restaurer'),

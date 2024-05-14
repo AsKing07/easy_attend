@@ -11,7 +11,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 class CourseCard extends StatefulWidget {
   String? name, filiere, niveau;
   String option;
-  DocumentSnapshot course;
+  final course;
   CourseCard(
       {super.key,
       required this.name,
@@ -27,11 +27,12 @@ class _CourseCardState extends State<CourseCard> {
   var professeur;
   bool dataIsLoaded = false;
   void loadProf() async {
-    DocumentSnapshot prof =
-        await get_Data().getProfById(widget.course['professeurId'], context);
+    final prof =
+        await get_Data().getProfById(widget.course['idProfesseur'], context);
 
     setState(() {
       professeur = prof;
+      print(prof);
       dataIsLoaded = true;
     });
   }
@@ -97,7 +98,7 @@ class _CourseCardState extends State<CourseCard> {
                     ),
                     const SizedBox(height: 5.0),
                     Text(
-                      widget.course['idCours'],
+                      widget.course['sigleCours'],
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 13.0,

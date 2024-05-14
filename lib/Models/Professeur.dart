@@ -8,7 +8,7 @@ class Prof {
   String prenom;
   String email;
   String phone;
-  String statut;
+  bool statut;
 
   Prof({
     this.idDoc,

@@ -13,7 +13,7 @@ import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 
 class CreateSeancePage extends StatefulWidget {
-  DocumentSnapshot course;
+  final course;
 
   CreateSeancePage({super.key, required this.course});
 
@@ -25,9 +25,6 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
   final dateTimeController = TextEditingController();
 
   DateTime _dateTime = DateTime.now();
-
-  bool dataIsloaded = false;
-  late DocumentSnapshot course;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await DatePicker.showDateTimePicker(context,
@@ -44,115 +41,103 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
     }
   }
 
-  Future loadCourseData() async {
-    course = await get_Data().getCourseById(widget.course.id, context);
-
-    setState(() {
-      dataIsloaded = true;
-    });
-  }
-
   @override
   void initState() {
     initializeDateFormatting('fr');
 
-    loadCourseData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return !dataIsloaded
-        ? const SizedBox()
-        : Scaffold(
-            appBar: AppBar(
-              backgroundColor: AppColors.secondaryColor,
-              foregroundColor: Colors.white,
-              title: Text(
-                'Créer une séance de ${course['nomCours']} ',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.secondaryColor,
+        foregroundColor: Colors.white,
+        title: Text(
+          'Créer une séance de ${widget.course['nomCours']} ',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: FontSize.medium,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 15,
+            ),
+            Text(
+              'Il est l\'heure pour une nouvelle séance de ',
+              style: GoogleFonts.poppins(
+                  color: AppColors.textColor,
+                  fontSize: FontSize.xxLarge,
+                  fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              "${widget.course['nomCours']}  - ${widget.course['niveau']} ",
+              style: GoogleFonts.poppins(
+                  color: AppColors.primaryColor,
                   fontSize: FontSize.medium,
+                  fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'Sélectionnez la date et l\'heure: ',
+              style: TextStyle(
+                fontSize: FontSize.xxLarge,
+                color: AppColors.secondaryColor,
+              ),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: () async {
+                _selectDate(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: GFColors.PRIMARY,
+              ),
+              child: dateTimeController.text.isEmpty
+                  ? const Text(
+                      "Sélectionner",
+                      style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: FontSize.large,
+                          fontWeight: FontWeight.bold),
+                    )
+                  : Text(
+                      dateTimeController.text,
+                      style: const TextStyle(
+                          fontSize: FontSize.xMedium, color: AppColors.white),
+                    ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: GFColors.PRIMARY,
                 ),
-              ),
-            ),
-            body: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    'Il est l\'heure pour une nouvelle séance de ',
+                onPressed: () async {
+                  if (dateTimeController.text.isEmpty) {
+                    GFToast.showToast(
+                        "Vous devez sélectionner la date", context);
+                  } else {
+                    var x = await set_Data()
+                        .createSeance(widget.course, _dateTime, context);
+                  }
+                },
+                child: Text("Créer la séance",
                     style: GoogleFonts.poppins(
-                        color: AppColors.textColor,
-                        fontSize: FontSize.xxLarge,
-                        fontWeight: FontWeight.w600),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    "${course['nomCours']}  - ${course['niveau']} ",
-                    style: GoogleFonts.poppins(
-                        color: AppColors.primaryColor,
-                        fontSize: FontSize.medium,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 30),
-                  const Text(
-                    'Sélectionnez la date et l\'heure: ',
-                    style: TextStyle(
-                      fontSize: FontSize.xxLarge,
-                      color: AppColors.secondaryColor,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () async {
-                      _selectDate(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: GFColors.PRIMARY,
-                    ),
-                    child: dateTimeController.text.isEmpty
-                        ? const Text(
-                            "Sélectionner",
-                            style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: FontSize.large,
-                                fontWeight: FontWeight.bold),
-                          )
-                        : Text(
-                            dateTimeController.text,
-                            style: const TextStyle(
-                                fontSize: FontSize.xMedium,
-                                color: AppColors.white),
-                          ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: GFColors.PRIMARY,
-                      ),
-                      onPressed: () async {
-                        if (dateTimeController.text.isEmpty) {
-                          GFToast.showToast(
-                              "Vous devez sélectionner la date", context);
-                        } else {
-                          var x = await set_Data()
-                              .createSeance(widget.course, _dateTime, context);
-                        }
-                      },
-                      child: Text("Créer la séance",
-                          style: GoogleFonts.poppins(
-                            color: AppColors.white,
-                            fontSize: FontSize.large,
-                            fontWeight: FontWeight.bold,
-                          )))
-                ],
-              ),
-            ),
-          );
+                      color: AppColors.white,
+                      fontSize: FontSize.large,
+                      fontWeight: FontWeight.bold,
+                    )))
+          ],
+        ),
+      ),
+    );
   }
 }

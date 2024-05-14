@@ -1,11 +1,16 @@
 // ignore_for_file: must_be_immutable, non_constant_identifier_names
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 
 class HelperDrawer extends StatefulWidget {
@@ -28,6 +33,7 @@ class HelperDrawer extends StatefulWidget {
 }
 
 class _HelperDrawerState extends State<HelperDrawer> {
+  final BACKEND_URL = dotenv.env['API_URL'];
   String name = "";
   User? user = FirebaseAuth.instance.currentUser;
 
@@ -46,19 +52,35 @@ class _HelperDrawerState extends State<HelperDrawer> {
   }
 
   Future<void> _loadUserName() async {
-    final DocumentSnapshot x = await FirebaseFirestore.instance
-        .collection(widget.nom.toLowerCase())
-        .doc(user!.uid)
-        .get();
+    http.Response response = await http.get(
+      Uri.parse('$BACKEND_URL/api/${widget.nom.toLowerCase()}/${user!.uid}'),
+    );
 
-    setState(() {
-      if (x.exists) {
-        name = '${x['nom']}  ${x['prenom']}';
-      } else {
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      Map<String, dynamic> user = jsonDecode(response.body);
+      setState(() {
+        name = '${user['nom']}  ${user['prenom']}';
+      });
+    } else {
+      setState(() {
         name = widget.nom;
-      }
-    });
+      });
+    }
   }
+  // Future<void> _loadUserName() async {
+  //   final DocumentSnapshot x = await FirebaseFirestore.instance
+  //       .collection(widget.nom.toLowerCase())
+  //       .doc(user!.uid)
+  //       .get();
+
+  //   setState(() {
+  //     if (x.exists) {
+  //       name = '${x['nom']}  ${x['prenom']}';
+  //     } else {
+  //       name = widget.nom;
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

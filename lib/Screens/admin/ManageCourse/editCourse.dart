@@ -13,9 +13,10 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditCoursePage extends StatefulWidget {
-  String id;
+  final id;
+  final void Function() callback;
 
-  EditCoursePage({super.key, required this.id});
+  EditCoursePage({super.key, required this.id, required this.callback});
 
   @override
   State<EditCoursePage> createState() => _EditCoursePageState();
@@ -33,19 +34,16 @@ class _EditCoursePageState extends State<EditCoursePage> {
   Cours? currentCourse;
 
   Future<void> loadAllActifFilieres() async {
-    List<QueryDocumentSnapshot> docsFiliere =
-        await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
       Filiere filiere = Filiere(
-        idDoc: doc.id,
+        idDoc: doc['idFiliere'].toString(),
         nomFiliere: doc["nomFiliere"],
-        idFiliere: doc["idFiliere"],
-        statut: doc["statut"],
-        niveaux: List<String>.from(
-          doc['niveaux'],
-        ),
+        idFiliere: doc["sigleFiliere"],
+        statut: doc["statut"] == 1,
+        niveaux: doc['niveaux'].split(','),
       );
 
       fil.add(filiere);
@@ -57,18 +55,17 @@ class _EditCoursePageState extends State<EditCoursePage> {
   }
 
   Future<void> loadAllActifProfData() async {
-    List<QueryDocumentSnapshot> docsProfs =
-        await get_Data().getActifTeacherData();
+    List<dynamic> docsProfs = await get_Data().getActifTeacherData();
     List<Prof> profs = [];
 
     for (var doc in docsProfs) {
       Prof prof = Prof(
-          idDoc: doc.id,
+          idDoc: doc['uid'],
           nom: doc['nom'],
           prenom: doc['prenom'],
           email: doc['email'],
           phone: doc['phone'],
-          statut: doc['statut']);
+          statut: doc['statut'] == 1);
 
       profs.add(prof);
     }
@@ -79,16 +76,16 @@ class _EditCoursePageState extends State<EditCoursePage> {
   }
 
   Future<void> loadCurrentCourse() async {
-    DocumentSnapshot docCourse =
+    Map<String, dynamic> docCourse =
         await get_Data().getCourseById(widget.id, context);
 
     Cours course = Cours(
-      idDoc: docCourse.id,
-      idCours: docCourse['idCours'],
+      idDoc: docCourse['idCours'].toString(),
+      idCours: docCourse['sigleCours'],
       nomCours: docCourse['nomCours'],
       niveau: docCourse['niveau'],
-      professeurId: docCourse['professeurId'],
-      filiereId: docCourse['filiereId'],
+      professeurId: docCourse['idProfesseur'],
+      filiereId: docCourse['idFiliere'],
     );
 
     setState(() {
@@ -185,7 +182,9 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                   (Filiere value) {
                                 return DropdownMenuItem<Filiere>(
                                   value: value,
-                                  child: Text(value.nomFiliere),
+                                  child: Text(
+                                    value.nomFiliere,
+                                  ),
                                 );
                               }).toList(),
                               decoration: const InputDecoration(
@@ -315,7 +314,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                     color: AppColors.textColor),
                                 decoration: InputDecoration(
                                   labelText:
-                                      'Identifiant du cours (Par exemple "BDA")',
+                                      'Identifiant/Sigle du cours (Par exemple "BDA")',
                                   prefixIcon: const Icon(Icons.school),
                                   contentPadding:
                                       const EdgeInsets.only(top: 10),
@@ -362,6 +361,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
 
                                   await set_Data()
                                       .modifierCours(currentCourse!, context);
+                                  widget.callback();
                                 } else {
                                   GFToast.showToast(
                                       "Tous les champs sont requis", context,
@@ -580,7 +580,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                         color: AppColors.textColor),
                                     decoration: InputDecoration(
                                       labelText:
-                                          'Identifiant du cours (Par exemple "BDA")',
+                                          'Identifiant/Sigle du cours (Par exemple "BDA")',
                                       prefixIcon: const Icon(Icons.school),
                                       contentPadding:
                                           const EdgeInsets.only(top: 10),
@@ -631,6 +631,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
 
                                       await set_Data().modifierCours(
                                           currentCourse!, context);
+                                      widget.callback();
                                     } else {
                                       GFToast.showToast(
                                           "Tous les champs sont requis",

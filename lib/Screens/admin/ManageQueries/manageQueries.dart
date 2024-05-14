@@ -1,15 +1,20 @@
 // ignore_for_file: file_names
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:expandable/expandable.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
 
 class ManageQueriesPage extends StatefulWidget {
   const ManageQueriesPage({Key? key}) : super(key: key);
@@ -30,6 +35,48 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
   };
 
   String selectedFilter = '';
+
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
+
+  Future<void> fetchData() async {
+    try {
+      final response = await http.get(Uri.parse(
+          '$BACKEND_URL/api/global/getRequestData?filtre=${filter['valeur']}'));
+      print(response.body);
+      if (response.statusCode == 200) {
+        List<dynamic> requete = jsonDecode(response.body);
+        _streamController.add(requete);
+        print(requete);
+      } else {
+        throw Exception('Erreur lors de la récupération des requete');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+    }
+  }
+
+  String getAuteur(String input) {
+    List<String> words = input.split(' '); // Split the input string by space
+
+    return '${words[0]} ${words[1]}'; // Concatenate the first two words
+  }
+
+  String getDetailsExceptAuteur(String input) {
+    List<String> words = input.split(' '); // Split the input string by space
+
+    List<String> remainingWords =
+        words.sublist(3); // Get sublist starting from index 3
+    return remainingWords
+        .join(' '); // Join the remaining words back into a string
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +119,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                             selected ? item['valeur'] as String : '';
                         filter['nom'] = item['nom'] as String;
                         filter['valeur'] = selectedFilter;
+                        fetchData();
                       });
                     },
                   );
@@ -84,27 +132,27 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
               Container(
                 height: MediaQuery.of(context).size.height -
                     180, // Définir la hauteur en fonction de la taille de l'écran
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: filter['valeur'] != ""
-                      ? FirebaseFirestore.instance
-                          .collection('requete')
-                          .where('statut', isEqualTo: filter['valeur'])
-                          .snapshots()
-                      : FirebaseFirestore.instance
-                          .collection('requete')
-                          .snapshots(),
+                child: StreamBuilder<List<dynamic>>(
+                  stream: _streamController.stream,
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data!.docs.isEmpty) {
-                        return const NoResultWidget();
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: LoadingAnimationWidget.hexagonDots(
+                            color: AppColors.secondaryColor, size: 100),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('Erreur : ${snapshot.error}');
+                    } else {
+                      List<dynamic>? requetes = snapshot.data;
+                      if (requetes!.isEmpty) {
+                        return const SingleChildScrollView(
+                          child: NoResultWidget(),
+                        );
                       } else {
-                        final queries = snapshot.data!.docs;
                         return ListView.builder(
-                            itemCount: queries.length,
+                            itemCount: requetes.length,
                             itemBuilder: (context, index) {
-                              final query = queries[index];
-                              final queryData =
-                                  query.data() as Map<String, dynamic>;
+                              final query = requetes[index];
 
                               return Container(
                                   width: double.infinity,
@@ -132,23 +180,23 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                queryData['type'].toString(),
+                                                query['type'].toString(),
+                                                softWrap: true,
                                                 style: const TextStyle(
                                                     color: AppColors
                                                         .secondaryColor,
-                                                    fontSize: FontSize.large,
+                                                    fontSize: FontSize.xMedium,
                                                     fontWeight:
-                                                        FontWeight.w600),
+                                                        FontWeight.w400),
                                               ),
                                               Container(
-                                                child: queryData['statut'] ==
-                                                        "1"
+                                                child: query['statut'] == "1"
                                                     ? const Icon(
                                                         Icons.check,
                                                         color: AppColors
                                                             .greenColor,
                                                       )
-                                                    : queryData['statut'] == "2"
+                                                    : query['statut'] == "2"
                                                         ? const Icon(Icons.sync,
                                                             color: AppColors
                                                                 .studColor)
@@ -160,7 +208,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                             ],
                                           ),
                                           collapsed: Text(
-                                            queryData['sujet'].toString(),
+                                            query['sujet'].toString(),
                                             softWrap: true,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
@@ -176,7 +224,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  "Auteur : ${query['auteur']}",
+                                                  "Auteur : ${getAuteur(query['details'])}",
                                                   softWrap: true,
                                                   maxLines: 2,
                                                   overflow:
@@ -192,7 +240,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                   height: 10,
                                                 ),
                                                 Text(
-                                                  "Détails: \n  ${queryData['details']}",
+                                                  "Détails: \n  ${getDetailsExceptAuteur(query['details'])}",
                                                   softWrap: true,
                                                   style: const TextStyle(
                                                       fontSize: 14,
@@ -209,10 +257,12 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                     // Approuver la requete
                                                     await set_Data()
                                                         .approuverRequete(
-                                                            query.id, context);
+                                                            query['idRequete'],
+                                                            context);
                                                     setState(() {
                                                       selectedFilter = "1";
                                                       filter['valeur'] = "1";
+                                                      fetchData();
                                                     });
                                                   },
                                                   text: "Approuver",
@@ -232,10 +282,12 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                     // Désapprouver la requete
                                                     await set_Data()
                                                         .desapprouverRequete(
-                                                            query.id, context);
+                                                            query['idRequete'],
+                                                            context);
                                                     setState(() {
                                                       selectedFilter = "0";
                                                       filter['valeur'] = "0";
+                                                      fetchData();
                                                     });
                                                   },
                                                   text: "Désapprouver",
@@ -255,10 +307,12 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                     // mettre en attente la requete
                                                     await set_Data()
                                                         .mettreEnAttenteRequete(
-                                                            query.id, context);
+                                                            query['idRequete'],
+                                                            context);
                                                     setState(() {
                                                       selectedFilter = "2";
                                                       filter['valeur'] = "2";
+                                                      fetchData();
                                                     });
                                                   },
                                                   text: "Mettre en attente",
@@ -278,13 +332,6 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                       ])));
                             });
                       }
-                    } else if (snapshot.hasError) {
-                      return const NoResultWidget();
-                    } else {
-                      return Center(
-                        child: LoadingAnimationWidget.hexagonDots(
-                            color: AppColors.secondaryColor, size: 200),
-                      );
                     }
                   },
                 ),

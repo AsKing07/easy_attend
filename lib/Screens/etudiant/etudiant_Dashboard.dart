@@ -1,12 +1,17 @@
 // ignore_for_file: prefer_typing_uninitialized_variables, file_names
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
 
 class EtudiantDashboard extends StatefulWidget {
   const EtudiantDashboard({super.key});
@@ -16,10 +21,13 @@ class EtudiantDashboard extends StatefulWidget {
 }
 
 class _EtudiantDashboardState extends State<EtudiantDashboard> {
-  late DocumentSnapshot etudiant;
+  late Map<String, dynamic> etudiant;
   // late DocumentSnapshot filiere;
   bool dataIsLoaded = false;
   List<Widget> myWidgets = [];
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
 
   Widget courseList(List<Widget> myWidget) {
     return Column(
@@ -36,9 +44,35 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
     });
   }
 
+  Future<void> fetchData() async {
+    final x = await get_Data().loadCurrentStudentData();
+    // await loadFiliere(x['idFiliere']);
+    setState(() {
+      etudiant = x;
+      dataIsLoaded = true;
+    });
+    http.Response response;
+    try {
+      response = await http.get(Uri.parse(
+          '$BACKEND_URL/api/global/getCoursesData?idFiliere=${etudiant['idFiliere']}&niveau=${etudiant['niveau']}'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> courses = jsonDecode(response.body);
+        _streamController.add(courses);
+        print(courses);
+      } else {
+        throw Exception('Erreur lors de la récupération des cours');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+      print(e);
+    }
+  }
+
   @override
   void initState() {
-    loadStudent();
+    // loadStudent();
+    fetchData();
     super.initState();
   }
 
@@ -48,7 +82,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
         body: !dataIsLoaded
             ? Center(
                 child: LoadingAnimationWidget.hexagonDots(
-                    color: AppColors.secondaryColor, size: 200),
+                    color: AppColors.secondaryColor, size: 100),
               )
             : Padding(
                 padding:
@@ -67,24 +101,28 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                       ),
                       const SizedBox(height: 20.0),
                       StreamBuilder(
-                          stream: FirebaseFirestore.instance
-                              .collection('cours')
-                              .where('filiereId',
-                                  isEqualTo: etudiant['idFiliere'])
-                              .where('niveau', isEqualTo: etudiant['niveau'])
-                              .snapshots(),
+                          stream: _streamController.stream,
                           builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data!.docs
-                                  .isEmpty) // Afficher un message si aucun résultat n'est trouvé
-                              {
-                                return const NoResultWidget();
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: LoadingAnimationWidget.hexagonDots(
+                                    color: AppColors.secondaryColor, size: 200),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text('Erreur : ${snapshot.error}');
+                            } else {
+                              List<dynamic>? cours = snapshot.data;
+                              if (cours!.isEmpty) {
+                                return const SingleChildScrollView(
+                                  child: NoResultWidget(),
+                                );
                               } else {
-                                int length = snapshot.data!.docs.length;
+                                int length = snapshot.data!.length;
                                 var previous;
                                 myWidgets.clear();
                                 for (int i = 0; i < length; i++) {
-                                  var object = snapshot.data!.docs[i];
+                                  var object = snapshot.data![i];
                                   if (identical(previous, null) == false) {
                                     myWidgets.add(Column(children: [
                                       Row(
@@ -133,14 +171,6 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
 
                                 return courseList(myWidgets);
                               }
-                            } else {
-                              return Material(
-                                child: Center(
-                                  child: LoadingAnimationWidget.hexagonDots(
-                                      color: AppColors.secondaryColor,
-                                      size: 200),
-                                ),
-                              );
                             }
                           })
                     ],

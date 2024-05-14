@@ -13,7 +13,9 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddStudentFromExcel extends StatefulWidget {
-  const AddStudentFromExcel({super.key});
+  final Function() callback;
+
+  const AddStudentFromExcel({super.key, required this.callback});
 
   @override
   State<AddStudentFromExcel> createState() => _AddStudentFromExcelState();
@@ -41,6 +43,8 @@ class _AddStudentFromExcelState extends State<AddStudentFromExcel> {
 
           // Clean up the URL object after use
           html.Url.revokeObjectUrl(url);
+
+          widget.callback();
         }
       });
 
@@ -145,6 +149,7 @@ class _AddStudentFromExcelState extends State<AddStudentFromExcel> {
                           });
                           await auth_methods_admin()
                               .addMultipleStudent(studentsFile!.path, context);
+                          widget.callback();
                         }
                       },
                       text: "Sélectionner le fichier",

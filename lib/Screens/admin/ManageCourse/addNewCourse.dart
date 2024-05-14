@@ -13,7 +13,9 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddNewCoursePage extends StatefulWidget {
-  const AddNewCoursePage({super.key});
+  final Function() callback;
+
+  const AddNewCoursePage({super.key, required this.callback});
 
   @override
   State<AddNewCoursePage> createState() => _AddNewCoursePageState();
@@ -31,19 +33,17 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
   final _idCoursController = TextEditingController();
 
   Future<void> loadAllActifFilieres() async {
-    List<QueryDocumentSnapshot> docsFiliere =
-        await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
+      print(doc);
       Filiere filiere = Filiere(
-        idDoc: doc.id,
+        idDoc: doc['idFiliere'].toString(),
         nomFiliere: doc["nomFiliere"],
-        idFiliere: doc["idFiliere"],
-        statut: doc["statut"],
-        niveaux: List<String>.from(
-          doc['niveaux'],
-        ),
+        idFiliere: doc["sigleFiliere"],
+        statut: doc["statut"] == 1,
+        niveaux: doc['niveaux'].split(','),
       );
 
       fil.add(filiere);
@@ -55,18 +55,17 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
   }
 
   Future<void> loadAllActifProfData() async {
-    List<QueryDocumentSnapshot> docsProfs =
-        await get_Data().getActifTeacherData();
+    List<dynamic> docsProfs = await get_Data().getActifTeacherData();
     List<Prof> profs = [];
 
     for (var doc in docsProfs) {
       Prof prof = Prof(
-          idDoc: doc.id,
+          idDoc: doc['uid'],
           nom: doc['nom'],
           prenom: doc['prenom'],
           email: doc['email'],
           phone: doc['phone'],
-          statut: doc['statut']);
+          statut: doc['statut'] == 1);
 
       profs.add(prof);
     }
@@ -273,7 +272,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                                   color: AppColors.textColor),
                               decoration: InputDecoration(
                                 labelText:
-                                    'Identifiant du cours (Par exemple "BDA")',
+                                    'Identifiant/Sigle du cours (Par exemple "BDA")',
                                 prefixIcon: const Icon(Icons.school),
                                 contentPadding: const EdgeInsets.only(top: 10),
                                 border: OutlineInputBorder(
@@ -321,6 +320,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                                       professeurId: _selectedProf!.idDoc);
 
                                   await set_Data().ajouterCours(cours, context);
+                                  widget.callback();
                                 }
                               }
                             },
@@ -513,7 +513,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
                                       color: AppColors.textColor),
                                   decoration: InputDecoration(
                                     labelText:
-                                        'Identifiant du cours (Par exemple "BDA")',
+                                        'Identifiant/Sigle du cours (Par exemple "BDA")',
                                     prefixIcon: const Icon(Icons.school),
                                     contentPadding:
                                         const EdgeInsets.only(top: 10),
@@ -564,6 +564,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
 
                                       await set_Data()
                                           .ajouterCours(cours, context);
+                                      widget.callback();
                                     }
                                   }
                                 },

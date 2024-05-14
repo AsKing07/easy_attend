@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use, file_names, unused_local_variable,
 
+import 'dart:convert';
+
 import 'package:universal_html/html.dart' as html;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,11 +20,11 @@ import 'package:path_provider/path_provider.dart';
 
 class PDFHelper {
   // pdf general
-  Future<Uint8List> buildGeneralPdf(DocumentSnapshot seanceData,
-      DocumentSnapshot course, BuildContext context) async {
+  Future<Uint8List> buildGeneralPdf(
+      seanceData, course, BuildContext context) async {
     final pw.Document doc = pw.Document();
-    DocumentSnapshot filiere =
-        await get_Data().getFiliereById(course['filiereId'], context);
+    final filiere =
+        await get_Data().getFiliereById(course['idFiliere'], context);
 
     final List<String> absents = [];
     final List<String> presents = [];
@@ -30,19 +32,21 @@ class PDFHelper {
 
     // Récupérer les noms des étudiants absents et présents
     final Map<String, dynamic> presenceEtudiant =
-        seanceData['presenceEtudiant'] as Map<String, dynamic>;
+        jsonDecode(seanceData['presenceEtudiant']);
 
     await Future.forEach(presenceEtudiant.entries, (entry) async {
       final etudiantId = entry.key;
       final present = entry.value;
 
-      final etudiantSnapshot = await FirebaseFirestore.instance
-          .collection('etudiant')
-          .doc(etudiantId)
-          .get();
+      // final etudiantSnapshot = await FirebaseFirestore.instance
+      //     .collection('etudiant')
+      //     .doc(etudiantId)
+      //     .get();
+      final etudiantSnapshot =
+          await get_Data().getStudentById(etudiantId, context);
 
-      final nom = etudiantSnapshot.get('nom');
-      final prenom = etudiantSnapshot.get('prenom');
+      final nom = etudiantSnapshot['nom'];
+      final prenom = etudiantSnapshot['prenom'];
       allEtudiants.add('$nom $prenom');
 
       if (present == false) {
@@ -80,7 +84,7 @@ class PDFHelper {
               pw.Text('Classe: ${filiere['nomFiliere']}  ${course['niveau']}',
                   style: const pw.TextStyle(fontSize: 16)),
               pw.Text(
-                  'Date de la séance: ${DateFormat('EEEE, d MMMM yyyy, hh:mm', 'fr').format(seanceData['dateSeance'].toDate())}',
+                  'Date de la séance: ${DateFormat('EEEE, d MMMM yyyy, hh:mm', 'fr').format(DateTime.parse(seanceData['dateSeance']).toLocal())}',
                   style: const pw.TextStyle(fontSize: 16)),
 
               pw.SizedBox(height: 20),
@@ -161,29 +165,33 @@ class PDFHelper {
     return await doc.save();
   }
 
-  Future<Uint8List> buildStudentPdf(DocumentSnapshot course, String studentName,
+  Future<Uint8List> buildStudentPdf(course, String studentName,
       String studentId, BuildContext context) async {
     final pw.Document doc = pw.Document();
-    DocumentSnapshot filiere =
-        await get_Data().getFiliereById(course['filiereId'], context);
+    final filiere =
+        await get_Data().getFiliereById(course['idFiliere'], context);
 
     List<DataRow> rows = [];
     int nombreDePresences = 0;
     int nombreTotalSeances = 0;
 
-    QuerySnapshot seancesSnapshot = await FirebaseFirestore.instance
-        .collection('seance')
-        .where('idCours', isEqualTo: course.id)
-        .orderBy('dateSeance', descending: true)
-        .get();
+    // QuerySnapshot seancesSnapshot = await FirebaseFirestore.instance
+    //     .collection('seance')
+    //     .where('idCours', isEqualTo: course.id)
+    //     .orderBy('dateSeance', descending: true)
+    //     .get();
+    final seancesSnapshot =
+        await get_Data().getSeanceOfOneCourse(course['idCours'].toString());
 
-    nombreTotalSeances = seancesSnapshot.docs.length;
+    nombreTotalSeances = seancesSnapshot.length;
 
-    for (var seance in seancesSnapshot.docs) {
-      Map<String, dynamic> data = seance.data() as Map<String, dynamic>;
+    for (var seance in seancesSnapshot) {
+      Map<String, dynamic> data = seance;
       String date = DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr')
-          .format(data['dateSeance'].toDate());
-      bool statut = data['presenceEtudiant'][studentId] ?? false;
+          .format(DateTime.parse(data['dateSeance']).toLocal());
+      Map<String, dynamic> presenceEtudiant =
+          jsonDecode(data['presenceEtudiant']);
+      bool statut = presenceEtudiant[studentId] ?? false;
 
       if (statut) {
         nombreDePresences++;

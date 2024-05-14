@@ -1,5 +1,8 @@
 // ignore_for_file: non_constant_identifier_names, file_names, prefer_typing_uninitialized_variables
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
@@ -7,7 +10,9 @@ import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
 
 class ProfDashboard extends StatefulWidget {
   const ProfDashboard({super.key});
@@ -17,11 +22,14 @@ class ProfDashboard extends StatefulWidget {
 }
 
 class _ProfDashboardState extends State<ProfDashboard> {
-  late DocumentSnapshot prof;
+  late Map<String, dynamic> prof;
   bool dataIsLoaded = false;
   List<Widget> myWidgets = [];
   List<Filiere> Allfilieres = [];
   Filiere? _selectedFiliere;
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
 
   Widget createCourseList(List<Widget> myWidget) {
     if (myWidget.isNotEmpty) {
@@ -42,19 +50,16 @@ class _ProfDashboardState extends State<ProfDashboard> {
   }
 
   Future<void> loadAllActifFilieres() async {
-    List<QueryDocumentSnapshot> docsFiliere =
-        await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
       Filiere filiere = Filiere(
-        idDoc: doc.id,
+        idDoc: doc['idFiliere'].toString(),
         nomFiliere: doc["nomFiliere"],
-        idFiliere: doc["idFiliere"],
-        statut: doc["statut"],
-        niveaux: List<String>.from(
-          doc['niveaux'],
-        ),
+        idFiliere: doc["sigleFiliere"],
+        statut: doc["statut"] == 1,
+        niveaux: doc['niveaux'].split(','),
       );
 
       fil.add(filiere);
@@ -65,11 +70,35 @@ class _ProfDashboardState extends State<ProfDashboard> {
     });
   }
 
+  Future<void> fetchData() async {
+    // final x = await get_Data().loadCurrentProfData();
+    // setState(() {
+    //   prof = x;
+    //   dataIsLoaded = true;
+    // });
+    http.Response response;
+    try {
+      response = await http.get(Uri.parse(
+          '$BACKEND_URL/api/global/getCoursesData?idFiliere=${_selectedFiliere?.idDoc}&idProf=${prof['uid']}'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> courses = jsonDecode(response.body);
+        _streamController.add(courses);
+      } else {
+        throw Exception('Erreur lors de la récupération des cours');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+      print(e);
+    }
+  }
+
   @override
   void initState() {
     // Récupérez les données dU prof à partir de Firebase
     loadProf();
     loadAllActifFilieres();
+    fetchData();
     super.initState();
   }
 
@@ -105,6 +134,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
                       onChanged: (Filiere? value) {
                         setState(() {
                           _selectedFiliere = value!;
+                          fetchData();
                         });
                       },
                       items: Allfilieres.map<DropdownMenuItem<Filiere>>(
@@ -127,19 +157,14 @@ class _ProfDashboardState extends State<ProfDashboard> {
                                 'Sélectionnez une filière pour afficher vos cours attribués'),
                           )
                         : StreamBuilder(
-                            stream: FirebaseFirestore.instance
-                                .collection('cours')
-                                .where('professeurId', isEqualTo: prof.id)
-                                .where('filiereId',
-                                    isEqualTo: _selectedFiliere?.idDoc)
-                                .snapshots(),
+                            stream: _streamController.stream,
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                int length = snapshot.data!.docs.length;
+                                int length = snapshot.data!.length;
                                 var previous;
                                 myWidgets.clear();
                                 for (int i = 0; i < length; i++) {
-                                  var object = snapshot.data!.docs[i];
+                                  var object = snapshot.data![i];
                                   if (identical(previous, null) == false) {
                                     myWidgets.add(Column(children: [
                                       Row(

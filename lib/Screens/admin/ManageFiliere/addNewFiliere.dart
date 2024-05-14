@@ -8,7 +8,8 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class addNewFilierePage extends StatefulWidget {
-  const addNewFilierePage({super.key});
+  final Function() callback;
+  const addNewFilierePage({super.key, required this.callback});
 
   @override
   _addNewFilierePageState createState() => _addNewFilierePageState();
@@ -229,6 +230,7 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                           _idController.text,
                                           niveauxSelectionnes.toSet().toList(),
                                           context);
+                                      widget.callback();
                                     } else {
                                       GFToast.showToast(
                                           "Sélectionner au moins un niveau",
@@ -447,6 +449,7 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                                         .toSet()
                                                         .toList(),
                                                     context);
+                                                widget.callback();
                                               } else {
                                                 GFToast.showToast(
                                                     "Sélectionner au moins un niveau",

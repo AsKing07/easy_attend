@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable, camel_case_types, file_names
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,15 +9,17 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/pdfHelper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:http/http.dart' as http;
 
 class seeOneStudentAttendance extends StatefulWidget {
   final String studentId, studentName;
 
-  DocumentSnapshot<Object?> course;
+  final course;
 
   seeOneStudentAttendance(
       {super.key,
@@ -32,9 +36,51 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
   int nombreTotalSeances = 0;
   int nombreDePresences = 0;
   double pourcentageDePresence = 0.0;
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
+
+  Future fetchData() async {
+    try {
+      http.Response response = await http.get(Uri.parse(
+          '$BACKEND_URL/api/teacher/getSeanceData?idCours=${widget.course['idCours']}'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> seances = jsonDecode(response.body);
+        _streamController.add(seances);
+        // print(seances);
+        int count = 0;
+
+        seances.forEach((seance) {
+          // Map<dynamic, dynamic> se = seance;
+          Map<String, dynamic> presenceEtudiant =
+              jsonDecode(seance['presenceEtudiant']);
+
+          if (presenceEtudiant[widget.studentId] == true) {
+            count++;
+          }
+        });
+        print(count);
+        setState(() {
+          nombreTotalSeances = seances.length;
+
+          nombreDePresences = count;
+          pourcentageDePresence = (nombreDePresences / nombreTotalSeances);
+        });
+      } else {
+        print(response.body);
+        throw Exception('Erreur lors de la récupération des seances');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+      print(e);
+    }
+  }
+
   @override
   void initState() {
     initializeDateFormatting('fr');
+    fetchData();
     super.initState();
   }
 
@@ -48,41 +94,30 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('seance')
-                    .where('idCours', isEqualTo: widget.course.id)
-                    .orderBy('dateSeance', descending: true)
-                    .snapshots(),
+              StreamBuilder(
+                stream: _streamController.stream,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                         child: LoadingAnimationWidget.hexagonDots(
-                            color: AppColors.secondaryColor, size: 200));
+                            color: AppColors.secondaryColor, size: 100));
                   }
                   if (snapshot.hasError) {
                     return Center(child: Text('Erreur: ${snapshot.error}'));
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const NoResultWidget();
                   }
 
-                  nombreTotalSeances = snapshot.data!.docs.length;
-                  nombreDePresences = snapshot.data!.docs.where((seance) {
-                    Map<String, dynamic> data =
-                        seance.data() as Map<String, dynamic>;
-                    return data['presenceEtudiant'][widget.studentId];
-                  }).length;
-                  pourcentageDePresence =
-                      (nombreDePresences / nombreTotalSeances);
                   List<DataRow> rows = [];
-                  for (var seance in snapshot.data!.docs) {
-                    Map<String, dynamic> data =
-                        seance.data() as Map<String, dynamic>;
+                  for (var seance in snapshot.data!) {
                     String date = DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr')
-                        .format(data['dateSeance'].toDate());
-                    bool statut = data['presenceEtudiant'][widget.studentId];
+                        .format(DateTime.parse(seance['dateSeance']).toLocal())
+                        .toUpperCase();
+                    Map<String, dynamic> presenceEtudiant =
+                        jsonDecode(seance['presenceEtudiant']);
+                    bool statut = presenceEtudiant[widget.studentId];
 
                     rows.add(DataRow(cells: [
                       DataCell(Text(date)),

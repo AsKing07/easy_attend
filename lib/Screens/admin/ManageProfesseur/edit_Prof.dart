@@ -10,9 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditProfPage extends StatefulWidget {
-  final String profId;
+  final profId;
+  final void Function() callback;
 
-  const EditProfPage({super.key, required this.profId});
+  const EditProfPage({super.key, required this.profId, required this.callback});
 
   @override
   State<EditProfPage> createState() => _EditProfPageState();
@@ -36,15 +37,14 @@ class _EditProfPageState extends State<EditProfPage> {
   }
 
   void loadProfData() async {
-    DocumentSnapshot prof =
+    Map<String, dynamic> prof =
         await get_Data().getProfById(widget.profId, context);
+    print(prof);
 
-    if (prof.exists) {
-      final data = prof.data() as Map<String, dynamic>;
-
-      _nomController.text = data['nom'];
-      _prenomController.text = data['prenom'];
-      _phoneController.text = data['phone'];
+    if (prof.isNotEmpty) {
+      _nomController.text = prof['nom'];
+      _prenomController.text = prof['prenom'];
+      _phoneController.text = prof['phone'];
     }
   }
 
@@ -238,6 +238,7 @@ class _EditProfPageState extends State<EditProfPage> {
                                     _prenomController.text,
                                     _phoneController.text,
                                     context);
+                                widget.callback();
                               }
                             },
                             child: const Text('Modifier le professseur'),
@@ -411,6 +412,7 @@ class _EditProfPageState extends State<EditProfPage> {
                                         _prenomController.text,
                                         _phoneController.text,
                                         context);
+                                    widget.callback();
                                   }
                                 },
                                 child: const Text('Modifier le professseur'),

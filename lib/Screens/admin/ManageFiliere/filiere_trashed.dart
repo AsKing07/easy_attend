@@ -1,23 +1,50 @@
 // ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
 
 class TrashFilierePage extends StatefulWidget {
-  const TrashFilierePage({super.key});
+  final Function() callback;
+
+  const TrashFilierePage({super.key, required this.callback});
 
   @override
   _TrashFilierePageState createState() => _TrashFilierePageState();
 }
 
 class _TrashFilierePageState extends State<TrashFilierePage> {
-  var allfiliere = [];
-  String searchText = '';
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
+  void fetchData() async {
+    try {
+      final response = await http
+          .get(Uri.parse('$BACKEND_URL/api/global/getInactifFiliereData'));
+      if (response.statusCode == 200) {
+        List<dynamic> filieres = jsonDecode(response.body);
+        _streamController.add(filieres);
+      } else {
+        throw Exception('Erreur lors de la récupération des filières');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,29 +63,24 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
       body: Column(
         children: [
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('filiere')
-                  .where('statut', isEqualTo: "0")
-                  .snapshots(),
+            child: StreamBuilder<List<dynamic>>(
+              stream: _streamController.stream,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data!.docs
+                  if (snapshot.data!
                       .isEmpty) // Afficher un message si aucun résultat n'est trouvé
                   {
                     return const NoResultWidget();
                   } else {
-                    final filieres = snapshot.data!.docs;
+                    List<dynamic>? filieres = snapshot.data;
 
                     return ListView.builder(
-                      itemCount: filieres.length,
+                      itemCount: filieres!.length,
                       itemBuilder: (context, index) {
                         final filiere = filieres[index];
-                        final filiereData =
-                            filiere.data() as Map<String, dynamic>;
 
                         return ListTile(
-                          title: Text(filiereData['nomFiliere']),
+                          title: Text(filiere['nomFiliere']),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -100,7 +122,9 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
                                           onPressed: () async {
                                             // Restaurer la filière de Firestore
                                             await set_Data().restoreFiliere(
-                                                filiere.id, context);
+                                                filiere['idFiliere'], context);
+                                            fetchData();
+                                            widget.callback();
                                             Navigator.of(context).pop();
                                           },
                                           child: const Text('Restaurer'),

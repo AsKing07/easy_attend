@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, camel_case_types, must_be_immutable, file_names
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,13 +10,15 @@ import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/pdfHelper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:http/http.dart' as http;
 
 class seeMyAttendance extends StatefulWidget {
-  DocumentSnapshot course;
+  final course;
 
   seeMyAttendance({super.key, required this.course});
 
@@ -23,32 +27,62 @@ class seeMyAttendance extends StatefulWidget {
 }
 
 class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
-  late DocumentSnapshot etudiant;
-  late DocumentSnapshot course;
+  late final etudiant;
+
   bool dataIsLoaded = false;
   int nombreTotalSeances = 0;
   int nombreDePresences = 0;
   double pourcentageDePresence = 0.0;
 
-  void loadStudent() async {
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
+
+  Future<void> fetchData() async {
     final x = await get_Data().loadCurrentStudentData();
-    await loadCourse();
     setState(() {
       etudiant = x;
       dataIsLoaded = true;
     });
-  }
 
-  Future loadCourse() async {
-    final x = await get_Data().getCourseById(widget.course.id, context);
-    setState(() {
-      course = x;
-    });
+    http.Response response;
+    try {
+      response = await http.get(Uri.parse(
+          '$BACKEND_URL/api/teacher/getSeanceData?idCours=${widget.course['idCours']}'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> seances = jsonDecode(response.body);
+        _streamController.add(seances);
+        print(seances);
+        int count = 0;
+        seances.forEach((seance) {
+          // Map<dynamic, dynamic> se = seance;
+          Map<String, dynamic> presenceEtudiant =
+              jsonDecode(seance['presenceEtudiant']);
+
+          if (presenceEtudiant[etudiant['uid']] == true) {
+            count++;
+          }
+        });
+        print(count);
+        setState(() {
+          nombreTotalSeances = seances.length;
+
+          nombreDePresences = count;
+          pourcentageDePresence = (nombreDePresences / nombreTotalSeances);
+        });
+      } else {
+        throw Exception('Erreur lors de la récupération des seances');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+      print(e);
+    }
   }
 
   @override
   void initState() {
-    loadStudent();
+    fetchData();
     initializeDateFormatting('fr');
     super.initState();
   }
@@ -64,12 +98,8 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
               child: LoadingAnimationWidget.hexagonDots(
                   color: AppColors.secondaryColor, size: 100),
             )
-          : StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('seance')
-                  .where('idCours', isEqualTo: course.id)
-                  .orderBy('dateSeance', descending: true)
-                  .snapshots(),
+          : StreamBuilder(
+              stream: _streamController.stream,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
@@ -81,31 +111,18 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                   return Center(child: Text('Erreur: ${snapshot.error}'));
                 }
 
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const NoResultWidget();
                 }
 
-                nombreTotalSeances = snapshot.data!.docs.length;
-                nombreDePresences = snapshot.data!.docs.where((seance) {
-                  Map<String, dynamic> data =
-                      seance.data() as Map<String, dynamic>;
-                  // Vérifiez si la valeur n'est pas nulle et convertissez-la en booléen
-                  return (data['presenceEtudiant'][etudiant.id] ?? false) ==
-                      true;
-                }).length;
-
-                pourcentageDePresence =
-                    (nombreDePresences / nombreTotalSeances);
-
                 List<DataRow> rows = [];
-                for (var seance in snapshot.data!.docs) {
-                  Map<String, dynamic> data =
-                      seance.data() as Map<String, dynamic>;
+                for (var seance in snapshot.data!) {
                   String date = DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr')
-                      .format(data['dateSeance'].toDate());
+                      .format(DateTime.parse(seance['dateSeance']).toLocal());
 
-                  bool statut = data['presenceEtudiant'][etudiant.id] ?? false;
-
+                  Map<String, dynamic> presenceEtudiant =
+                      jsonDecode(seance['presenceEtudiant']);
+                  bool statut = presenceEtudiant[etudiant['uid']];
                   rows.add(DataRow(cells: [
                     DataCell(Text(date)),
                     statut
@@ -123,7 +140,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                     child: Column(
                   children: [
                     Text(
-                      course['nomCours'],
+                      widget.course['nomCours'],
                       style: const TextStyle(
                         fontSize: FontSize.xLarge,
                         fontWeight: FontWeight.bold,
@@ -165,7 +182,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                           Uint8List pdfBytes = await pdfHelper.buildStudentPdf(
                               widget.course,
                               '${etudiant['nom']} ${etudiant['prenom']}',
-                              etudiant.id,
+                              etudiant['uid'],
                               context);
                           await pdfHelper.savePdf(
                               pdfBytes,

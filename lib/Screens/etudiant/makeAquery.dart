@@ -18,7 +18,7 @@ class MakeQuery extends StatefulWidget {
 }
 
 class _MakeQueryState extends State<MakeQuery> {
-  late DocumentSnapshot etudiant;
+  late Map<String, dynamic> etudiant;
   bool dataIsLoaded = false;
 
   String dropdownValue = 'Selectionnez un type';
@@ -43,18 +43,21 @@ class _MakeQueryState extends State<MakeQuery> {
     try {
       final x = await get_Data().loadCurrentStudentData();
 
-      final DocumentSnapshot query = await get_Data().getQueryById(x.id);
+      final Map<String, dynamic> query =
+          await get_Data().getQueryById(x['uid'], context);
 
       setState(() {
         etudiant = x;
+        if (query.isNotEmpty) {
+          querySubjectFromDB = query['sujet'];
+          queryTypeFromDB = query['type'];
+          queryStatusFromDB = query["statut"];
+          queryFromDB = query['details'];
+        }
         dataIsLoaded = true;
-        querySubjectFromDB = query['sujet'];
-        queryTypeFromDB = query['type'];
-        queryStatusFromDB = query["statut"];
-        queryFromDB = query['details'];
       });
     } catch (e) {
-      // print(e);
+      print(e);
     }
   }
 
@@ -70,7 +73,7 @@ class _MakeQueryState extends State<MakeQuery> {
         body: !dataIsLoaded
             ? Center(
                 child: LoadingAnimationWidget.hexagonDots(
-                    color: AppColors.secondaryColor, size: 200),
+                    color: AppColors.secondaryColor, size: 100),
               )
             : SingleChildScrollView(
                 child: Padding(
@@ -93,7 +96,7 @@ class _MakeQueryState extends State<MakeQuery> {
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(6.0),
                           child: DropdownButton(
                             isDense: true,
                             borderRadius: BorderRadius.circular(30),
@@ -186,10 +189,10 @@ class _MakeQueryState extends State<MakeQuery> {
                               DateTime x = DateTime.now();
                               await set_Data().createQuery(
                                   "${etudiant['nom']} ${etudiant['prenom']}",
-                                  etudiant.id,
+                                  etudiant['uid'],
                                   dropdownValue,
                                   _subjectController.text,
-                                  _queryController.text,
+                                  "${etudiant['nom']} ${etudiant['prenom']} : ${_queryController.text} ",
                                   "2",
                                   x,
                                   context);
@@ -209,7 +212,7 @@ class _MakeQueryState extends State<MakeQuery> {
                               title: queryTypeFromDB,
                               titleColor: Colors.black,
                               message:
-                                  "Objet de la requête: $querySubjectFromDB  \n \n   $queryFromDB \n \n Statut:  ${queryStatusFromDB == "2" ? "En attente de traitement" : queryStatusFromDB == "1" ? "Approuvé" : "Rejeté"}",
+                                  "Objet de la requête: $querySubjectFromDB  \n \n   $queryFromDB \n \n Statut:  ${queryStatusFromDB == "2" ? "En attente de traitement" : queryStatusFromDB == "1" ? "Approuvé" : queryStatusFromDB == "0" ? "Rejeté" : queryStatusFromDB}",
                               messageColor: Colors.black,
                               buttonOkText: 'Retour',
                               dialogRadius: 30.0,

@@ -1,4 +1,3 @@
-
 // ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,8 +14,10 @@ import 'package:easy_attend/Widgets/my_warning_widget.dart';
 
 class EditStudentPage extends StatefulWidget {
   final String studentId;
+  final void Function() callback;
 
-  const EditStudentPage({super.key, required this.studentId});
+  const EditStudentPage(
+      {super.key, required this.studentId, required this.callback});
 
   @override
   State<EditStudentPage> createState() => _EditStudentPageState();
@@ -35,33 +36,29 @@ class _EditStudentPageState extends State<EditStudentPage> {
   List<Filiere> Allfilieres = [];
 
   void loadStudentData() async {
-    DocumentSnapshot etudiant =
+    Map<String, dynamic> etudiant =
         await get_Data().getStudentById(widget.studentId, context);
 
-    if (etudiant.exists) {
-      final data = etudiant.data() as Map<String, dynamic>;
-      _nomController.text = data['nom'];
-      _prenomController.text = data['prenom'];
-      _phoneController.text = data['phone'];
-      _matriculeController.text = data['matricule'];
+    if (etudiant.isNotEmpty) {
+      //final data = etudiant.data() as Map<String, dynamic>;
+      _nomController.text = etudiant['nom'];
+      _prenomController.text = etudiant['prenom'];
+      _phoneController.text = etudiant['phone'];
+      _matriculeController.text = etudiant['matricule'];
     }
   }
 
   Future<void> loadAllActifFilieres() async {
-    List<QueryDocumentSnapshot> docsFiliere =
-        await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
       Filiere filiere = Filiere(
-        idDoc: doc.id,
-        nomFiliere: doc["nomFiliere"],
-        idFiliere: doc["idFiliere"],
-        statut: doc["statut"],
-        niveaux: List<String>.from(
-          doc['niveaux'],
-        ),
-      );
+          idDoc: doc['idFiliere'].toString(),
+          nomFiliere: doc["nomFiliere"],
+          idFiliere: doc["sigleFiliere"],
+          statut: doc["statut"] == 1,
+          niveaux: doc['niveaux'].split(','));
 
       fil.add(filiere);
     }
@@ -356,6 +353,8 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                     _selectedNiveau,
                                     _matriculeController.text,
                                     context);
+
+                                widget.callback();
                               }
                             },
                             text: "Modifier Etudiant",
@@ -631,6 +630,8 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                         _selectedNiveau,
                                         _matriculeController.text,
                                         context);
+
+                                    widget.callback();
                                   }
                                 },
                                 text: "Modifier Etudiant",

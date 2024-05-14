@@ -1,15 +1,23 @@
-// ignore_for_file: use_build_context_synchronously, file_names
+// ignore_for_file: use_build_context_synchronously, file_names, non_constant_identifier_names, prefer_typing_uninitialized_variables
+
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/addNewCourse.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/editCourse.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
 
 class ManageCoursePage extends StatefulWidget {
   const ManageCoursePage({super.key});
@@ -19,12 +27,201 @@ class ManageCoursePage extends StatefulWidget {
 }
 
 class _ManageCoursePageState extends State<ManageCoursePage> {
-  String searchText = '';
+  final TextEditingController _searchController = TextEditingController();
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
+  List<Filiere> Allfilieres = [];
+  Filiere? _selectedFiliere;
+  var _selectedNiveau;
+
+  void _onSearchChanged() {
+    fetchData();
+  }
+
+  Future<void> loadAllActifFilieres() async {
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
+    List<Filiere> fil = [];
+
+    for (var doc in docsFiliere) {
+      print(doc);
+      Filiere filiere = Filiere(
+        idDoc: doc['idFiliere'].toString(),
+        nomFiliere: doc["nomFiliere"],
+        idFiliere: doc["sigleFiliere"],
+        statut: doc["statut"] == 1,
+        niveaux: doc['niveaux'].split(','),
+      );
+
+      fil.add(filiere);
+    }
+
+    setState(() {
+      Allfilieres.addAll(fil);
+    });
+  }
+
+  Future<void> fetchData() async {
+    http.Response response;
+    try {
+      if (_selectedFiliere != null) {
+        if (_selectedNiveau != null) {
+          response = await http.get(Uri.parse(
+              '$BACKEND_URL/api/global/getCoursesData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}&niveau=$_selectedNiveau'));
+        } else {
+          response = await http.get(Uri.parse(
+              '$BACKEND_URL/api/global/getCoursesData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}'));
+        }
+      } else {
+        response = await http.get(Uri.parse(
+            '$BACKEND_URL/api/global/getCoursesData?search=${_searchController.text}'));
+      }
+      if (response.statusCode == 200) {
+        List<dynamic> courses = jsonDecode(response.body);
+        _streamController.add(courses);
+        print(courses);
+      } else {
+        throw Exception('Erreur lors de la récupération des cours');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadAllActifFilieres();
+
+    _searchController.addListener(_onSearchChanged);
+
+    fetchData();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _streamController.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
+          Container(
+              color: AppColors.secondaryColor,
+              height: 75,
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: MediaQuery.of(context).size.width >= 1024
+                    ? MediaQuery.of(context).size.width * 0.2
+                    : MediaQuery.of(context).size.width >= 600
+                        ? MediaQuery.of(context).size.width * 0.05
+                        : 10,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child:
+                        //Dropdown Filieres
+                        DropdownButtonFormField<Filiere>(
+                      dropdownColor: AppColors.secondaryColor,
+                      style: const TextStyle(
+                          color: AppColors.backgroundColor,
+                          fontSize: FontSize.small),
+                      value: _selectedFiliere,
+                      elevation: 18,
+                      onChanged: (Filiere? value) {
+                        setState(() {
+                          _selectedFiliere = value!;
+                          _selectedNiveau = null;
+                        });
+                        fetchData();
+                      },
+                      items: Allfilieres.map<DropdownMenuItem<Filiere>>(
+                          (Filiere value) {
+                        return DropdownMenuItem<Filiere>(
+                          value: value,
+                          child: Text(
+                            value.nomFiliere,
+                            style: const TextStyle(
+                                fontSize: 8.5, fontWeight: FontWeight.bold),
+                          ),
+                        );
+                      }).toList(),
+                      icon: const Icon(Icons.arrow_drop_down,
+                          color: AppColors.white),
+                      decoration: const InputDecoration(
+                        labelStyle: TextStyle(color: AppColors.white),
+                        labelText: 'Filière',
+                        enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.white, width: 2.0),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0))),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: //Dropdown Niveaux
+                        _selectedFiliere != null
+                            ? Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                decoration: BoxDecoration(
+                                  color: AppColors.secondaryColor,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  border: Border.all(
+                                      color: AppColors.white, width: 2.0),
+                                ),
+                                child: DropdownButton<String>(
+                                  value: _selectedNiveau,
+                                  dropdownColor: AppColors.secondaryColor,
+                                  style:
+                                      const TextStyle(color: AppColors.white),
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _selectedNiveau = value!;
+                                      fetchData();
+                                    });
+                                  },
+                                  items: _selectedFiliere!.niveaux
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                        style: const TextStyle(
+                                            color: AppColors.white),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  hint: const Text(
+                                    'Niveau',
+                                    style: TextStyle(color: AppColors.white),
+                                  ),
+                                  icon: const Icon(Icons.arrow_drop_down,
+                                      color: AppColors.white),
+                                  isExpanded: true,
+                                  underline:
+                                      const SizedBox(), // Supprime la ligne de séparation
+                                ),
+                              )
+                            : const SizedBox(),
+                  )
+                ],
+              )),
           Container(
             color: AppColors.secondaryColor,
             height: 80,
@@ -37,15 +234,25 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                       ? MediaQuery.of(context).size.width * 0.05
                       : 10,
             ),
-            child: SearchBar(
-              leading: const Icon(
-                Icons.search,
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: AppColors.white,
+                ),
+                hintText: "Rechercher",
+                hintStyle: TextStyle(color: AppColors.white),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: AppColors.white),
+                ),
               ),
-              hintText: "Rechercher",
+              style: const TextStyle(color: AppColors.white),
               onChanged: (value) {
-                setState(() {
-                  searchText = value;
-                });
+                _onSearchChanged();
               },
             ),
           ),
@@ -60,30 +267,32 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                 fontSize: FontSize.large),
           ),
           Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('cours')
-                .where('nomCours',
-                    isGreaterThanOrEqualTo: searchText.toUpperCase())
-                .where('nomCours',
-                    isLessThanOrEqualTo: '${searchText.toUpperCase()}\uf8ff')
-                .where('statut', isEqualTo: "1")
-                .snapshots(),
+              child: StreamBuilder<List<dynamic>>(
+            stream: _streamController.stream,
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data!.docs.isEmpty) {
-                  return const NoResultWidget();
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: LoadingAnimationWidget.hexagonDots(
+                      color: AppColors.secondaryColor, size: 200),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Erreur : ${snapshot.error}');
+              } else {
+                List<dynamic>? cours = snapshot.data;
+                if (cours!.isEmpty) {
+                  return const SingleChildScrollView(
+                    child: NoResultWidget(),
+                  );
                 } else {
-                  final cours = snapshot.data!.docs;
+                  final cours = snapshot.data!;
                   return ListView.builder(
                     itemCount: cours.length,
                     itemBuilder: (contex, index) {
                       final cour = cours[index];
-                      final courData = cour.data() as Map<String, dynamic>;
                       return ListTile(
-                        title: Text(courData['nomCours']),
+                        title: Text(cour['nomCours']),
                         subtitle: Text(
-                          courData['idCours'],
+                          cour['sigleCours'],
                           style:
                               const TextStyle(color: AppColors.secondaryColor),
                         ),
@@ -97,8 +306,10 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          EditCoursePage(id: cour.id)),
+                                      builder: (context) => EditCoursePage(
+                                            id: cour['idCours'],
+                                            callback: fetchData,
+                                          )),
                                 );
                               },
                             ),
@@ -139,8 +350,9 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                                       TextButton(
                                         onPressed: () async {
                                           // Supprimez la filière de Firestore
-                                          await set_Data()
-                                              .deleteCours(cour.id, context);
+                                          await set_Data().deleteCours(
+                                              cour['idCours'], context);
+                                          fetchData();
                                           Navigator.of(context).pop();
                                         },
                                         child: const Text('Supprimer'),
@@ -156,14 +368,6 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                     },
                   );
                 }
-              } else if (snapshot.hasError) {
-                Helper().ErrorMessage(context);
-                return const SizedBox();
-              } else {
-                return Center(
-                  child: LoadingAnimationWidget.hexagonDots(
-                      color: AppColors.secondaryColor, size: 200),
-                );
               }
             },
           ))
@@ -187,7 +391,9 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const AddNewCoursePage()),
+                        builder: (context) => AddNewCoursePage(
+                              callback: fetchData,
+                            )),
                   );
                 },
               ),
@@ -235,6 +441,8 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                           onPressed: () async {
                             // Supprimez les filière de Firestore
                             await set_Data().deleteAllCours(context);
+                            fetchData();
+
                             Navigator.of(context).pop();
                           },
                           child: const Text('Supprimer'),

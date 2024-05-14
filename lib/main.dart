@@ -6,6 +6,7 @@ import 'firebase_options.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
@@ -15,6 +16,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   ); //Initialiser Firebase
 
+  await dotenv.load(fileName: ".env");
   checkLocalisation();
 
   runApp(const MyApp());

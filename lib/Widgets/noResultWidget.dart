@@ -30,7 +30,7 @@ class _NoResultWidgetState extends State<NoResultWidget> {
             ),
           ),
           SizedBox(height: MediaQuery.of(context).size.height / 20),
-          const Text("Pas de résultats :(")
+          const Text("Pas de résultats 🥲")
         ],
       ),
     );

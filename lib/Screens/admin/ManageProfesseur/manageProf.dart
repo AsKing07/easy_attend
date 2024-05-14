@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, file_names
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
@@ -8,8 +11,10 @@ import 'package:easy_attend/Screens/admin/ManageProfesseur/prof_trashed.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/edit_Prof.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
 
 class ManageProf extends StatefulWidget {
   const ManageProf({super.key});
@@ -19,8 +24,48 @@ class ManageProf extends StatefulWidget {
 }
 
 class _ManageProfState extends State<ManageProf> {
-  String searchText = '';
+  final TextEditingController _searchController = TextEditingController();
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
   String searchFilter = 'Nom';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+
+    fetchData();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _streamController.close();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      final response = await http.get(Uri.parse(
+          '$BACKEND_URL/api/global/getProfData?search=${_searchController.text}&filtre=$searchFilter'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> profs = jsonDecode(response.body);
+        _streamController.add(profs);
+        print(profs);
+      } else {
+        throw Exception('Erreur lors de la récupération des profs');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,43 +87,69 @@ class _ManageProfState extends State<ManageProf> {
             child: Row(
               children: [
                 Expanded(
-                  child: SearchBar(
-                    leading: const Icon(
-                      Icons.search,
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: AppColors.white,
+                      ),
+                      iconColor: AppColors.white,
+                      hintText: "Rechercher",
+                      hintStyle: TextStyle(color: AppColors.white),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: AppColors.white, width: 2.0),
+                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.white),
+                      ),
                     ),
-                    hintText: "Rechercher",
+                    style: const TextStyle(color: AppColors.white),
                     onChanged: (value) {
-                      setState(() {
-                        searchText = value;
-                      });
+                      _onSearchChanged();
                     },
                   ),
                 ),
                 const SizedBox(width: 10),
-                DropdownButton<String>(
-                  dropdownColor: AppColors.secondaryColor,
-                  style: const TextStyle(
-                    color: AppColors.backgroundColor,
-                  ),
-                  value: searchFilter,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      searchFilter = newValue!;
-                    });
-                  },
-                  items: <String>['Nom', 'Prenom']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondaryColor,
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(color: AppColors.white, width: 2.0),
+                    ),
+                    child: DropdownButton<String>(
+                        dropdownColor: AppColors.secondaryColor,
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: FontSize.large),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                          color: AppColors.backgroundColor,
+                        ),
+                        value: searchFilter,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            searchFilter = newValue!;
+                          });
+                          fetchData();
+                        },
+                        items: <String>['Nom', 'Prenom']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: FontSize.large),
+                            ),
+                          );
+                        }).toList(),
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: AppColors.white),
+                        isExpanded: true,
+                        underline: const SizedBox()),
+                  ),
+                )
               ],
             ),
           ),
@@ -93,35 +164,34 @@ class _ManageProfState extends State<ManageProf> {
                 fontSize: FontSize.large),
           ),
           Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('prof')
-                      .where('statut', isEqualTo: "1")
-                      .where(searchFilter.toLowerCase().trim(),
-                          isGreaterThanOrEqualTo: searchText.toUpperCase())
-                      .where(searchFilter.toLowerCase().trim(),
-                          isLessThanOrEqualTo:
-                              '${searchText.toUpperCase()}\uf8ff')
-                      .snapshots(),
+              child: StreamBuilder<List<dynamic>>(
+                  stream: _streamController.stream,
                   builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data!.docs
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                          child: LoadingAnimationWidget.hexagonDots(
+                              color: AppColors.secondaryColor, size: 200));
+                    } else if (snapshot.hasError) {
+                      return Text('Erreur : ${snapshot.error}');
+                    } else {
+                      List<dynamic>? profs = snapshot.data;
+                      if (profs!
                           .isEmpty) // Afficher un message si aucun résultat n'est trouvé
                       {
-                        return const NoResultWidget();
+                        return const SingleChildScrollView(
+                          child: NoResultWidget(),
+                        );
                       } else {
-                        final profs = snapshot.data!.docs;
                         return ListView.builder(
                             itemCount: profs.length,
                             itemBuilder: (context, index) {
                               final prof = profs[index];
-                              final profData =
-                                  prof.data() as Map<String, dynamic>;
+
                               return ListTile(
-                                title: Text(
-                                    '${profData["nom"]}  ${profData["prenom"]}'),
+                                title:
+                                    Text('${prof["nom"]}  ${prof["prenom"]}'),
                                 subtitle: Text(
-                                  'Num : ${profData["phone"]}',
+                                  'Num : ${prof["phone"]}',
                                   style: const TextStyle(
                                       color: AppColors.secondaryColor,
                                       fontSize: FontSize.small),
@@ -138,7 +208,8 @@ class _ManageProfState extends State<ManageProf> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   EditProfPage(
-                                                    profId: prof.id,
+                                                    profId: prof['uid'],
+                                                    callback: fetchData,
                                                   )),
                                         );
                                       },
@@ -182,7 +253,8 @@ class _ManageProfState extends State<ManageProf> {
                                                 onPressed: () async {
                                                   // Supprimez le prof de Firestore
                                                   await set_Data().deleteProf(
-                                                      prof.id, context);
+                                                      prof['uid'], context);
+                                                  fetchData();
                                                   Navigator.of(context).pop();
                                                 },
                                                 child: const Text('Supprimer'),
@@ -197,11 +269,6 @@ class _ManageProfState extends State<ManageProf> {
                               );
                             });
                       }
-                    } else {
-                      return Center(
-                        child: LoadingAnimationWidget.hexagonDots(
-                            color: AppColors.secondaryColor, size: 200),
-                      );
                     }
                   }))
         ],
@@ -224,7 +291,9 @@ class _ManageProfState extends State<ManageProf> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const addNewProfPage()),
+                        builder: (context) => addNewProfPage(
+                              callback: fetchData,
+                            )),
                   );
                 },
               ),
@@ -296,7 +365,9 @@ class _ManageProfState extends State<ManageProf> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const TrashProfPage()),
+                        builder: (context) => TrashProfPage(
+                              callback: fetchData,
+                            )),
                   );
                 },
               ),

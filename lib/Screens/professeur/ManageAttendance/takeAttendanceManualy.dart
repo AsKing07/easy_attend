@@ -1,8 +1,9 @@
-// ignore_for_file: use_build_context_synchronously, must_be_immutable, file_names, non_constant_identifier_names, empty_catches
+// ignore_for_file: use_build_context_synchronously, must_be_immutable, file_names, non_constant_identifier_names, empty_catches, prefer_typing_uninitialized_variables, prefer_const_constructors_in_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
+import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,17 +12,20 @@ import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class TakeManualAttendance extends StatefulWidget {
-  String seanceId, courseId;
+  final seance, course;
+  final Function() callback;
+
   TakeManualAttendance(
-      {super.key, required this.seanceId, required this.courseId});
+      {super.key,
+      required this.seance,
+      required this.course,
+      required this.callback});
 
   @override
   State<TakeManualAttendance> createState() => _TakeManualAttendanceState();
 }
 
 class _TakeManualAttendanceState extends State<TakeManualAttendance> {
-  late DocumentSnapshot course;
-  late DocumentSnapshot seance;
   bool dataIsloaded = false;
   late List<Map<String, dynamic>> presenceEtudiant;
 
@@ -29,15 +33,14 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
 
   Future getEtudiantsCours() async {
     try {
-      await loadCourseSeance();
-      final List<QueryDocumentSnapshot> etudiantDoc = await get_Data()
+      final List<dynamic> etudiantDoc = await get_Data()
           .getEtudiantsOfAFiliereAndNiveau(
-              course['filiereId'], course['niveau']);
+              widget.course['idFiliere'], widget.course['niveau']);
 
       List<Etudiant> etudiants = [];
       for (var doc in etudiantDoc) {
         final etudiant = Etudiant(
-            uid: doc.id,
+            uid: doc['uid'],
             matricule: doc['matricule'],
             nom: doc['nom'],
             prenom: doc['prenom'],
@@ -45,69 +48,39 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
             idFiliere: doc['idFiliere'],
             filiere: doc["filiere"],
             niveau: doc['niveau'],
-            statut: doc['statut']);
+            statut: doc['statut'] == 1);
 
         etudiants.add(etudiant);
       }
-      DocumentSnapshot se = await FirebaseFirestore.instance
-          .collection('seance')
-          .doc(widget.seanceId)
-          .get();
 
       setState(() {
-        seance = se;
         AllEtudiant.addAll(etudiants);
         presenceEtudiant = List.generate(etudiants.length, (index) {
           return {'id': etudiants[index].uid, 'present': false};
         });
         dataIsloaded = true;
       });
-    } catch (e) {}
-  }
-
-  Future<void> loadCourseSeance() async {
-    DocumentSnapshot cours =
-        await get_Data().getCourseById(widget.courseId, context);
-    setState(() {
-      course = cours;
-    });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> enregistrerPresence() async {
-    try {
-      showDialog(
-          context: context,
-          builder: (context) => Center(
-                child: LoadingAnimationWidget.hexagonDots(
-                    color: AppColors.secondaryColor, size: 200),
-              ));
-      // Récupérer l'ID de la séance
-      String seanceId = widget.seanceId;
+    // Récupérer l'ID de la séance
+    String seanceId = widget.seance['idSeance'].toString();
 
-      // Créer un Map pour stocker les présences
-      Map<String, bool> presenceEtudiantsMap = {};
-      for (int i = 0; i < AllEtudiant.length; i++) {
-        presenceEtudiantsMap[AllEtudiant[i].uid!] =
-            presenceEtudiant[i]['present'];
-      }
+    // Créer un Map pour stocker les présences
+    Map<String, bool> presenceEtudiantsMap = {};
+    for (int i = 0; i < AllEtudiant.length; i++) {
+      presenceEtudiantsMap[AllEtudiant[i].uid!] =
+          presenceEtudiant[i]['present'];
+    }
 
-      // Mettre à jour le document Firebase
-      await FirebaseFirestore.instance
-          .collection('seance')
-          .doc(seanceId)
-          .update({
-        'presenceEtudiant': presenceEtudiantsMap,
-        'presenceTookOnce': true
-      });
+    // Mettre à jour le document Firebase
+    await set_Data()
+        .updateSeancePresence(seanceId, presenceEtudiantsMap, context);
 
-      // Afficher un message de confirmation
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Présence enregistrée avec succès'),
-        ),
-      );
-    } catch (e) {}
+    widget.callback();
   }
 
   @override
@@ -144,13 +117,13 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
                 const SizedBox(
                   height: 20,
                 ),
-                Text('Cours: ${course['nomCours']}',
+                Text('Cours: ${widget.course['nomCours']}',
                     style: GoogleFonts.poppins(
                         color: AppColors.textColor,
                         fontSize: FontSize.xxLarge,
                         fontWeight: FontWeight.w600)),
                 Text(
-                    'Séance du ${DateFormat('EEEE, d MMMM yyyy, hh:mm', 'fr').format(seance['dateSeance'].toDate())}',
+                    'Séance du ${DateFormat('EEEE, d MMM yy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal()).toUpperCase()}',
                     style: GoogleFonts.poppins(
                         color: AppColors.primaryColor,
                         fontSize: FontSize.medium,

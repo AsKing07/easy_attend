@@ -37,12 +37,34 @@ class Helper {
     );
   }
 
+  void networkErrorMessage(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return myErrorWidget(
+            content: "Une erreur de réseau s'est produite!", height: 140);
+      },
+    );
+  }
+
   void filiereExistanteMessage(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
         return myErrorWidget(
-            content: "Une filière avec le même id existe déjà.", height: 160);
+            content: "Une filière avec le même identifiant/Sigle existe déjà.",
+            height: 160);
+      },
+    );
+  }
+
+  void coursExistantMessage(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return myErrorWidget(
+            content: "Un cours avec le même identifiant/Sigle existe déjà.",
+            height: 160);
       },
     );
   }

@@ -1,15 +1,20 @@
 // ignore_for_file: camel_case_types, file_names, must_be_immutable
 
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/seeOneStudentAttendance.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:http/http.dart' as http;
 
 class listOfStudentsOfACourse extends StatefulWidget {
-  DocumentSnapshot<Object?> course;
+  final course;
   listOfStudentsOfACourse({super.key, required this.course});
 
   @override
@@ -18,6 +23,34 @@ class listOfStudentsOfACourse extends StatefulWidget {
 }
 
 class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
+  final BACKEND_URL = dotenv.env['API_URL'];
+  final StreamController<List<dynamic>> _streamController =
+      StreamController<List<dynamic>>();
+  Future<void> fetchData() async {
+    http.Response response;
+    try {
+      response = await http.get(Uri.parse(
+          '$BACKEND_URL/api/global/getStudentData?idFiliere=${widget.course['idFiliere']}&niveau=${widget.course['niveau']}'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> students = jsonDecode(response.body);
+        _streamController.add(students);
+        print(students);
+      } else {
+        throw Exception('Erreur lors de la récupération des étudiants');
+      }
+    } catch (e) {
+      // Gérer les erreurs ici
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,29 +79,34 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
           ),
           const SizedBox(height: 30),
           Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('etudiant')
-                .where('idFiliere', isEqualTo: widget.course['filiereId'])
-                .where('niveau', isEqualTo: widget.course['niveau'])
-                .snapshots(),
+              child: StreamBuilder(
+            stream: _streamController.stream,
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data!.docs.isEmpty) {
-                  return const NoResultWidget();
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                    child: LoadingAnimationWidget.hexagonDots(
+                        color: AppColors.secondaryColor, size: 200));
+              } else if (snapshot.hasError) {
+                return Text('Erreur : ${snapshot.error}');
+              } else {
+                List<dynamic>? students = snapshot.data;
+                if (students!
+                    .isEmpty) // Afficher un message si aucun résultat n'est trouvé
+                {
+                  return const SingleChildScrollView(
+                    child: NoResultWidget(),
+                  );
                 } else {
-                  final etudiants = snapshot.data!.docs;
                   return ListView.builder(
-                      itemCount: etudiants.length,
+                      itemCount: students.length,
                       itemBuilder: (context, index) {
-                        final etudiant = etudiants[index];
-                        final etudiantData =
-                            etudiant.data() as Map<String, dynamic>;
+                        final etudiant = students[index];
+
                         return ListTile(
-                          title: Text(
-                              '${etudiantData['nom']} ${etudiantData['prenom']}'),
+                          title:
+                              Text('${etudiant['nom']} ${etudiant['prenom']}'),
                           subtitle: Text(
-                            '${etudiantData['matricule']}',
+                            '${etudiant['matricule']}',
                             style: const TextStyle(
                                 color: AppColors.secondaryColor,
                                 fontSize: FontSize.small),
@@ -82,9 +120,9 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
                                     builder: (context) =>
                                         seeOneStudentAttendance(
                                           course: widget.course,
-                                          studentId: etudiant.id,
+                                          studentId: etudiant['uid'],
                                           studentName:
-                                              '${etudiantData['nom']} ${etudiantData['prenom']}',
+                                              '${etudiant['nom']} ${etudiant['prenom']}',
                                         )),
                               );
                             },
@@ -92,13 +130,6 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
                         );
                       });
                 }
-              } else if (snapshot.hasError) {
-                return const NoResultWidget();
-              } else {
-                return Center(
-                  child: LoadingAnimationWidget.hexagonDots(
-                      color: AppColors.secondaryColor, size: 200),
-                );
               }
             },
           ))

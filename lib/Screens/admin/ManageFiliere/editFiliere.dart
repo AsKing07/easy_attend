@@ -10,9 +10,11 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ModifierFilierePage extends StatefulWidget {
-  final String filiereId;
+  final filiereId;
+  final void Function() callback;
 
-  const ModifierFilierePage({super.key, required this.filiereId});
+  const ModifierFilierePage(
+      {super.key, required this.filiereId, required this.callback});
 
   @override
   _ModifierFilierePageState createState() => _ModifierFilierePageState();
@@ -33,14 +35,13 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
   }
 
   void loadFiliereData() async {
-    DocumentSnapshot filiere =
+    Map<String, dynamic> filiere =
         await get_Data().getFiliereById(widget.filiereId, context);
 
-    if (filiere.exists) {
-      final data = filiere.data() as Map<String, dynamic>;
-      _nomController.text = data['nomFiliere'];
-      _idController.text = data['idFiliere'];
-      niveauxSelectionnes = List<String>.from(data['niveaux']);
+    if (filiere.isNotEmpty) {
+      _nomController.text = filiere['nomFiliere'];
+      _idController.text = filiere['sigleFiliere'].toString();
+      niveauxSelectionnes = filiere['niveaux'].split(',');
       setState(() {
         niveauxAjoutes = niveauxSelectionnes.toList();
       });
@@ -239,6 +240,7 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
                                         _idController.text,
                                         niveauxSelectionnes,
                                         context);
+                                    widget.callback();
                                   } else {
                                     GFToast.showToast(
                                         "Sélectionner au moins un niveau",
@@ -436,6 +438,7 @@ class _ModifierFilierePageState extends State<ModifierFilierePage> {
                                             _idController.text,
                                             niveauxSelectionnes,
                                             context);
+                                        widget.callback();
                                       } else {
                                         GFToast.showToast(
                                             "Sélectionner au moins un niveau",
