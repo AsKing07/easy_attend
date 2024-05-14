@@ -2,9 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:firebase_auth/firebase_auth.dart';

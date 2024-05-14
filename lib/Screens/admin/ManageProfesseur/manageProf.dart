@@ -52,7 +52,7 @@ class _ManageProfState extends State<ManageProf> {
   Future<void> fetchData() async {
     try {
       final response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/global/getProfData?search=${_searchController.text}&filtre=$searchFilter'));
+          '$BACKEND_URL/api/prof/getProfData?search=${_searchController.text}&filtre=$searchFilter'));
 
       if (response.statusCode == 200) {
         List<dynamic> profs = jsonDecode(response.body);

@@ -14,15 +14,14 @@ class get_Data {
   //METHODES
 
   //METHODES DES FILIERES
-  Future getFiliereData() async {
-    var data = await FirebaseFirestore.instance.collection("filiere").get();
-
-    return data.docs;
-  }
+  // Future getFiliereData() async {
+  //   var data = await FirebaseFirestore.instance.collection("filiere").get();
+  //   return data.docs;
+  // }
 
   Future getActifFiliereData() async {
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getActifFiliereData'),
+      Uri.parse('$BACKEND_URL/api/filiere/getActifFiliereData'),
     );
 
     if (response.statusCode == 200) {
@@ -37,18 +36,11 @@ class get_Data {
       print('Erreur lors de la récupération des filieres actives');
     }
   }
-  // Future getActifFiliereData() async {
-  //   var data = await FirebaseFirestore.instance
-  //       .collection("filiere")
-  //       .where('statut', isEqualTo: "1")
-  //       .get();
-  //   return data.docs;
-  // }
 
   Future getFiliereById(id, BuildContext context) async {
     try {
       http.Response response = await http.get(
-        Uri.parse('$BACKEND_URL/api/global/getFiliereById/$id'),
+        Uri.parse('$BACKEND_URL/api/filiere/getFiliereById/$id'),
       );
 
       if (response.statusCode == 200) {
@@ -71,30 +63,8 @@ class get_Data {
           toastDuration: 6);
     }
   }
-  // Future getFiliereById(id, BuildContext context) async {
-  //   try {
-  //     DocumentSnapshot x =
-  //         await FirebaseFirestore.instance.collection('filiere').doc(id).get();
-  //     return x;
-  //   } catch (e) {
-  //     GFToast.showToast(
-  //         "Une erreur est subvenue lors de la récupération des données",
-  //         context,
-  //         backgroundColor: Colors.white,
-  //         textStyle: const TextStyle(color: Colors.red),
-  //         toastDuration: 6);
-  //   }
-  // }
 
   //METHODES DES ADMINS
-
-  // Future<DocumentSnapshot<Object?>> loadCurrentAdminData() async {
-  //   final uid = FirebaseAuth.instance.currentUser?.uid;
-  //   final DocumentSnapshot x =
-  //       await FirebaseFirestore.instance.collection("admin").doc(uid).get();
-  //   // print(uid);
-  //   return x;
-  // }
 
   Future loadCurrentAdminData() async {
     try {
@@ -126,7 +96,7 @@ class get_Data {
   Future loadCurrentStudentData() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getStudentById/$uid'),
+      Uri.parse('$BACKEND_URL/api/student/getStudentById/$uid'),
     );
 
     Map<String, dynamic> x = jsonDecode(response.body);
@@ -134,14 +104,6 @@ class get_Data {
 
     return x;
   }
-
-  // Future<DocumentSnapshot<Object?>> loadCurrentStudentData() async {
-  //   final uid = FirebaseAuth.instance.currentUser?.uid;
-  //   final DocumentSnapshot x =
-  //       await FirebaseFirestore.instance.collection("etudiant").doc(uid).get();
-  //   // print(uid);
-  //   return x;
-  // }
 
   Future getActifStudentData() async {
     http.Response response = await http.get(
@@ -160,17 +122,10 @@ class get_Data {
       print('Erreur lors de la récupération des étudiants actifs');
     }
   }
-  // Future getActifStudentData() async {
-  //   var data = await FirebaseFirestore.instance
-  //       .collection("etudiant")
-  //       .where("statut", isEqualTo: "1")
-  //       .get();
-  //   return data.docs;
-  // }
 
   Future getStudentData() async {
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getStudentData'),
+      Uri.parse('$BACKEND_URL/api/student/getStudentData'),
     );
     if (response.statusCode == 200) {
       // La requête a réussi, traiter la réponse ici
@@ -184,15 +139,11 @@ class get_Data {
       print('Erreur lors de la récupération des étudiants');
     }
   }
-  // Future getStudentData() async {
-  //   var data = await FirebaseFirestore.instance.collection("etudiant").get();
-  //   return data.docs;
-  // }
 
   Future getStudentById(id, BuildContext context) async {
     try {
       http.Response response = await http.get(
-        Uri.parse('$BACKEND_URL/api/global/getStudentById/${id}'),
+        Uri.parse('$BACKEND_URL/api/student/getStudentById/${id}'),
       );
 
       if (response.statusCode == 200 && response.body.isNotEmpty) {
@@ -208,50 +159,15 @@ class get_Data {
           toastDuration: 6);
     }
   }
-  // Future getStudentById(id, BuildContext context) async {
-  //   try {
-  //     DocumentSnapshot x =
-  //         await FirebaseFirestore.instance.collection('etudiant').doc(id).get();
-  //     return x;
-  //   } catch (e) {
-  //     GFToast.showToast(
-  //         "Une erreur est subvenue lors de la récupération des données",
-  //         context,
-  //         backgroundColor: Colors.white,
-  //         textStyle: const TextStyle(color: Colors.red),
-  //         toastDuration: 6);
-  //   }
-  // }
-
-  Future getEtudiantsOfAFiliere(String idFiliere) async {
-    // print(idFiliere);
-    var data = await FirebaseFirestore.instance
-        .collection("etudiant")
-        .where('idFiliere', isEqualTo: idFiliere)
-        .where('statut', isEqualTo: '1')
-        .get();
-    return data.docs;
-  }
 
   Future getEtudiantsOfAFiliereAndNiveau(
       String idFiliere, String niveau) async {
     http.Response response = await http.get(Uri.parse(
-        '$BACKEND_URL/api/global/getStudentData?idFiliere=${idFiliere}&niveau=$niveau'));
+        '$BACKEND_URL/api/student/getStudentData?idFiliere=${idFiliere}&niveau=$niveau'));
 
     List<dynamic> etudiants = jsonDecode(response.body);
     return etudiants;
   }
-  // Future getEtudiantsOfAFiliereAndNiveau(
-  //     String idFiliere, String niveau) async {
-  //   // print(idFiliere);
-  //   var data = await FirebaseFirestore.instance
-  //       .collection("etudiant")
-  //       .where('idFiliere', isEqualTo: idFiliere)
-  //       .where('niveau', isEqualTo: niveau.toUpperCase())
-  //       .where('statut', isEqualTo: '1')
-  //       .get();
-  //   return data.docs;
-  // }
 
   // METHODES DES PROFS
 
@@ -259,24 +175,17 @@ class get_Data {
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getProfById/$uid'),
+      Uri.parse('$BACKEND_URL/api/prof/getProfById/$uid'),
     );
 
     Map<String, dynamic> x = jsonDecode(response.body);
 
     return x;
   }
-  // Future<DocumentSnapshot<Object?>> loadCurrentProfData() async {
-  //   final uid = FirebaseAuth.instance.currentUser?.uid;
-  //   final DocumentSnapshot x =
-  //       await FirebaseFirestore.instance.collection("prof").doc(uid).get();
-  //   // print(uid);
-  //   return x;
-  // }
 
   Future getTeacherData() async {
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getProfData/'),
+      Uri.parse('$BACKEND_URL/api/prof/getProfData/'),
     );
 
     if (response.statusCode == 200) {
@@ -298,7 +207,7 @@ class get_Data {
   Future getProfById(id, BuildContext context) async {
     try {
       http.Response response = await http.get(
-        Uri.parse('$BACKEND_URL/api/global/getProfById/$id'),
+        Uri.parse('$BACKEND_URL/api/prof/getProfById/$id'),
       );
 
       if (response.statusCode == 200) {
@@ -322,24 +231,10 @@ class get_Data {
           toastDuration: 6);
     }
   }
-  // Future getProfById(id, BuildContext context) async {
-  //   try {
-  //     DocumentSnapshot x =
-  //         await FirebaseFirestore.instance.collection('prof').doc(id).get();
-  //     return x;
-  //   } catch (e) {
-  //     GFToast.showToast(
-  //         "Une erreur est subvenue lors de la récupération des données",
-  //         context,
-  //         backgroundColor: Colors.white,
-  //         textStyle: const TextStyle(color: Colors.red),
-  //         toastDuration: 6);
-  //   }
-  // }
 
   Future getActifTeacherData() async {
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getActifProfData'),
+      Uri.parse('$BACKEND_URL/api/prof/getActifProfData'),
     );
 
     if (response.statusCode == 200) {
@@ -354,20 +249,13 @@ class get_Data {
       print('Erreur lors de la récupération des profs actifs');
     }
   }
-  // Future getActifTeacherData() async {
-  //   var data = await FirebaseFirestore.instance
-  //       .collection("prof")
-  //       .where('statut', isEqualTo: "1")
-  //       .get();
-  //   return data.docs;
-  // }
 
 //METHODES DES COURS
 
 //Recupérer tous les cours
   Future getCourseData() async {
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getActifCoursesData'),
+      Uri.parse('$BACKEND_URL/api/cours/getActifCoursesData'),
     );
 
     if (response.statusCode == 200) {
@@ -382,17 +270,13 @@ class get_Data {
       print('Erreur lors de la récupération des profs actifs');
     }
   }
-  // Future getCourseData() async {
-  //   var data = await FirebaseFirestore.instance.collection("cours").get();
-  //   return data.docs;
-  // }
 
   //Récupérer un cours donné
 
   Future getCourseById(id, BuildContext context) async {
     try {
       http.Response response = await http.get(
-        Uri.parse('$BACKEND_URL/api/global/getCourseById/$id'),
+        Uri.parse('$BACKEND_URL/api/cours/getCourseById/$id'),
       );
 
       if (response.statusCode == 200) {
@@ -422,25 +306,10 @@ class get_Data {
     }
   }
 
-  // Future getCourseById(id, BuildContext context) async {
-  //   try {
-  //     DocumentSnapshot x =
-  //         await FirebaseFirestore.instance.collection('cours').doc(id).get();
-  //     return x;
-  //   } catch (e) {
-  //     GFToast.showToast(
-  //         "Une erreur est subvenue lors de la récupération des données",
-  //         context,
-  //         backgroundColor: Colors.white,
-  //         textStyle: const TextStyle(color: Colors.red),
-  //         toastDuration: 6);
-  //   }
-  // }
-
   // METHODES REQUETES
   Future getUnsolvedQueriesData() async {
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getUnsolvedRequestData'),
+      Uri.parse('$BACKEND_URL/api/requete/getUnsolvedRequestData'),
     );
 
     if (response.statusCode == 200) {
@@ -453,17 +322,10 @@ class get_Data {
       print('Erreur lors de la récupération des requêtes inactives');
     }
   }
-  // Future getUnsolvedQueriesData() async {
-  //   var data = await FirebaseFirestore.instance
-  //       .collection("requete")
-  //       .where("statut", isEqualTo: "2")
-  //       .get();
-  //   return data.docs;
-  // }
 
   Future getQueryById(id, BuildContext context) async {
     http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/global/getRequestById/$id'),
+      Uri.parse('$BACKEND_URL/api/requete/$id'),
     );
     print(response.body);
 
@@ -483,11 +345,6 @@ class get_Data {
           toastDuration: 6);
     }
   }
-  // Future getQueryById(id) async {
-  //   DocumentSnapshot query =
-  //       await FirebaseFirestore.instance.collection('requete').doc(id).get();
-  //   return query;
-  // }
 
   // METHODES SEANCES
 
@@ -495,8 +352,8 @@ class get_Data {
   Future getSeanceOfOneCourse(String courseId) async {
     http.Response response;
     try {
-      response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/teacher/getSeanceData?idCours=$courseId'));
+      response = await http.get(
+          Uri.parse('$BACKEND_URL/api/seance/getSeanceData?idCours=$courseId'));
 
       if (response.statusCode == 200) {
         List<dynamic> seances = jsonDecode(response.body);
@@ -509,37 +366,4 @@ class get_Data {
       print(e);
     }
   }
-  // Future getSeanceOfOneCourse(String courseId) async {
-  //   var data = await FirebaseFirestore.instance
-  //       .collection("seance")
-  //       .where("idCours", isEqualTo: courseId)
-  //       .get();
-  //   return data.docs;
-  // }
-
-  //Récuperer une séance
-
-  // Future getSeanceById(id, BuildContext context) async {
-  //   try {
-  //     DocumentSnapshot x =
-  //         await FirebaseFirestore.instance.collection('seance').doc(id).get();
-  //     return x;
-  //   } catch (e) {
-  //     GFToast.showToast(
-  //         "Une erreur est subvenue lors de la récupération des données",
-  //         context,
-  //         backgroundColor: Colors.white,
-  //         textStyle: const TextStyle(color: Colors.red),
-  //         toastDuration: 6);
-  //   }
-  // }
-
-  // Future getSeanceData(String seanceId) async {
-  //   var doc = await FirebaseFirestore.instance
-  //       .collection('seance')
-  //       .doc(seanceId)
-  //       .get();
-
-  //   return doc;
-  // }
 }

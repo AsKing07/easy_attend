@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/pdfHelper.dart';
-import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
@@ -72,8 +71,8 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
   }
 
   Future fetchStudent(id) async {
-    final response =
-        await http.get(Uri.parse('$BACKEND_URL/api/global/getStudentById/$id'));
+    final response = await http
+        .get(Uri.parse('$BACKEND_URL/api/student/getStudentById/$id'));
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
       return jsonData;

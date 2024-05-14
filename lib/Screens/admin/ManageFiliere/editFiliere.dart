@@ -1,11 +1,10 @@
-// ignore_for_file: library_private_types_in_public_api, file_names
+// ignore_for_file: library_private_types_in_public_api, file_names, prefer_typing_uninitialized_variables
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 

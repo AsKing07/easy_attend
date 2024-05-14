@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/seeOneStudentAttendance.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
@@ -30,7 +29,7 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
     http.Response response;
     try {
       response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/global/getStudentData?idFiliere=${widget.course['idFiliere']}&niveau=${widget.course['niveau']}'));
+          '$BACKEND_URL/api/student/getStudentData?idFiliere=${widget.course['idFiliere']}&niveau=${widget.course['niveau']}'));
 
       if (response.statusCode == 200) {
         List<dynamic> students = jsonDecode(response.body);

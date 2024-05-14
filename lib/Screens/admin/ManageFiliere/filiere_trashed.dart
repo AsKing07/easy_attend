@@ -28,7 +28,7 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
   void fetchData() async {
     try {
       final response = await http
-          .get(Uri.parse('$BACKEND_URL/api/global/getInactifFiliereData'));
+          .get(Uri.parse('$BACKEND_URL/api/filiere/getInactifFiliereData'));
       if (response.statusCode == 200) {
         List<dynamic> filieres = jsonDecode(response.body);
         _streamController.add(filieres);

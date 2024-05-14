@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable, file_names, unused_local_variable
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:getwidget/getwidget.dart';
@@ -9,7 +8,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 
 class CreateSeancePage extends StatefulWidget {

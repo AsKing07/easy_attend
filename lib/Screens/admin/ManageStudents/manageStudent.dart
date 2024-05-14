@@ -69,14 +69,14 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
       if (_selectedFiliere != null) {
         if (_selectedNiveau != null) {
           response = await http.get(Uri.parse(
-              '$BACKEND_URL/api/global/getStudentData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}&niveau=$_selectedNiveau'));
+              '$BACKEND_URL/api/stuent/getStudentData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}&niveau=$_selectedNiveau'));
         } else {
           response = await http.get(Uri.parse(
-              '$BACKEND_URL/api/global/getStudentData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}'));
+              '$BACKEND_URL/api/student/getStudentData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}'));
         }
       } else {
         response = await http.get(Uri.parse(
-            '$BACKEND_URL/api/global/getStudentData?search=${_searchController.text}'));
+            '$BACKEND_URL/api/student/getStudentData?search=${_searchController.text}'));
       }
       // final response = await http.get(Uri.parse(
       //     '$BACKEND_URL/api/global/getStudentData?search=${_searchController.text}&filtre=$searchFilter'));

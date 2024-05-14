@@ -1,8 +1,6 @@
 // ignore_for_file: file_names, must_be_immutable, avoid_unnecessary_containers
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

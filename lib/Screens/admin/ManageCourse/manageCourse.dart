@@ -67,14 +67,14 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
       if (_selectedFiliere != null) {
         if (_selectedNiveau != null) {
           response = await http.get(Uri.parse(
-              '$BACKEND_URL/api/global/getCoursesData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}&niveau=$_selectedNiveau'));
+              '$BACKEND_URL/api/cours/getCoursesData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}&niveau=$_selectedNiveau'));
         } else {
           response = await http.get(Uri.parse(
-              '$BACKEND_URL/api/global/getCoursesData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}'));
+              '$BACKEND_URL/api/cours/getCoursesData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}'));
         }
       } else {
         response = await http.get(Uri.parse(
-            '$BACKEND_URL/api/global/getCoursesData?search=${_searchController.text}'));
+            '$BACKEND_URL/api/cours/getCoursesData?search=${_searchController.text}'));
       }
       if (response.statusCode == 200) {
         List<dynamic> courses = jsonDecode(response.body);

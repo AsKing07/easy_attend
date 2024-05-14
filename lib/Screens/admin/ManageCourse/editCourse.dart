@@ -1,6 +1,5 @@
 // ignore_for_file: non_constant_identifier_names, must_be_immutable, file_names
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';

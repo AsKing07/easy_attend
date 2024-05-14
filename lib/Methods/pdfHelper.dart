@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:universal_html/html.dart' as html;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Widgets/helper.dart';

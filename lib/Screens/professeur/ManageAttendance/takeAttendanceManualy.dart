@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable, file_names, non_constant_identifier_names, empty_catches, prefer_typing_uninitialized_variables, prefer_const_constructors_in_immutables
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';

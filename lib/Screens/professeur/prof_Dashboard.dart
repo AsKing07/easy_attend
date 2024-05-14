@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
@@ -79,7 +78,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
     http.Response response;
     try {
       response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/global/getCoursesData?idFiliere=${_selectedFiliere?.idDoc}&idProf=${prof['uid']}'));
+          '$BACKEND_URL/api/cours/getCoursesData?idFiliere=${_selectedFiliere?.idDoc}&idProf=${prof['uid']}'));
 
       if (response.statusCode == 200) {
         List<dynamic> courses = jsonDecode(response.body);

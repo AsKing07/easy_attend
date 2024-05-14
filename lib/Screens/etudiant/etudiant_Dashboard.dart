@@ -54,7 +54,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
     http.Response response;
     try {
       response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/global/getCoursesData?idFiliere=${etudiant['idFiliere']}&niveau=${etudiant['niveau']}'));
+          '$BACKEND_URL/api/cours/getCoursesData?idFiliere=${etudiant['idFiliere']}&niveau=${etudiant['niveau']}'));
 
       if (response.statusCode == 200) {
         List<dynamic> courses = jsonDecode(response.body);

@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/set_data.dart';
@@ -43,7 +42,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
   Future<void> fetchData() async {
     try {
       final response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/global/getRequestData?filtre=${filter['valeur']}'));
+          '$BACKEND_URL/api/requete/getRequestData?filtre=${filter['valeur']}'));
       print(response.body);
       if (response.statusCode == 200) {
         List<dynamic> requete = jsonDecode(response.body);

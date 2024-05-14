@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/professeur/ProfHome.dart';
 import 'package:easy_attend/Widgets/helper.dart';
@@ -29,7 +28,7 @@ class auth_methods_prof {
       );
       final uid = FirebaseAuth.instance.currentUser!.uid;
       http.Response response = await http.get(
-        Uri.parse('$BACKEND_URL/api/global/getProfById/$uid'),
+        Uri.parse('$BACKEND_URL/api/prof/getProfById/$uid'),
       );
 
       Map<String, dynamic> prof = jsonDecode(response.body);

@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/helper.dart';
@@ -27,8 +26,8 @@ class _TrashProfPageState extends State<TrashProfPage> {
       StreamController<List<dynamic>>();
   void fetchData() async {
     try {
-      final response = await http
-          .get(Uri.parse('$BACKEND_URL/api/global/getInactifProfData'));
+      final response =
+          await http.get(Uri.parse('$BACKEND_URL/api/prof/getInactifProfData'));
       if (response.statusCode == 200) {
         List<dynamic> profs = jsonDecode(response.body);
         _streamController.add(profs);

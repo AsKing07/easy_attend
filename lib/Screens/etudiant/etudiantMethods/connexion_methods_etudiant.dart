@@ -34,7 +34,7 @@ class auth_methods_etudiant {
       final uid = FirebaseAuth.instance.currentUser!.uid;
       if (uid != null) {
         http.Response response = await http.get(
-          Uri.parse('$BACKEND_URL/api/global/getStudentById/$uid'),
+          Uri.parse('$BACKEND_URL/api/student/getStudentById/$uid'),
         );
 
         Map<String, dynamic> student = jsonDecode(response.body);

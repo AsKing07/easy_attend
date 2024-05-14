@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/pdfHelper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
@@ -43,7 +42,7 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
   Future fetchData() async {
     try {
       http.Response response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/teacher/getSeanceData?idCours=${widget.course['idCours']}'));
+          '$BACKEND_URL/api/seance/getSeanceData?idCours=${widget.course['idCours']}'));
 
       if (response.statusCode == 200) {
         List<dynamic> seances = jsonDecode(response.body);

@@ -42,7 +42,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
     http.Response response;
     try {
       response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/teacher/getSeanceData?idCours=${widget.course['idCours']}'));
+          '$BACKEND_URL/api/seance/getSeanceData?idCours=${widget.course['idCours']}'));
 
       if (response.statusCode == 200) {
         List<dynamic> seances = jsonDecode(response.body);
