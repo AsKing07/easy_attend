@@ -122,7 +122,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                   Map<String, dynamic> presenceEtudiant =
                       jsonDecode(seance['presenceEtudiant']);
                   print(etudiant['uid']);
-                  bool statut = presenceEtudiant[etudiant['uid']];
+                  bool statut = presenceEtudiant[etudiant['uid']] ?? false;
                   rows.add(DataRow(cells: [
                     DataCell(Text(date)),
                     statut

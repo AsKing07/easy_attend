@@ -393,7 +393,7 @@ class set_Data {
             ));
 
     http.Response response = await http.put(
-      Uri.parse('$BACKEND_URL/api/cours:'),
+      Uri.parse('$BACKEND_URL/api/cours/'),
       body: jsonEncode({
         'idCours': cours.idDoc,
         'nomCours': cours.nomCours.toUpperCase().trim(),

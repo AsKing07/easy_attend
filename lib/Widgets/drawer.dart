@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HelperDrawer extends StatefulWidget {
   List<MenuItems> items;
@@ -33,7 +34,7 @@ class HelperDrawer extends StatefulWidget {
 class _HelperDrawerState extends State<HelperDrawer> {
   final BACKEND_URL = dotenv.env['API_URL'];
   String name = "";
-  User? user = FirebaseAuth.instance.currentUser;
+  // User? user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
@@ -50,27 +51,30 @@ class _HelperDrawerState extends State<HelperDrawer> {
   }
 
   Future<void> _loadUserName() async {
-    http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/${widget.nom.toLowerCase()}/${user!.uid}'),
-    );
+    final prefs = await SharedPreferences.getInstance();
+    var utilisateur = json.decode(prefs.getString('user')!);
 
-    if (response.statusCode == 200 && response.body.isNotEmpty) {
-      Map<String, dynamic> user = jsonDecode(response.body);
-      setState(() {
-        name = '${user['nom']}  ${user['prenom']}';
-      });
-    } else {
-      setState(() {
-        name = widget.nom;
-      });
-    }
+    name = '${utilisateur['nom']}  ${utilisateur['prenom']}';
+
+    // http.Response response = await http.get(
+    //   Uri.parse('$BACKEND_URL/api/${widget.nom.toLowerCase()}/${user!.uid}'),
+    // );
+    // if (response.statusCode == 200 && response.body.isNotEmpty) {
+    //   Map<String, dynamic> user = jsonDecode(response.body);
+    //   setState(() {
+    //     name = '${user['nom']}  ${user['prenom']}';
+    //   });
+    // } else {
+    //   setState(() {
+    //     name = widget.nom;
+    //   });
+    // }
   }
   // Future<void> _loadUserName() async {
   //   final DocumentSnapshot x = await FirebaseFirestore.instance
   //       .collection(widget.nom.toLowerCase())
   //       .doc(user!.uid)
   //       .get();
-
   //   setState(() {
   //     if (x.exists) {
   //       name = '${x['nom']}  ${x['prenom']}';
@@ -118,7 +122,7 @@ class _HelperDrawerState extends State<HelperDrawer> {
                       children: [
                         Expanded(
                           child: InkWell(
-                            onTap: () {
+                            onTap: () async {
                               auth_methods_admin().logUserOut(context);
                             },
                             child: const Row(

@@ -55,7 +55,7 @@ class _EtudiantHomeState extends State<EtudiantHome> {
             }
           });
         },
-        nom: "Etudiant",
+        nom: "Student",
       ),
       appBar: AppBar(
         backgroundColor: AppColors.secondaryColor,

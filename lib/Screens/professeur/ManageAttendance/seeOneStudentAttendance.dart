@@ -116,7 +116,7 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
                         .toUpperCase();
                     Map<String, dynamic> presenceEtudiant =
                         jsonDecode(seance['presenceEtudiant']);
-                    bool statut = presenceEtudiant[widget.studentId];
+                    bool statut = presenceEtudiant[widget.studentId] ?? false;
 
                     rows.add(DataRow(cells: [
                       DataCell(Text(date)),

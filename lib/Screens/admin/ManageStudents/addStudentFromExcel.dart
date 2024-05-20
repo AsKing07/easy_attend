@@ -40,11 +40,10 @@ class _AddStudentFromExcelState extends State<AddStudentFromExcel> {
           final url = html.Url.createObjectUrl(file);
 
           await auth_methods_admin().addMultipleStudentFromWeb(file, context);
+          await widget.callback();
 
           // Clean up the URL object after use
           html.Url.revokeObjectUrl(url);
-
-          widget.callback();
         }
       });
 

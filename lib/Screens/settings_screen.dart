@@ -1,16 +1,14 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, prefer_typing_uninitialized_variables, non_constant_identifier_names
 
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Widgets/settings_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Config/utils.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 
 class SettingsScreen extends StatefulWidget {
   String nom;
@@ -21,26 +19,33 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final BACKEND_URL = dotenv.env['API_URL'];
+  var utilisateur;
 
-  User? user = FirebaseAuth.instance.currentUser;
   String name = "";
+  String email = "";
   final auth = FirebaseAuth.instance;
   Future<void> _loadUserName() async {
-    http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/${widget.nom.toLowerCase()}/${user!.uid}'),
-    );
+    // http.Response response = await http.get(
+    //   Uri.parse('$BACKEND_URL/api/${widget.nom.toLowerCase()}/${user!.uid}'),
+    // );
+    // if (response.statusCode == 200 && response.body.isNotEmpty) {
+    //   Map<String, dynamic> user = jsonDecode(response.body);
+    //   setState(() {
+    //     name = '${user['nom']}  ${user['prenom']}';
+    //   });
+    // } else {
+    //   setState(() {
+    //     name = widget.nom;
+    //   });
+    // }
+    final prefs = await SharedPreferences.getInstance();
+    var user = json.decode(prefs.getString('user')!);
 
-    if (response.statusCode == 200 && response.body.isNotEmpty) {
-      Map<String, dynamic> user = jsonDecode(response.body);
-      setState(() {
-        name = '${user['nom']}  ${user['prenom']}';
-      });
-    } else {
-      setState(() {
-        name = widget.nom;
-      });
-    }
+    setState(() {
+      name = '${user['nom']}  ${user['prenom']}';
+      email = '${user['email']}';
+      utilisateur = user;
+    });
   }
 
   @override
@@ -84,14 +89,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     letterSpacing: 2.0,
                     color: AppColors.textColor),
               ),
+              Text(
+                email,
+                style: const TextStyle(
+                    fontSize: 15.0,
+                    letterSpacing: 2.0,
+                    color: AppColors.textColor),
+              ),
               const SizedBox(height: 100.0),
               SettingsTile(
                 color: AppColors.secondaryColor,
                 icon: Icons.lock,
                 title: 'Changer le mot de passe',
                 onTap: () {
+                  print(utilisateur['email']);
                   auth
-                      .sendPasswordResetEmail(email: auth.currentUser!.email!)
+                      .sendPasswordResetEmail(email: utilisateur['email'])
                       .then((value) {
                     GFToast.showToast(
                         'Un e-mail de réinitialisation a été envoyé à votre adresse e-mail. Consultez également vos spams.',

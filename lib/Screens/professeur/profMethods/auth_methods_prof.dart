@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, camel_case_types, unused_catch_clause
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/professeur/ProfHome.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class auth_methods_prof {
   final BACKEND_URL = dotenv.env['API_URL'];
@@ -40,6 +42,11 @@ class auth_methods_prof {
           Helper().notAuthorizedMessage(context);
           FirebaseAuth.instance.signOut();
         } else {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setBool("loggedIn", true);
+          prefs.setString("role", "prof");
+
+          prefs.setString("user", json.encode(prof));
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => const ProfHome()));
         }
@@ -49,44 +56,24 @@ class auth_methods_prof {
         Helper().notAuthorizedMessage(context);
         FirebaseAuth.instance.signOut();
       }
-    } on FirebaseAuthException catch (e) {
+    } catch (e) {
       Navigator.pop(context);
-      Helper().badCredential(context);
+      if (e is FirebaseAuthException) {
+        print(e.code);
+        if (e.code == 'user-not-found' ||
+            e.code == 'wrong-password' ||
+            e.code == 'invalid-credential') {
+          Helper().badCredential(context);
+        } else {
+          Helper().ErrorMessage(context);
+        }
+      } else if (e is SocketException) {
+        Helper().networkErrorMessage(context);
+      } else {
+        Helper().ErrorMessage(context);
+      }
     }
   }
-  // Future logProfIn(String email, String password, BuildContext context) async {
-  //   showDialog(
-  //       context: context,
-  //       builder: (context) => Center(
-  //           child: LoadingAnimationWidget.hexagonDots(
-  //               color: AppColors.secondaryColor, size: 100)));
-  //   try {
-  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //       email: email.trim(),
-  //       password: password,
-  //     );
-  //     final uid = FirebaseAuth.instance.currentUser!.uid;
-  //     var userSnapshot =
-  //         await FirebaseFirestore.instance.collection("prof").doc(uid).get();
-  //     if (userSnapshot.exists) {
-  //       if (userSnapshot.data()!["statut"] == "0") {
-  //         Navigator.pop(context);
-  //         Helper().notAuthorizedMessage(context);
-  //         FirebaseAuth.instance.signOut();
-  //       } else {
-  //         Navigator.pushReplacement(context,
-  //             MaterialPageRoute(builder: (context) => const ProfHome()));
-  //       }
-  //     } else {
-  //       Navigator.pop(context);
-  //       Helper().notAuthorizedMessage(context);
-  //       FirebaseAuth.instance.signOut();
-  //     }
-  //   } on FirebaseAuthException catch (e) {
-  //     Navigator.pop(context);
-  //     Helper().badCredential(context);
-  //   }
-  // }
 
   void requestProfAccount(BuildContext context) {
     //Remplacer plus tard par effectuer une requette lorsque la logique des requette sera coder

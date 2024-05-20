@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class get_Data {
   final BACKEND_URL = dotenv.env['API_URL'];
@@ -66,40 +67,54 @@ class get_Data {
   //METHODES DES ADMINS
 
   Future loadCurrentAdminData() async {
-    try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      // Envoi d'une requête GET à l'API
-      http.Response response = await http.get(
-        Uri.parse('$BACKEND_URL/api/admin/$uid'),
-      );
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var utilisateur = json.decode(prefs.getString('user')!);
+    Map<String, dynamic> admin = utilisateur;
+    return admin;
+    // try {
+    //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+    //   var utilisateur = json.decode(prefs.getString('user')!);
+    //   // final uid = FirebaseAuth.instance.currentUser?.uid;
+    //   final uid = utilisateur['uid'];
 
-      if (response.statusCode == 200) {
-        // La requête a réussi, traiter la réponse ici
-        Map<String, dynamic> admin = jsonDecode(response.body);
-        // Utiliser les données de l'administrateur ici
-        // print(admin);
-        return admin;
-      } else {
-        // La requête a échoué, gérer l'erreur ici
-        print(
-            'Erreur lors de la récupération des données de l\'administrateur');
-      }
-    } catch (e) {
-      // Gérer l'erreur d'envoi de la requête ici
-      print('Erreur lors de l\'envoi de la requête');
-    }
+    //   // Envoi d'une requête GET à l'API
+    //   http.Response response = await http.get(
+    //     Uri.parse('$BACKEND_URL/api/admin/$uid'),
+    //   );
+
+    //   if (response.statusCode == 200) {
+    //     // La requête a réussi, traiter la réponse ici
+    //     Map<String, dynamic> admin = jsonDecode(response.body);
+    //     // Utiliser les données de l'administrateur ici
+    //     // print(admin);
+    //     return admin;
+    //   } else {
+    //     // La requête a échoué, gérer l'erreur ici
+    //     print(
+    //         'Erreur lors de la récupération des données de l\'administrateur');
+    //     return {'nom': 'Administrateur', 'prenom': 'Administrateur'};
+    //   }
+    // } catch (e) {
+    //   // Gérer l'erreur d'envoi de la requête ici
+    //   print('Erreur lors de l\'envoi de la requête');
+    //}
   }
 
   //METHODES DES ETUDIANTS
 
   Future loadCurrentStudentData() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/student/getStudentById/$uid'),
-    );
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var utilisateur = json.decode(prefs.getString('user')!);
+    //   // final uid = FirebaseAuth.instance.currentUser?.uid;
+    //   final uid = utilisateur['uid'];
+    // http.Response response = await http.get(
+    //   Uri.parse('$BACKEND_URL/api/student/getStudentById/$uid'),
+    // );
 
-    Map<String, dynamic> x = jsonDecode(response.body);
-    // print(uid);
+    // Map<String, dynamic> x = jsonDecode(response.body);
+    // // print(uid);
+
+    Map<String, dynamic> x = utilisateur;
 
     return x;
   }
@@ -171,15 +186,20 @@ class get_Data {
   // METHODES DES PROFS
 
   Future loadCurrentProfData() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    // final uid = FirebaseAuth.instance.currentUser?.uid;
 
-    http.Response response = await http.get(
-      Uri.parse('$BACKEND_URL/api/prof/getProfById/$uid'),
-    );
+    // http.Response response = await http.get(
+    //   Uri.parse('$BACKEND_URL/api/prof/getProfById/$uid'),
+    // );
 
-    Map<String, dynamic> x = jsonDecode(response.body);
+    // Map<String, dynamic> x = jsonDecode(response.body);
 
-    return x;
+    // return x;
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var utilisateur = json.decode(prefs.getString('user')!);
+    Map<String, dynamic> prof = utilisateur;
+    return prof;
   }
 
   Future getTeacherData() async {
@@ -323,6 +343,7 @@ class get_Data {
   }
 
   Future getQueryById(id, BuildContext context) async {
+    print(id);
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/requete/$id'),
     );

@@ -1,7 +1,11 @@
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Screens/admin/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
+import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
+import 'package:easy_attend/Screens/professeur/ProfHome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
@@ -18,8 +22,11 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
   checkLocalisation();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  runApp(const MyApp());
+  runApp(MyApp(
+    prefs: prefs,
+  ));
 }
 
 //Fonction de demande des permissions de service localisation
@@ -50,54 +57,51 @@ Future checkLocalisation() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final prefs;
+  const MyApp({super.key, required this.prefs});
 
   // Ce widget est la racine de l'application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
-    );
+    return MaterialApp(
+        debugShowCheckedModeBanner: false, home: SplashScreen(prefs: prefs));
   }
 }
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  final prefs;
+  SplashScreen({super.key, required this.prefs});
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSplashScreen(
-      splash: const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Easy",
-                style: TextStyle(
-                  color: AppColors.primaryColor,
-                  fontSize: 30,
-                  letterSpacing: 10.0,
-                ),
-              ),
-              Text(
-                "Attend",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  letterSpacing: 10.0,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      backgroundColor: AppColors.textColor,
-      nextScreen: const AuthPage(),
-      duration: 800,
-      splashTransition: SplashTransition.fadeTransition,
+    return FutureBuilder(
+      future: checkUserLoggedIn(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Afficher un indicateur de chargement en attendant la vérification
+        } else {
+          if (snapshot.data == true) {
+            // Utilisateur connecté, rediriger en fonction du rôle
+            final String role = prefs.getString("role") ?? "";
+            if (role == "admin") {
+              return AdminHome(); // Rediriger vers la page d'administration
+            } else if (role == "student") {
+              return EtudiantHome(); // Rediriger vers la page d'étudiant
+            } else if (role == "prof") {
+              return ProfHome(); // Rediriger vers la page de professeur
+            }
+          }
+          // Utilisateur non connecté, rediriger vers la page de connexion
+          return AuthPage();
+        }
+      },
     );
+  }
+
+  Future<bool> checkUserLoggedIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    bool loggedIn = prefs.getBool("loggedIn") ?? false;
+    return loggedIn;
   }
 }

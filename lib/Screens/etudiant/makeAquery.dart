@@ -42,8 +42,7 @@ class _MakeQueryState extends State<MakeQuery> {
     try {
       final x = await get_Data().loadCurrentStudentData();
 
-      final Map<String, dynamic> query =
-          await get_Data().getQueryById(x['uid'], context);
+      final dynamic query = await get_Data().getQueryById(x['uid'], context);
 
       setState(() {
         etudiant = x;

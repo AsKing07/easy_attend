@@ -16,6 +16,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:excel/excel.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:http/http.dart' as http;
 
@@ -37,6 +38,15 @@ class auth_methods_admin {
   Future signUp(String email, String password, String nom, String prenom,
       String phone, BuildContext context) async {
     try {
+      showDialog(
+        context: context,
+        builder: (context) => Center(
+          child: LoadingAnimationWidget.hexagonDots(
+            color: AppColors.secondaryColor,
+            size: 100,
+          ),
+        ),
+      );
       // Création de l'utilisateur
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -136,7 +146,13 @@ class auth_methods_admin {
         Uri.parse('$BACKEND_URL/api/admin/$uid'),
       );
 
+      Map<String, dynamic> admin = jsonDecode(response.body);
       if (response.statusCode == 200 && response.body.isNotEmpty) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool("loggedIn", true);
+        prefs.setString("role", "admin");
+        prefs.setString("user", json.encode(admin));
+
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const AdminHome()),
@@ -253,7 +269,7 @@ class auth_methods_admin {
 
       http.Response response = await http.get(
         Uri.parse(
-            '$BACKEND_URL/api/global/getStudentByMatricule?matricule=${etudiant.matricule}'),
+            '$BACKEND_URL/api/student/getStudentByMatricule?matricule=${etudiant.matricule}'),
       );
 
       if (response.statusCode == 200 && response.body.isNotEmpty) {
@@ -280,7 +296,7 @@ class auth_methods_admin {
         if (uid != null) {
           // Envoi des informations de l'utilisateur au backend pour enregistrement dans la base de données SQL
           http.Response response = await http.post(
-            Uri.parse('$BACKEND_URL/api/admin/students'),
+            Uri.parse('$BACKEND_URL/api/student'),
             body: jsonEncode({
               'uid': uid,
               'email': etudiant.email!.trim(),
@@ -295,6 +311,7 @@ class auth_methods_admin {
             }),
             headers: {'Content-Type': 'application/json'},
           );
+          print(response.body);
 
           if (response.statusCode == 200) {
             Navigator.pop(context);
@@ -663,8 +680,17 @@ class auth_methods_admin {
   }
 
   //log out user method
-  void logUserOut(BuildContext context) {
+  void logUserOut(BuildContext context) async {
     FirebaseAuth.instance.signOut();
+
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.setBool("loggedIn", false);
+    prefs.remove("role");
+    prefs.remove("email");
+    prefs.remove("mdp");
+    prefs.remove("user");
+
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const AuthPage()),
