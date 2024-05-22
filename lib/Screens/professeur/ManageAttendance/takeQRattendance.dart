@@ -2,6 +2,7 @@
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -18,6 +19,9 @@ class TakeQrAttendancePage extends StatefulWidget {
 
 class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
   bool started = false;
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
 
   @override
   void initState() {
@@ -70,11 +74,13 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                               thickness: 2,
                             ),
                           ),
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 350),
-                            child: Lottie.asset('assets/qrAnim.json'),
-                          ),
-                          const SizedBox(height: 10),
+                          !isWebMobile
+                              ? ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 350),
+                                  child: Lottie.asset('assets/qrAnim.json'),
+                                )
+                              : const SizedBox(height: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,

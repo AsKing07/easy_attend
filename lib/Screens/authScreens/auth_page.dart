@@ -80,27 +80,27 @@ class _AuthPageState extends State<AuthPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Authentification'),
-        actions: screenSize()
-                .isWeb() // Vérifier si l'application est en cours d'exécution dans un navigateur web
-            ? [
-                IconButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return WarningWidget(
-                          title: "Information",
-                          content:
-                              "Les étudiants doivent se procurer l'application mobile",
-                          height: 150,
-                        );
-                      },
-                    );
-                  },
-                  icon: const Icon(Icons.info),
-                ),
-              ]
-            : null, // Ne rien afficher si ce n'est pas sur le web
+        // actions: screenSize()
+        //         .isWeb() // Vérifier si l'application est en cours d'exécution dans un navigateur web
+        //     ? [
+        //         IconButton(
+        //           onPressed: () {
+        //             showDialog(
+        //               context: context,
+        //               builder: (context) {
+        //                 return WarningWidget(
+        //                   title: "Information",
+        //                   content:
+        //                       "Les étudiants doivent se procurer l'application mobile",
+        //                   height: 150,
+        //                 );
+        //               },
+        //             );
+        //           },
+        //           icon: const Icon(Icons.info),
+        //         ),
+        //       ]
+        //     : null, // Ne rien afficher si ce n'est pas sur le web
       ),
       body: Container(
         color: AppColors.backgroundColor,
@@ -165,8 +165,8 @@ class _AuthPageState extends State<AuthPage> {
                         items: <String>[
                           'Administrateur',
                           'Professeur',
-                          if (!screenSize().isWeb() && screenSize().isAndroid())
-                            'Etudiant'
+                          //if (!screenSize().isWeb() && screenSize().isAndroid())
+                          'Etudiant'
                         ]
                             .map<DropdownMenuItem<String>>(
                               (String value) => DropdownMenuItem<String>(

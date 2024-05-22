@@ -919,7 +919,11 @@ class set_Data {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Présence enregistrée avec succès'),
+          backgroundColor: AppColors.secondaryColor,
+          content: Text(
+            'Présence enregistrée avec succès',
+            style: TextStyle(color: AppColors.white),
+          ),
         ),
       );
     } else {

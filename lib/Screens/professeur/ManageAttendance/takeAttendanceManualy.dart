@@ -1,10 +1,13 @@
 // ignore_for_file: use_build_context_synchronously, must_be_immutable, file_names, non_constant_identifier_names, empty_catches, prefer_typing_uninitialized_variables, prefer_const_constructors_in_immutables
 
+import 'dart:convert';
+
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -27,6 +30,7 @@ class TakeManualAttendance extends StatefulWidget {
 class _TakeManualAttendanceState extends State<TakeManualAttendance> {
   bool dataIsloaded = false;
   late List<Map<String, dynamic>> presenceEtudiant;
+  late Map<String, dynamic> oldPresenceEtudiant;
 
   late List<Etudiant> AllEtudiant = [];
 
@@ -51,12 +55,17 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
 
         etudiants.add(etudiant);
       }
+      oldPresenceEtudiant = jsonDecode(widget.seance['presenceEtudiant']);
 
       setState(() {
         AllEtudiant.addAll(etudiants);
         presenceEtudiant = List.generate(etudiants.length, (index) {
-          return {'id': etudiants[index].uid, 'present': false};
+          return {
+            'id': etudiants[index].uid,
+            'present': oldPresenceEtudiant['${etudiants[index].uid}'] == true
+          };
         });
+
         dataIsloaded = true;
       });
     } catch (e) {
@@ -133,6 +142,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
                         itemCount: AllEtudiant.length,
                         itemBuilder: (context, index) {
                           return CheckboxListTile(
+                            activeColor: AppColors.secondaryColor,
                             title: Text(
                                 '${AllEtudiant[index].nom} ${AllEtudiant[index].prenom}'),
                             value: presenceEtudiant[index]['present'],
@@ -145,11 +155,17 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
                         })),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10, top: 10),
-                  child: ElevatedButton(
+                  child: GFButton(
                     onPressed: () async {
                       await enregistrerPresence();
                     },
-                    child: const Text('Enregistrer la présence'),
+                    text: "Enregistrer la présence",
+                    textStyle: const TextStyle(
+                        color: AppColors.white,
+                        fontSize: FontSize.large,
+                        fontWeight: FontWeight.bold),
+                    shape: GFButtonShape.pills,
+                    fullWidthButton: true,
                   ),
                 ),
               ],

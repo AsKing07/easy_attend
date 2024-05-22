@@ -1,13 +1,16 @@
 // ignore_for_file: use_build_context_synchronously, file_names, avoid_unnecessary_containers
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import '../../Config/utils.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class GiveQrAttendancePage extends StatefulWidget {
   const GiveQrAttendancePage({super.key});
@@ -18,10 +21,33 @@ class GiveQrAttendancePage extends StatefulWidget {
 
 class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
   String studentId = "";
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
 
-  void scanPass(BuildContext context) async {
-    String res = await FlutterBarcodeScanner.scanBarcode(
-        "#ff6666", 'Arreter le scan', true, ScanMode.QR);
+  void scanPassWeb() async {
+    if (isWebMobile) {
+      String scanResult = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const SimpleBarcodeScannerPage()),
+      );
+      scanPass(context, res: scanResult);
+    } else {
+      GFToast.showToast(
+          "Le scan n'est pris en charge que pour les navigateurs Web mobiles.",
+          backgroundColor: AppColors.redColor,
+          context,
+          toastDuration: 6);
+    }
+  }
+
+  void scanPass(BuildContext context, {String res = ""}) async {
+    !screenSize()
+            .isWeb() // Vérifier si l'application est en cours d'exécution dans un navigateur web
+        ? res = await FlutterBarcodeScanner.scanBarcode(
+            "#ff6666", 'Arreter le scan', true, ScanMode.QR)
+        : null;
     final x = await get_Data().getSeanceByCode(res);
     print(x);
 
@@ -189,9 +215,9 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
   }
 
   void getStudentId() async {
-    DocumentSnapshot x = await get_Data().loadCurrentStudentData();
+    dynamic x = await get_Data().loadCurrentStudentData();
     setState(() {
-      studentId = x.id;
+      studentId = x['uid'];
     });
   }
 
@@ -230,8 +256,9 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
               thickness: 2,
             ),
           ),
-          Lottie.asset('assets/qrAnim.json'),
-          const SizedBox(height: 10),
+          !isWebMobile
+              ? Lottie.asset('assets/qrAnim.json')
+              : const SizedBox(height: 10),
           const Text(
             '1. Tenez le téléphone en position verticale.',
             style: TextStyle(fontSize: 16),
@@ -251,8 +278,11 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
           ),
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: () {
-              scanPass(context);
+            onPressed: () async {
+              screenSize()
+                      .isWeb() // Vérifier si l'application est en cours d'exécution dans un navigateur web
+                  ? scanPassWeb()
+                  : scanPass(context);
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: AppColors.white,
