@@ -102,7 +102,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 icon: Icons.lock,
                 title: 'Changer le mot de passe',
                 onTap: () {
-                  print(utilisateur['email']);
                   auth
                       .sendPasswordResetEmail(email: utilisateur['email'])
                       .then((value) {

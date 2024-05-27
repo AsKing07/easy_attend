@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:easy_attend/Config/styles.dart';
@@ -10,8 +12,8 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:http/http.dart' as http;
 
 class SeeSeanceAttendanceProf extends StatefulWidget {
-  final seance;
-  final course;
+  final dynamic seance;
+  final dynamic course;
   const SeeSeanceAttendanceProf(
       {Key? key, required this.seance, required this.course})
       : super(key: key);
@@ -119,7 +121,7 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 15),
-                  (presenceEtudiants == null || presenceEtudiants.isEmpty)
+                  (presenceEtudiants.isEmpty)
                       ? const Center(
                           child: Text(
                           'Aucune présence enregistrée pour cette séance',
@@ -173,7 +175,7 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
                                           context);
                                   await pdfHelper.savePdf(
                                       pdfBytes,
-                                      '${widget.course['nomCours']}- ${widget.course['niveau']}- ${date}',
+                                      '${widget.course['nomCours']}- ${widget.course['niveau']}- $date',
                                       context);
                                 },
                                 icon: const Icon(Icons.print,

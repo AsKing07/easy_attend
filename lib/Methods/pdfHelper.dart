@@ -179,8 +179,8 @@ class PDFHelper {
     //     .where('idCours', isEqualTo: course.id)
     //     .orderBy('dateSeance', descending: true)
     //     .get();
-    final seancesSnapshot =
-        await get_Data().getSeanceOfOneCourse(course['idCours'].toString());
+    final seancesSnapshot = await get_Data()
+        .getSeanceOfOneCourse(course['idCours'].toString(), context);
 
     nombreTotalSeances = seancesSnapshot.length;
 

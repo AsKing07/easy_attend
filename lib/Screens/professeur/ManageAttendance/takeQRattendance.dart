@@ -9,9 +9,9 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:lottie/lottie.dart';
 
 class TakeQrAttendancePage extends StatefulWidget {
-  final seance;
+  final dynamic seance;
   final Function() callback;
-  TakeQrAttendancePage(
+  const TakeQrAttendancePage(
       {super.key, required this.seance, required this.callback});
   @override
   State<TakeQrAttendancePage> createState() => _TakeQrAttendancePageState();

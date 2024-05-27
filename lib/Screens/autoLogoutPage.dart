@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
 import 'package:flutter/material.dart';

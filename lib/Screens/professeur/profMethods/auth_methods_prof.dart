@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, camel_case_types, unused_catch_clause
+// ignore_for_file: use_build_context_synchronously, camel_case_types, unused_catch_clause, non_constant_identifier_names
 
 import 'dart:convert';
 import 'dart:io';
@@ -59,7 +59,6 @@ class auth_methods_prof {
     } catch (e) {
       Navigator.pop(context);
       if (e is FirebaseAuthException) {
-        print(e.code);
         if (e.code == 'user-not-found' ||
             e.code == 'wrong-password' ||
             e.code == 'invalid-credential') {

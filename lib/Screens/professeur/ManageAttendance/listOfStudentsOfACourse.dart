@@ -1,4 +1,4 @@
-// ignore_for_file: camel_case_types, file_names, must_be_immutable
+// ignore_for_file: camel_case_types, file_names, must_be_immutable, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
@@ -13,8 +13,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
 class listOfStudentsOfACourse extends StatefulWidget {
-  final course;
-  listOfStudentsOfACourse({super.key, required this.course});
+  final dynamic course;
+  const listOfStudentsOfACourse({super.key, required this.course});
 
   @override
   State<listOfStudentsOfACourse> createState() =>
@@ -34,13 +34,18 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
       if (response.statusCode == 200) {
         List<dynamic> students = jsonDecode(response.body);
         _streamController.add(students);
-        print(students);
       } else {
         throw Exception('Erreur lors de la récupération des étudiants');
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les étudiants. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names, library_private_types_in_public_api, file_names, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
@@ -53,12 +53,18 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
       if (response.statusCode == 200) {
         List<dynamic> filieres = jsonDecode(response.body);
         _streamController.add(filieres);
-        print(filieres);
       } else {
         throw Exception('Erreur lors de la récupération des filières');
       }
     } catch (e) {
       // Gérer les erreurs ici
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les filières. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -189,6 +195,7 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                                               context,
                                             );
                                             fetchData();
+
                                             Navigator.of(context).pop();
                                           },
                                           child: const Text('Supprimer'),

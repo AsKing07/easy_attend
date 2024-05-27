@@ -1,9 +1,8 @@
-// ignore_for_file: use_build_context_synchronously, file_names
+// ignore_for_file: use_build_context_synchronously, file_names, non_constant_identifier_names
 
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/addNewProf.dart';
@@ -57,13 +56,18 @@ class _ManageProfState extends State<ManageProf> {
       if (response.statusCode == 200) {
         List<dynamic> profs = jsonDecode(response.body);
         _streamController.add(profs);
-        print(profs);
       } else {
         throw Exception('Erreur lors de la récupération des profs');
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les professeurs. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

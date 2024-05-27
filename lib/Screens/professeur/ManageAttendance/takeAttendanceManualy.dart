@@ -69,7 +69,14 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
         dataIsloaded = true;
       });
     } catch (e) {
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Impossible de récupérer les étudiants de ce cours. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

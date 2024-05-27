@@ -1,9 +1,8 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, file_names
+// ignore_for_file: prefer_typing_uninitialized_variables, file_names, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
@@ -59,13 +58,24 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
       if (response.statusCode == 200) {
         List<dynamic> courses = jsonDecode(response.body);
         _streamController.add(courses);
-        print(courses);
       } else {
-        throw Exception('Erreur lors de la récupération des cours');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Impossible de récupérer les cours.'),
+            duration: Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les cours. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

@@ -49,7 +49,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
   }
 
   Future<void> loadAllActifFilieres() async {
-    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
@@ -88,7 +88,15 @@ class _ProfDashboardState extends State<ProfDashboard> {
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Impossible de récupérer les cours. Erreur:$e'),
+            duration: const Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

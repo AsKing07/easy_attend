@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
@@ -43,16 +43,27 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
     try {
       final response = await http.get(Uri.parse(
           '$BACKEND_URL/api/requete/getRequestData?filtre=${filter['valeur']}'));
-      print(response.body);
       if (response.statusCode == 200) {
         List<dynamic> requete = jsonDecode(response.body);
         _streamController.add(requete);
-        print(requete);
       } else {
-        throw Exception('Erreur lors de la récupération des requete');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Impossible de récupérer les requêtes. '),
+            duration: Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       // Gérer les erreurs ici
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les requêtes. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -181,7 +192,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Container(
+                                                  SizedBox(
                                                     width: 160,
                                                     child: Text(
                                                       query['type'].toString(),

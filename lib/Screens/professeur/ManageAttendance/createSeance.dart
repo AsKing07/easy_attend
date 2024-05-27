@@ -11,9 +11,9 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 
 class CreateSeancePage extends StatefulWidget {
-  final course;
+  final dynamic course;
 
-  CreateSeancePage({super.key, required this.course});
+  const CreateSeancePage({super.key, required this.course});
 
   @override
   State<CreateSeancePage> createState() => _CreateSeancePageState();

@@ -1,4 +1,3 @@
-import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
 import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
@@ -9,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -57,7 +55,7 @@ Future checkLocalisation() async {
 }
 
 class MyApp extends StatelessWidget {
-  final prefs;
+  final dynamic prefs;
   const MyApp({super.key, required this.prefs});
 
   // Ce widget est la racine de l'application.
@@ -69,8 +67,8 @@ class MyApp extends StatelessWidget {
 }
 
 class SplashScreen extends StatelessWidget {
-  final prefs;
-  SplashScreen({super.key, required this.prefs});
+  final dynamic prefs;
+  const SplashScreen({super.key, required this.prefs});
 
   @override
   Widget build(BuildContext context) {
@@ -78,21 +76,21 @@ class SplashScreen extends StatelessWidget {
       future: checkUserLoggedIn(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Afficher un indicateur de chargement en attendant la vérification
+          return const CircularProgressIndicator(); // Afficher un indicateur de chargement en attendant la vérification
         } else {
           if (snapshot.data == true) {
             // Utilisateur connecté, rediriger en fonction du rôle
             final String role = prefs.getString("role") ?? "";
             if (role == "admin") {
-              return AdminHome(); // Rediriger vers la page d'administration
+              return const AdminHome(); // Rediriger vers la page d'administration
             } else if (role == "student") {
-              return EtudiantHome(); // Rediriger vers la page d'étudiant
+              return const EtudiantHome(); // Rediriger vers la page d'étudiant
             } else if (role == "prof") {
-              return ProfHome(); // Rediriger vers la page de professeur
+              return const ProfHome(); // Rediriger vers la page de professeur
             }
           }
           // Utilisateur non connecté, rediriger vers la page de connexion
-          return AuthPage();
+          return const AuthPage();
         }
       },
     );

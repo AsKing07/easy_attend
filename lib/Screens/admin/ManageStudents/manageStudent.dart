@@ -1,9 +1,8 @@
-// ignore_for_file: use_build_context_synchronously, file_names
+// ignore_for_file: use_build_context_synchronously, file_names, prefer_typing_uninitialized_variables, non_constant_identifier_names
 
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
@@ -22,7 +21,6 @@ import 'package:http/http.dart' as http;
 
 class ManageStudentPage extends StatefulWidget {
   const ManageStudentPage({super.key});
-
   @override
   State<ManageStudentPage> createState() => _ManageStudentPageState();
 }
@@ -38,11 +36,10 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
   var _selectedNiveau;
 
   Future<void> loadAllActifFilieres() async {
-    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
-      print(doc);
       Filiere filiere = Filiere(
         idDoc: doc['idFiliere'].toString(),
         nomFiliere: doc["nomFiliere"],
@@ -78,19 +75,21 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
         response = await http.get(Uri.parse(
             '$BACKEND_URL/api/student/getStudentData?search=${_searchController.text}'));
       }
-      // final response = await http.get(Uri.parse(
-      //     '$BACKEND_URL/api/global/getStudentData?search=${_searchController.text}&filtre=$searchFilter'));
-
       if (response.statusCode == 200) {
         List<dynamic> students = jsonDecode(response.body);
         _streamController.add(students);
-        print(students);
       } else {
         throw Exception('Erreur lors de la récupération des étudiants');
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les étudiants. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -152,7 +151,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                           value: value,
                           child: Text(
                             value.nomFiliere,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 8.5, fontWeight: FontWeight.bold),
                           ),
                         );

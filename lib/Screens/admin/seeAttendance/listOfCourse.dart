@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, camel_case_types, prefer_typing_uninitialized_variables, non_constant_identifier_names
+// ignore_for_file: file_names, camel_case_types, prefer_typing_uninitialized_variables, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
@@ -40,7 +40,7 @@ class _listOfCourseState extends State<listOfCourse> {
   }
 
   Future<void> loadAllActifFilieres() async {
-    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
@@ -70,13 +70,18 @@ class _listOfCourseState extends State<listOfCourse> {
       if (response.statusCode == 200) {
         List<dynamic> courses = jsonDecode(response.body);
         _streamController.add(courses);
-        print(courses);
       } else {
         throw Exception('Erreur lors de la récupération des cours');
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les cours. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

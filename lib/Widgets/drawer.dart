@@ -5,10 +5,8 @@ import 'dart:convert';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

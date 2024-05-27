@@ -12,10 +12,10 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditCoursePage extends StatefulWidget {
-  final id;
+  final dynamic id;
   final void Function() callback;
 
-  EditCoursePage({super.key, required this.id, required this.callback});
+  const EditCoursePage({super.key, required this.id, required this.callback});
 
   @override
   State<EditCoursePage> createState() => _EditCoursePageState();
@@ -33,7 +33,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
   Cours? currentCourse;
 
   Future<void> loadAllActifFilieres() async {
-    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
@@ -54,7 +54,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
   }
 
   Future<void> loadAllActifProfData() async {
-    List<dynamic> docsProfs = await get_Data().getActifTeacherData();
+    List<dynamic> docsProfs = await get_Data().getActifTeacherData(context);
     List<Prof> profs = [];
 
     for (var doc in docsProfs) {

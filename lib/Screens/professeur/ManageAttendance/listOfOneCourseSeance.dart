@@ -1,17 +1,13 @@
-// ignore_for_file: must_be_immutable, file_names, non_constant_identifier_names, sized_box_for_whitespace
+// ignore_for_file: must_be_immutable, file_names, non_constant_identifier_names, sized_box_for_whitespace, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
-import 'package:easy_attend/Models/Seance.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/seeAttendance.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/takeAttendanceManualy.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/takeQRattendance.dart';
-import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:expandable/expandable.dart';
@@ -25,9 +21,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
 class ListOfOneCourseSeancePage extends StatefulWidget {
-  final course;
+  final dynamic course;
 
-  ListOfOneCourseSeancePage({super.key, required this.course});
+  const ListOfOneCourseSeancePage({super.key, required this.course});
   @override
   State<ListOfOneCourseSeancePage> createState() =>
       _ListOfOneCourseSeancePageState();
@@ -47,13 +43,18 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
       if (response.statusCode == 200) {
         List<dynamic> seances = jsonDecode(response.body);
         _streamController.add(seances);
-        print(seances);
       } else {
         throw Exception('Erreur lors de la récupération des seances');
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les séances. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -141,8 +142,6 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                 itemCount: seances.length,
                                 itemBuilder: (context, index) {
                                   final seance = seances[index];
-                                  print(seance['presenceTookOnce']);
-
                                   return Column(
                                     children: [
                                       Container(

@@ -37,11 +37,10 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
   }
 
   Future<void> loadAllActifFilieres() async {
-    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
-      print(doc);
       Filiere filiere = Filiere(
         idDoc: doc['idFiliere'].toString(),
         nomFiliere: doc["nomFiliere"],
@@ -76,13 +75,18 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
       if (response.statusCode == 200) {
         List<dynamic> courses = jsonDecode(response.body);
         _streamController.add(courses);
-        print(courses);
       } else {
         throw Exception('Erreur lors de la récupération des cours');
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les étudiants. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

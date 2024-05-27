@@ -31,7 +31,7 @@ class _CourseCardState extends State<CourseCard> {
 
     setState(() {
       professeur = prof;
-      print(prof);
+
       dataIsLoaded = true;
     });
   }

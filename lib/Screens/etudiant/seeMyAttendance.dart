@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, camel_case_types, must_be_immutable, file_names
+// ignore_for_file: use_build_context_synchronously, camel_case_types, must_be_immutable, file_names, prefer_typing_uninitialized_variables, non_constant_identifier_names
 
 import 'dart:async';
 import 'dart:convert';
@@ -17,9 +17,9 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:http/http.dart' as http;
 
 class seeMyAttendance extends StatefulWidget {
-  final course;
+  final dynamic course;
 
-  seeMyAttendance({super.key, required this.course});
+  const seeMyAttendance({super.key, required this.course});
 
   @override
   State<seeMyAttendance> createState() => _seeOneStudentAttendanceState();
@@ -52,9 +52,9 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
       if (response.statusCode == 200) {
         List<dynamic> seances = jsonDecode(response.body);
         _streamController.add(seances);
-        print(seances);
+
         int count = 0;
-        seances.forEach((seance) {
+        for (var seance in seances) {
           // Map<dynamic, dynamic> se = seance;
           Map<String, dynamic> presenceEtudiant =
               jsonDecode(seance['presenceEtudiant']);
@@ -62,8 +62,8 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
           if (presenceEtudiant[etudiant['uid']] == true) {
             count++;
           }
-        });
-        print(count);
+        }
+
         setState(() {
           nombreTotalSeances = seances.length;
 
@@ -75,7 +75,13 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les séances. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -121,7 +127,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
 
                   Map<String, dynamic> presenceEtudiant =
                       jsonDecode(seance['presenceEtudiant']);
-                  print(etudiant['uid']);
+
                   bool statut = presenceEtudiant[etudiant['uid']] ?? false;
                   rows.add(DataRow(cells: [
                     DataCell(Text(date)),

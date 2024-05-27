@@ -166,7 +166,6 @@ class auth_methods_admin {
     } catch (e) {
       Navigator.pop(context);
       if (e is FirebaseAuthException) {
-        print(e.code);
         if (e.code == 'user-not-found' ||
             e.code == 'wrong-password' ||
             e.code == 'invalid-credential') {
@@ -179,7 +178,6 @@ class auth_methods_admin {
       } else {
         Helper().ErrorMessage(context);
       }
-      print(e);
     }
   }
 
@@ -230,7 +228,6 @@ class auth_methods_admin {
         Helper().ErrorMessage(context);
       }
     } catch (e) {
-      print(e);
       Navigator.pop(context);
       // Gérer l'erreur d'inscription ici
       if (e is FirebaseAuthException) {
@@ -284,8 +281,6 @@ class auth_methods_admin {
           },
         );
       } else {
-        print(response.body);
-
         FirebaseApp firebaseApp = await Firebase.initializeApp(
             name: 'Secondary', options: Firebase.app().options);
         // Création de l'etudiant
@@ -311,7 +306,6 @@ class auth_methods_admin {
             }),
             headers: {'Content-Type': 'application/json'},
           );
-          print(response.body);
 
           if (response.statusCode == 200) {
             Navigator.pop(context);
@@ -323,7 +317,6 @@ class auth_methods_admin {
         }
       }
     } catch (e) {
-      print(e);
       Navigator.pop(context);
       // Gérer l'erreur d'inscription ici
       if (e is FirebaseAuthException) {
@@ -431,7 +424,7 @@ class auth_methods_admin {
       Uri.parse(
           '$BACKEND_URL/api/student/getStudentByMatricule?matricule=${etudiant.matricule}'),
     );
-    print(response.body);
+
     if (response.statusCode == 404) {
       // Création de l'etudiant
       try {
@@ -443,7 +436,7 @@ class auth_methods_admin {
         if (uid != null) {
           // L'étudiant n'existe pas encore, ajouter
           // Envoi des informations de l'utilisateur au backend pour enregistrement dans la base de données SQL
-          http.Response response = await http.post(
+          await http.post(
             Uri.parse('$BACKEND_URL/api/student/'),
             body: jsonEncode({
               'uid': uid,
@@ -459,10 +452,15 @@ class auth_methods_admin {
             }),
             headers: {'Content-Type': 'application/json'},
           );
-          print(response.body);
         }
       } catch (e) {
-        print(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur innatendue : $e '),
+            duration: const Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }

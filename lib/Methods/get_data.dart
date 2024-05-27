@@ -1,6 +1,5 @@
-// ignore_for_file: use_build_context_synchronously, camel_case_types
+// ignore_for_file: use_build_context_synchronously, camel_case_types, non_constant_identifier_names
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
@@ -19,7 +18,7 @@ class get_Data {
   //   return data.docs;
   // }
 
-  Future getActifFiliereData() async {
+  Future getActifFiliereData(BuildContext context) async {
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/filiere/getActifFiliereData'),
     );
@@ -33,7 +32,14 @@ class get_Data {
       return filieres;
     } else {
       // La requête a échoué, gérer l'erreur ici
-      print('Erreur lors de la récupération des filieres actives');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Impossible de récupérer les filières actives. Veuillez réessayer.'),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -52,11 +58,16 @@ class get_Data {
         return filiere[0];
       } else {
         // La requête a échoué, gérer l'erreur ici
-        print('Erreur lors de la récupération de la filière');
+        GFToast.showToast(
+            "Une erreur est subvenue lors de la récupération des données.",
+            context,
+            backgroundColor: Colors.white,
+            textStyle: const TextStyle(color: Colors.red),
+            toastDuration: 6);
       }
     } catch (e) {
       GFToast.showToast(
-          "Une erreur est subvenue lors de la récupération des données",
+          "Une erreur est subvenue lors de la récupération des données. Erreur:$e",
           context,
           backgroundColor: Colors.white,
           textStyle: const TextStyle(color: Colors.red),
@@ -115,11 +126,10 @@ class get_Data {
     // // print(uid);
 
     Map<String, dynamic> x = utilisateur;
-
     return x;
   }
 
-  Future getActifStudentData() async {
+  Future getActifStudentData(BuildContext context) async {
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/student/getActifStudentData'),
     );
@@ -133,11 +143,18 @@ class get_Data {
       return students;
     } else {
       // La requête a échoué, gérer l'erreur ici
-      print('Erreur lors de la récupération des étudiants actifs');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Impossible de récupérer les étudiants.'),
+          duration: Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
-  Future getStudentData() async {
+  Future getStudentData(BuildContext context) async {
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/student/getStudentData'),
     );
@@ -145,19 +162,22 @@ class get_Data {
       // La requête a réussi, traiter la réponse ici
       List<dynamic> students = jsonDecode(response.body);
       // Utiliser les données des filieres ici
-      print(response.body);
-      print(students.length);
       return students;
     } else {
       // La requête a échoué, gérer l'erreur ici
-      print('Erreur lors de la récupération des étudiants');
+      GFToast.showToast(
+          "Une erreur est subvenue lors de la récupération des données.",
+          context,
+          backgroundColor: Colors.white,
+          textStyle: const TextStyle(color: Colors.red),
+          toastDuration: 6);
     }
   }
 
   Future getStudentById(id, BuildContext context) async {
     try {
       http.Response response = await http.get(
-        Uri.parse('$BACKEND_URL/api/student/getStudentById/${id}'),
+        Uri.parse('$BACKEND_URL/api/student/getStudentById/$id'),
       );
 
       if (response.statusCode == 200 && response.body.isNotEmpty) {
@@ -177,7 +197,7 @@ class get_Data {
   Future getEtudiantsOfAFiliereAndNiveau(
       String idFiliere, String niveau) async {
     http.Response response = await http.get(Uri.parse(
-        '$BACKEND_URL/api/student/getStudentData?idFiliere=${idFiliere}&niveau=$niveau'));
+        '$BACKEND_URL/api/student/getStudentData?idFiliere=$idFiliere&niveau=$niveau'));
 
     List<dynamic> etudiants = jsonDecode(response.body);
     return etudiants;
@@ -202,7 +222,7 @@ class get_Data {
     return prof;
   }
 
-  Future getTeacherData() async {
+  Future getTeacherData(BuildContext context) async {
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/prof/getProfData/'),
     );
@@ -216,7 +236,12 @@ class get_Data {
       return profs;
     } else {
       // La requête a échoué, gérer l'erreur ici
-      print('Erreur lors de la récupération des filieres actives');
+      GFToast.showToast(
+          "Une erreur est subvenue lors de la récupération des professeurs",
+          context,
+          backgroundColor: Colors.white,
+          textStyle: const TextStyle(color: Colors.red),
+          toastDuration: 6);
     }
 
     // var data = await FirebaseFirestore.instance.collection("prof").get();
@@ -233,13 +258,16 @@ class get_Data {
         // La requête a réussi, traiter la réponse ici
         dynamic prof = jsonDecode(response.body);
         // Utiliser les données des profs ici
-        print(response.body);
-        print(prof);
         return prof;
       } else {
         // La requête a échoué, gérer l'erreur ici
-        print('Erreur lors de la récupération du prof');
-        print(response.body);
+        GFToast.showToast(
+            "Une erreur est subvenue lors de la récupération des données",
+            context,
+            backgroundColor: Colors.white,
+            textStyle: const TextStyle(color: Colors.red),
+            toastDuration: 6);
+        // print(response.body);
       }
     } catch (e) {
       GFToast.showToast(
@@ -251,7 +279,7 @@ class get_Data {
     }
   }
 
-  Future getActifTeacherData() async {
+  Future getActifTeacherData(BuildContext context) async {
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/prof/getActifProfData'),
     );
@@ -260,19 +288,21 @@ class get_Data {
       // La requête a réussi, traiter la réponse ici
       List<dynamic> profs = jsonDecode(response.body);
       // Utiliser les données des profs ici
-      //  print(response.body);
-      // print(profs.length);
       return profs;
     } else {
-      // La requête a échoué, gérer l'erreur ici
-      print('Erreur lors de la récupération des profs actifs');
+      GFToast.showToast(
+          "Une erreur est subvenue lors de la récupération des données",
+          context,
+          backgroundColor: Colors.white,
+          textStyle: const TextStyle(color: Colors.red),
+          toastDuration: 6);
     }
   }
 
 //METHODES DES COURS
 
 //Recupérer tous les cours
-  Future getCourseData() async {
+  Future getCourseData(BuildContext context) async {
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/cours/getActifCoursesData'),
     );
@@ -281,12 +311,15 @@ class get_Data {
       // La requête a réussi, traiter la réponse ici
       List<dynamic> cours = jsonDecode(response.body);
       // Utiliser les données des cours ici
-      print(response.body);
-      print(cours.length);
       return cours;
     } else {
       // La requête a échoué, gérer l'erreur ici
-      print('Erreur lors de la récupération des profs actifs');
+      GFToast.showToast(
+          "Une erreur est subvenue lors de la récupération des données",
+          context,
+          backgroundColor: Colors.white,
+          textStyle: const TextStyle(color: Colors.red),
+          toastDuration: 6);
     }
   }
 
@@ -302,8 +335,7 @@ class get_Data {
         // La requête a réussi, traiter la réponse ici
         dynamic course = jsonDecode(response.body);
         // Utiliser les données des filieres ici
-        print(response.body);
-        print(course);
+
         return course[0];
       } else {
         // La requête a échoué, gérer l'erreur ici
@@ -316,17 +348,16 @@ class get_Data {
       }
     } catch (e) {
       GFToast.showToast(
-          "Une erreur est subvenue lors de la récupération des données",
+          "Une erreur est subvenue lors de la récupération des données. Erreur: $e",
           context,
           backgroundColor: Colors.white,
           textStyle: const TextStyle(color: Colors.red),
           toastDuration: 6);
-      print(e);
     }
   }
 
   // METHODES REQUETES
-  Future getUnsolvedQueriesData() async {
+  Future getUnsolvedQueriesData(BuildContext context) async {
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/requete/getUnsolvedRequestData'),
     );
@@ -338,16 +369,20 @@ class get_Data {
       return queries;
     } else {
       // La requête a échoué, gérer l'erreur ici
-      print('Erreur lors de la récupération des requêtes inactives');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Impossible de récupérer les requêtes.'),
+          duration: Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   Future getQueryById(id, BuildContext context) async {
-    print(id);
     http.Response response = await http.get(
       Uri.parse('$BACKEND_URL/api/requete/$id'),
     );
-    print(response.body);
 
     if (response.statusCode == 200) {
       // La requête a réussi, traiter la réponse ici
@@ -369,7 +404,7 @@ class get_Data {
   // METHODES SEANCES
 
 //Liste des séances d'un cours
-  Future getSeanceOfOneCourse(String courseId) async {
+  Future getSeanceOfOneCourse(String courseId, BuildContext context) async {
     http.Response response;
     try {
       response = await http.get(
@@ -379,16 +414,22 @@ class get_Data {
         List<dynamic> seances = jsonDecode(response.body);
         return seances;
       } else {
-        print(response.body);
         throw Exception('Erreur lors de la récupération des seances');
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Impossible de récupérer les séances de ce cours. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
-  Future getSeanceByCode(String code) async {
+  Future getSeanceByCode(String code, BuildContext context) async {
     http.Response response;
     try {
       response = await http
@@ -398,11 +439,23 @@ class get_Data {
         dynamic seance = jsonDecode(response.body);
         return seance;
       } else {
-        throw Exception('Erreur lors de la récupération de la seance');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Impossible de récupérer la séance.'),
+            duration: Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer la séance. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 }

@@ -48,8 +48,7 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
         ? res = await FlutterBarcodeScanner.scanBarcode(
             "#ff6666", 'Arreter le scan', true, ScanMode.QR)
         : null;
-    final x = await get_Data().getSeanceByCode(res);
-    print(x);
+    final x = await get_Data().getSeanceByCode(res, context);
 
     if (x != null) {
       final seanceDoc = x;
@@ -153,7 +152,13 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
                 });
           }
         } catch (e) {
-          print(e);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Une erreur s\'est produite. Erreur:$e'),
+              duration: const Duration(seconds: 6),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       }
     } else {

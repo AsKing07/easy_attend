@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, must_be_immutable, camel_case_types, file_names
+// ignore_for_file: use_build_context_synchronously, must_be_immutable, camel_case_types, file_names, non_constant_identifier_names
 
 import 'dart:async';
 import 'dart:convert';
@@ -18,9 +18,9 @@ import 'package:http/http.dart' as http;
 class seeOneStudentAttendance extends StatefulWidget {
   final String studentId, studentName;
 
-  final course;
+  final dynamic course;
 
-  seeOneStudentAttendance(
+  const seeOneStudentAttendance(
       {super.key,
       required this.course,
       required this.studentId,
@@ -50,7 +50,7 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
         // print(seances);
         int count = 0;
 
-        seances.forEach((seance) {
+        for (var seance in seances) {
           // Map<dynamic, dynamic> se = seance;
           Map<String, dynamic> presenceEtudiant =
               jsonDecode(seance['presenceEtudiant']);
@@ -58,8 +58,8 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
           if (presenceEtudiant[widget.studentId] == true) {
             count++;
           }
-        });
-        print(count);
+        }
+
         setState(() {
           nombreTotalSeances = seances.length;
 
@@ -67,12 +67,23 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
           pourcentageDePresence = (nombreDePresences / nombreTotalSeances);
         });
       } else {
-        print(response.body);
-        throw Exception('Erreur lors de la récupération des seances');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Impossible de récupérer les séances'),
+            duration: Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       // Gérer les erreurs ici
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Impossible de récupérer les séances. Erreur:$e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

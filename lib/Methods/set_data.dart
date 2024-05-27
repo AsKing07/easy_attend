@@ -1,8 +1,7 @@
-// ignore_for_file: use_build_context_synchronously, camel_case_types, unused_local_variable
+// ignore_for_file: use_build_context_synchronously, camel_case_types, unused_local_variable, non_constant_identifier_names
 
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Cours.dart';
@@ -12,6 +11,7 @@ import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:getwidget/components/toast/gf_toast.dart';
 import 'package:http/http.dart' as http;
 import 'package:random_string/random_string.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -127,7 +127,11 @@ class set_Data {
         );
       } else {
         // La requête a échoué, gérer l'erreur ici
-        print('Erreur lors de la suppression des données');
+        GFToast.showToast(
+            "Une erreur est subvenue lors de la suppression", context,
+            backgroundColor: Colors.white,
+            textStyle: const TextStyle(color: Colors.red),
+            toastDuration: 6);
       }
 
       Navigator.pop(context);
@@ -163,7 +167,14 @@ class set_Data {
         );
 
         if (response.statusCode != 200) {
-          print('Erreur lors de la restauration des etudiants');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Erreur lors de la restauration des etudiants de la filière'),
+              duration: Duration(seconds: 6),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
 
         response = await http.put(
@@ -171,11 +182,24 @@ class set_Data {
         );
 
         if (response.statusCode != 200) {
-          print('Erreur lors de la restauration des cours');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Erreur lors de la restauration des cours de la filière'),
+              duration: Duration(seconds: 6),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       } else {
         // La requête a échoué, gérer l'erreur ici
-        print('Erreur lors de la restauration des données');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erreur lors de la restauration de la filière.'),
+            duration: Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
 
       Navigator.pop(context);
@@ -211,7 +235,13 @@ class set_Data {
         );
       } else {
         // La requête a échoué, gérer l'erreur ici
-        print('Erreur lors de la suppression des données');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erreur lors de la suppression des données!'),
+            duration: Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       Helper().ErrorMessage(context);
@@ -331,7 +361,6 @@ class set_Data {
       Helper().succesMessage(context);
     } else {
       // Une erreur s'est produite lors de la modification de l'étudiant
-      print(response.body);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
     }
@@ -521,7 +550,6 @@ class set_Data {
 
         Navigator.pop(context);
         Helper().ErrorMessage(context);
-        print(response.body);
       }
     }
   }
@@ -606,7 +634,6 @@ class set_Data {
       }),
       headers: {'Content-Type': 'application/json'},
     );
-    print(response.body);
     if (response.statusCode == 200) {
       //succès
       Navigator.pop(context);
@@ -698,7 +725,6 @@ class set_Data {
         }),
         headers: {'Content-Type': 'application/json'},
       );
-      print(response.body);
 
       if (response.statusCode == 200) {
         // Cours ajouté avec succès
@@ -711,9 +737,15 @@ class set_Data {
         Helper().ErrorMessage(context);
       }
     } catch (e) {
-      print(e);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: $e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -731,7 +763,7 @@ class set_Data {
               ));
 
       // Récupérer le document existant
-      dynamic seance = await get_Data().getSeanceByCode(codeSeance);
+      dynamic seance = await get_Data().getSeanceByCode(codeSeance, context);
 
       // Vérifier si le document existe
       if (seance != null) {
@@ -757,7 +789,6 @@ class set_Data {
           }),
           headers: {'Content-Type': 'application/json'},
         );
-        print(response.body);
         if (response.statusCode == 200) {
           Navigator.pop(context);
           return true;
@@ -770,9 +801,15 @@ class set_Data {
         }
       }
     } catch (e) {
-      print(e);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur : $e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
   // Future<void> updatePresenceEtudiant(String seanceId, String etudiantId,
@@ -871,7 +908,6 @@ class set_Data {
         }),
         headers: {'Content-Type': 'application/json'},
       );
-      print(response.body);
 
       if (response.statusCode == 200) {
         // Séance ajouté avec succès
@@ -892,9 +928,15 @@ class set_Data {
         Helper().ErrorMessage(context);
       }
     } catch (e) {
-      print(e);
       Navigator.pop(context);
       Helper().ErrorMessage(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: $e'),
+          duration: const Duration(seconds: 6),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -913,7 +955,6 @@ class set_Data {
       }),
       headers: {'Content-Type': 'application/json'},
     );
-    print(response.body);
 
     if (response.statusCode == 200) {
       Navigator.pop(context);

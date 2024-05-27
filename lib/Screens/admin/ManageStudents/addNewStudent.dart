@@ -34,7 +34,7 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
   List<Filiere> Allfilieres = [];
 
   Future<void> loadAllActifFilieres() async {
-    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {

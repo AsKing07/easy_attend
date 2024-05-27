@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class OneCoursePage extends StatefulWidget {
-  final course;
+  final dynamic course;
 
-  OneCoursePage({super.key, required this.course});
+  const OneCoursePage({super.key, required this.course});
 
   @override
   State<OneCoursePage> createState() => _OneCoursePageState();

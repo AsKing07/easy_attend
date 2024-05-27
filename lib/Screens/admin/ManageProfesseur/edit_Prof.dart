@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EditProfPage extends StatefulWidget {
-  final profId;
+  final dynamic profId;
   final void Function() callback;
 
   const EditProfPage({super.key, required this.profId, required this.callback});
@@ -38,7 +38,6 @@ class _EditProfPageState extends State<EditProfPage> {
   void loadProfData() async {
     Map<String, dynamic> prof =
         await get_Data().getProfById(widget.profId, context);
-    print(prof);
 
     if (prof.isNotEmpty) {
       _nomController.text = prof['nom'];

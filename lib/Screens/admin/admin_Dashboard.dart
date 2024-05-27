@@ -1,6 +1,5 @@
 // ignore_for_file: file_names
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
@@ -16,7 +15,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  late var admin;
+  late dynamic admin;
   bool dataIsLoaded = false;
 
   void loadAdmin() async {
@@ -92,7 +91,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                         constraints.maxWidth > 800 ? 320 : 160,
                                     height: 200,
                                     child: FutureBuilder(
-                                      future: get_Data().getActifStudentData(),
+                                      future: get_Data()
+                                          .getActifStudentData(context),
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState ==
                                             ConnectionState.waiting) {
@@ -169,7 +169,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                         constraints.maxWidth > 800 ? 320 : 160,
                                     height: 200,
                                     child: FutureBuilder(
-                                      future: get_Data().getActifTeacherData(),
+                                      future: get_Data()
+                                          .getActifTeacherData(context),
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState ==
                                             ConnectionState.waiting) {
@@ -251,8 +252,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                           : 160,
                                       height: 200,
                                       child: FutureBuilder(
-                                        future:
-                                            get_Data().getActifFiliereData(),
+                                        future: get_Data()
+                                            .getActifFiliereData(context),
                                         builder: (context, snapshot) {
                                           if (snapshot.connectionState ==
                                               ConnectionState.waiting) {
@@ -332,7 +333,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                         constraints.maxWidth > 800 ? 320 : 160,
                                     height: 200,
                                     child: FutureBuilder(
-                                      future: get_Data().getCourseData(),
+                                      future: get_Data().getCourseData(context),
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState ==
                                             ConnectionState.waiting) {
@@ -409,7 +410,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                 width: constraints.maxWidth > 800 ? 640 : 320,
                                 height: 105,
                                 child: FutureBuilder(
-                                  future: get_Data().getUnsolvedQueriesData(),
+                                  future: get_Data()
+                                      .getUnsolvedQueriesData(context),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {

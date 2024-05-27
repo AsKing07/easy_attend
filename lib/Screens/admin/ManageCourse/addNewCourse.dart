@@ -32,11 +32,10 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
   final _idCoursController = TextEditingController();
 
   Future<void> loadAllActifFilieres() async {
-    List<dynamic> docsFiliere = await get_Data().getActifFiliereData();
+    List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
     List<Filiere> fil = [];
 
     for (var doc in docsFiliere) {
-      print(doc);
       Filiere filiere = Filiere(
         idDoc: doc['idFiliere'].toString(),
         nomFiliere: doc["nomFiliere"],
@@ -54,7 +53,7 @@ class _AddNewCoursePageState extends State<AddNewCoursePage> {
   }
 
   Future<void> loadAllActifProfData() async {
-    List<dynamic> docsProfs = await get_Data().getActifTeacherData();
+    List<dynamic> docsProfs = await get_Data().getActifTeacherData(context);
     List<Prof> profs = [];
 
     for (var doc in docsProfs) {
