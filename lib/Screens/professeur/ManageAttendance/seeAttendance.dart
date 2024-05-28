@@ -36,7 +36,7 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
   Future<void> fetchData() async {
     setState(() {
       date =
-          'Séance du ${DateFormat('EEEE, d MMMM yyyy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal()).toUpperCase()}  ';
+          'Séance du ${DateFormat('EEEE, d MMMM yyyy, HH:MM', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal()).toUpperCase()}  ';
       presenceEtudiants = jsonDecode(widget.seance['presenceEtudiant']);
       nombreTotalEtudiants = presenceEtudiants.length;
       nombreDePresences =

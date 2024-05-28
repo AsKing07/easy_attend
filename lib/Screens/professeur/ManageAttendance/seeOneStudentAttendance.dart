@@ -179,7 +179,7 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
                         lineWidth: 15.0,
                         percent: pourcentageDePresence,
                         center: Text(
-                          '${pourcentageDePresence * 100}% de présence',
+                          '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20.0),
                         ),

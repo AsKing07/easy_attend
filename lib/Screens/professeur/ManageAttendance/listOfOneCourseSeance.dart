@@ -171,7 +171,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                                     children: [
                                                       Text(
                                                         DateFormat(
-                                                                'EEEE, d MMM yy, hh:mm',
+                                                                'EEEE, d MMM yy, HH:MM',
                                                                 'fr')
                                                             .format(DateTime
                                                                     .parse(seance[

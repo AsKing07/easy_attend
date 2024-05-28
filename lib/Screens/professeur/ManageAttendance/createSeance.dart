@@ -33,8 +33,8 @@ class _CreateSeancePageState extends State<CreateSeancePage> {
     if (picked != null && picked != _dateTime) {
       setState(() {
         _dateTime = picked;
-        dateTimeController.text =
-            DateFormat('EEEE, d MMMM yyyy, hh:mm', 'fr').format(_dateTime);
+        dateTimeController.text = DateFormat('EEEE, d MMMM yyyy, HH:MM', 'fr')
+            .format(_dateTime.toLocal());
       });
     }
   }
