@@ -150,7 +150,7 @@ class _TrashStudentPageState extends State<TrashStudentPage> {
                 } else {
                   return Center(
                     child: LoadingAnimationWidget.hexagonDots(
-                        color: AppColors.secondaryColor, size: 200),
+                        color: AppColors.secondaryColor, size: 100),
                   );
                 }
               },

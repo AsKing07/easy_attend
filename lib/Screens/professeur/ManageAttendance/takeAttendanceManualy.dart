@@ -112,7 +112,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
     return dataIsloaded == false
         ? Center(
             child: LoadingAnimationWidget.hexagonDots(
-                color: AppColors.secondaryColor, size: 200),
+                color: AppColors.secondaryColor, size: 100),
           )
         : Scaffold(
             appBar: AppBar(

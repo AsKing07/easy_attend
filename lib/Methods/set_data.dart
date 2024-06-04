@@ -215,7 +215,7 @@ class set_Data {
           context: context,
           builder: (context) => Center(
                 child: LoadingAnimationWidget.hexagonDots(
-                    color: AppColors.secondaryColor, size: 200),
+                    color: AppColors.secondaryColor, size: 100),
               ));
 
       http.Response response = await http.delete(

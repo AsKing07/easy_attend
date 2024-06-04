@@ -76,9 +76,9 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double aspectRatio = screenWidth > 600
-        ? 2.5
-        : 1 / 1.5; // Plus de hauteur pour les petits écrans
+    double screenheight = MediaQuery.of(context).size.height;
+    double aspectRatio =
+        screenWidth > 600 ? 2.5 : 1; // Plus de hauteur pour les petits écrans
 
     return Scaffold(
       body: !dataIsLoaded
@@ -108,7 +108,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                               ConnectionState.waiting) {
                             return Center(
                               child: LoadingAnimationWidget.hexagonDots(
-                                  color: AppColors.secondaryColor, size: 200),
+                                  color: AppColors.secondaryColor, size: 100),
                             );
                           } else if (snapshot.hasError) {
                             return Text('Erreur : ${snapshot.error}');
@@ -125,7 +125,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount:
-                                      MediaQuery.of(context).size.width > 600
+                                      MediaQuery.of(context).size.width > 1550
                                           ? 3
                                           : 2,
                                   crossAxisSpacing: 10,

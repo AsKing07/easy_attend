@@ -44,7 +44,7 @@ class _EtudiantHomeState extends State<EtudiantHome> {
   ];
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.of(context).size.width > 600
+    return MediaQuery.of(context).size.width > 1200
         //Large screen
         ? Scaffold(
             appBar: AppBar(

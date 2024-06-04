@@ -89,7 +89,7 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
                     child: LoadingAnimationWidget.hexagonDots(
-                        color: AppColors.secondaryColor, size: 200));
+                        color: AppColors.secondaryColor, size: 100));
               } else if (snapshot.hasError) {
                 return Text('Erreur : ${snapshot.error}');
               } else {

@@ -103,113 +103,123 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
               child: LoadingAnimationWidget.hexagonDots(
                   color: AppColors.secondaryColor, size: 100),
             )
-          : StreamBuilder(
-              stream: _streamController.stream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: LoadingAnimationWidget.hexagonDots(
-                        color: AppColors.secondaryColor, size: 200),
-                  );
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Erreur: ${snapshot.error}'));
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const NoResultWidget();
-                }
-
-                List<DataRow> rows = [];
-                for (var seance in snapshot.data!) {
-                  String date = DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr')
-                      .format(DateTime.parse(seance['dateSeance']).toLocal());
-
-                  Map<String, dynamic> presenceEtudiant =
-                      jsonDecode(seance['presenceEtudiant']);
-
-                  bool statut = presenceEtudiant[etudiant['uid']] ?? false;
-                  rows.add(DataRow(cells: [
-                    DataCell(Text(date)),
-                    statut
-                        ? const DataCell(Text(
-                            'Présent(e)',
-                            style: TextStyle(color: AppColors.greenColor),
-                          ))
-                        : const DataCell(Text(
-                            'Absent(e)',
-                            style: TextStyle(color: AppColors.redColor),
-                          )),
-                  ]));
-                }
-                return SingleChildScrollView(
-                    child: Column(
+          : SingleChildScrollView(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      widget.course['nomCours'],
-                      style: const TextStyle(
-                        fontSize: FontSize.xLarge,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textColor,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 15),
-                    Text(
-                      '${etudiant['nom']} ${etudiant['prenom']}',
-                      style: const TextStyle(
-                        fontSize: FontSize.medium,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.secondaryColor,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 15),
-                    CircularPercentIndicator(
-                      radius: 130.0,
-                      animation: true,
-                      animationDuration: 1200,
-                      lineWidth: 15.0,
-                      percent: pourcentageDePresence,
-                      center: Text(
-                        '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20.0),
-                      ),
-                      circularStrokeCap: CircularStrokeCap.butt,
-                      backgroundColor: Colors.grey,
-                      progressColor: AppColors.secondaryColor,
-                    ),
-                    const SizedBox(height: 15),
-                    IconButton(
-                        iconSize: 50,
-                        onPressed: () async {
-                          PDFHelper pdfHelper = PDFHelper();
-                          Uint8List pdfBytes = await pdfHelper.buildStudentPdf(
-                              widget.course,
-                              '${etudiant['nom']} ${etudiant['prenom']}',
-                              etudiant['uid'],
-                              context);
-                          await pdfHelper.savePdf(
-                              pdfBytes,
-                              '${widget.course['nomCours']}- ${widget.course['niveau']}- ${etudiant['nom']} ${etudiant['prenom']}',
-                              context);
-                        },
-                        icon: const Icon(Icons.print,
-                            color: AppColors.secondaryColor)),
-                    const Text("Imprimer"),
-                    const SizedBox(height: 15),
-                    DataTable(
-                      columns: const [
-                        DataColumn(label: Text('Date de la séance')),
-                        DataColumn(label: Text('Statut')),
-                      ],
-                      rows: rows,
-                    ),
-                  ],
-                ));
-              },
-            ),
+                  StreamBuilder(
+                    stream: _streamController.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: LoadingAnimationWidget.hexagonDots(
+                              color: AppColors.secondaryColor, size: 100),
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Erreur: ${snapshot.error}'));
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const NoResultWidget();
+                      }
+
+                      List<DataRow> rows = [];
+                      for (var seance in snapshot.data!) {
+                        String date =
+                            DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr').format(
+                                DateTime.parse(seance['dateSeance']).toLocal());
+
+                        Map<String, dynamic> presenceEtudiant =
+                            jsonDecode(seance['presenceEtudiant']);
+
+                        bool statut =
+                            presenceEtudiant[etudiant['uid']] ?? false;
+                        rows.add(DataRow(cells: [
+                          DataCell(Text(date)),
+                          statut
+                              ? const DataCell(Text(
+                                  'Présent(e)',
+                                  style: TextStyle(color: AppColors.greenColor),
+                                ))
+                              : const DataCell(Text(
+                                  'Absent(e)',
+                                  style: TextStyle(color: AppColors.redColor),
+                                )),
+                        ]));
+                      }
+                      return Column(
+                        children: [
+                          Text(
+                            widget.course['nomCours'],
+                            style: const TextStyle(
+                              fontSize: FontSize.xLarge,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textColor,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 15),
+                          Text(
+                            '${etudiant['nom']} ${etudiant['prenom']}',
+                            style: const TextStyle(
+                              fontSize: FontSize.medium,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.secondaryColor,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 15),
+                          CircularPercentIndicator(
+                            radius: 130.0,
+                            animation: true,
+                            animationDuration: 1200,
+                            lineWidth: 15.0,
+                            percent: pourcentageDePresence,
+                            center: Text(
+                              '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20.0),
+                            ),
+                            circularStrokeCap: CircularStrokeCap.butt,
+                            backgroundColor: Colors.grey,
+                            progressColor: AppColors.secondaryColor,
+                          ),
+                          const SizedBox(height: 15),
+                          IconButton(
+                              iconSize: 50,
+                              onPressed: () async {
+                                PDFHelper pdfHelper = PDFHelper();
+                                Uint8List pdfBytes =
+                                    await pdfHelper.buildStudentPdf(
+                                        widget.course,
+                                        '${etudiant['nom']} ${etudiant['prenom']}',
+                                        etudiant['uid'],
+                                        context);
+                                await pdfHelper.savePdf(
+                                    pdfBytes,
+                                    '${widget.course['nomCours']}- ${widget.course['niveau']}- ${etudiant['nom']} ${etudiant['prenom']}',
+                                    context);
+                              },
+                              icon: const Icon(Icons.print,
+                                  color: AppColors.secondaryColor)),
+                          const Text("Imprimer"),
+                          const SizedBox(height: 15),
+                          SizedBox(
+                            width: double.infinity,
+                            child: DataTable(
+                              columns: const [
+                                DataColumn(label: Text('Date de la séance')),
+                                DataColumn(label: Text('Statut')),
+                              ],
+                              rows: rows,
+                            ),
+                          )
+                        ],
+                      );
+                    },
+                  )
+                ])),
     );
   }
 }

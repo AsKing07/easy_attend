@@ -45,9 +45,9 @@ class _CourseCardState extends State<CourseCard> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double cardPadding = screenWidth > 600 ? 20 : 10;
-    double fontSizeTitle = screenWidth > 600 ? 20 : 12;
-    double fontSizeSubTitle = screenWidth > 600 ? 17 : 10;
+    double cardPadding = screenWidth > 600 ? 22 : 12;
+    double fontSizeTitle = screenWidth > 600 ? 17 : 10;
+    double fontSizeSubTitle = screenWidth > 600 ? 15 : 8;
 
     return !dataIsLoaded
         ? LoadingAnimationWidget.hexagonDots(
@@ -89,7 +89,7 @@ class _CourseCardState extends State<CourseCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      maxLines: 2,
+                      maxLines: 1,
                       widget.name!,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -105,14 +105,14 @@ class _CourseCardState extends State<CourseCard> {
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Sigle: ${widget.course['sigleCours']}',
-                      style: TextStyle(
-                        fontSize: fontSizeSubTitle,
-                        color: Colors.white,
-                      ),
-                    ),
+                    // const SizedBox(height: 5),
+                    // Text(
+                    //   'Sigle: ${widget.course['sigleCours']}',
+                    //   style: TextStyle(
+                    //     fontSize: fontSizeSubTitle,
+                    //     color: Colors.white,
+                    //   ),
+                    // ),
                     const SizedBox(height: 5),
                     if ((widget.option == "admin" ||
                             widget.option == "etudiant") &&
