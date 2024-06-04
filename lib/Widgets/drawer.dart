@@ -53,34 +53,7 @@ class _HelperDrawerState extends State<HelperDrawer> {
     var utilisateur = json.decode(prefs.getString('user')!);
 
     name = '${utilisateur['nom']}  ${utilisateur['prenom']}';
-
-    // http.Response response = await http.get(
-    //   Uri.parse('$BACKEND_URL/api/${widget.nom.toLowerCase()}/${user!.uid}'),
-    // );
-    // if (response.statusCode == 200 && response.body.isNotEmpty) {
-    //   Map<String, dynamic> user = jsonDecode(response.body);
-    //   setState(() {
-    //     name = '${user['nom']}  ${user['prenom']}';
-    //   });
-    // } else {
-    //   setState(() {
-    //     name = widget.nom;
-    //   });
-    // }
   }
-  // Future<void> _loadUserName() async {
-  //   final DocumentSnapshot x = await FirebaseFirestore.instance
-  //       .collection(widget.nom.toLowerCase())
-  //       .doc(user!.uid)
-  //       .get();
-  //   setState(() {
-  //     if (x.exists) {
-  //       name = '${x['nom']}  ${x['prenom']}';
-  //     } else {
-  //       name = widget.nom;
-  //     }
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +148,6 @@ class _HelperDrawerState extends State<HelperDrawer> {
 Widget menuItem(MenuItems item, Function changePage, BuildContext context) {
   return GestureDetector(
     onTap: () {
-      Navigator.pop(context);
       changePage(item);
     },
     child: Container(

@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables, must_be_immutable, file_names
 
+import 'package:flutter/material.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Screens/etudiant/seeMyAttendance.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/OneCoursePage.dart';
-import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class CourseCard extends StatefulWidget {
@@ -18,6 +18,7 @@ class CourseCard extends StatefulWidget {
       this.filiere,
       required this.course,
       required this.option});
+
   @override
   State<CourseCard> createState() => _CourseCardState();
 }
@@ -25,13 +26,12 @@ class CourseCard extends StatefulWidget {
 class _CourseCardState extends State<CourseCard> {
   var professeur;
   bool dataIsLoaded = false;
+
   void loadProf() async {
     final prof =
         await get_Data().getProfById(widget.course['idProfesseur'], context);
-
     setState(() {
       professeur = prof;
-
       dataIsLoaded = true;
     });
   }
@@ -44,97 +44,89 @@ class _CourseCardState extends State<CourseCard> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double cardPadding = screenWidth > 600 ? 20 : 10;
+    double fontSizeTitle = screenWidth > 600 ? 20 : 12;
+    double fontSizeSubTitle = screenWidth > 600 ? 17 : 10;
+
     return !dataIsLoaded
         ? LoadingAnimationWidget.hexagonDots(
             color: AppColors.secondaryColor, size: 50)
-        : Container(
-            margin: const EdgeInsets.only(top: 5.0),
-            width: MediaQuery.of(context).size.width > 400 ? 200 : 150,
-            height: widget.option == "admin" ? 230 : 170,
-            decoration: BoxDecoration(
-              color: AppColors.secondaryColor,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                const BoxShadow(
-                  color: Colors.black54,
-                  spreadRadius: 3,
-                  blurRadius: 3,
-                  offset: Offset(0, 3),
+        : InkWell(
+            onTap: () {
+              if (widget.option == "professeur" || widget.option == 'admin') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          OneCoursePage(course: widget.course)),
+                );
+              } else if (widget.option == "etudiant") {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          seeMyAttendance(course: widget.course)),
+                );
+              }
+            },
+            child: Card(
+              elevation: 5,
+              shadowColor: Colors.black45,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              child: Container(
+                padding: EdgeInsets.all(cardPadding),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.secondaryColor, AppColors.primaryColor],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(15),
                 ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-              child: TextButton(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    widget.option == "etudiant"
-                        ? Text(
-                            ' ${widget.niveau}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(
-                            '${widget.filiere} ${widget.niveau}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                    const SizedBox(height: 5.0),
                     Text(
+                      maxLines: 2,
                       widget.name!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 13.0,
+                        fontSize: fontSizeTitle,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 5.0),
+                    const SizedBox(height: 5),
                     Text(
-                      widget.course['sigleCours'],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13.0,
+                      '${widget.filiere ?? ""} ${widget.niveau}',
+                      style: TextStyle(
+                        fontSize: fontSizeSubTitle,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 5.0),
-                    widget.option == "admin"
-                        ? Text(
-                            'Professeur : \n ${professeur['nom']} ${professeur['prenom']}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13.0,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const SizedBox()
+                    const SizedBox(height: 5),
+                    Text(
+                      'Sigle: ${widget.course['sigleCours']}',
+                      style: TextStyle(
+                        fontSize: fontSizeSubTitle,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    if ((widget.option == "admin" ||
+                            widget.option == "etudiant") &&
+                        professeur != null)
+                      Text(
+                        'Professeur : ${professeur['nom']} ${professeur['prenom']}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: fontSizeSubTitle,
+                          color: Colors.white,
+                        ),
+                      ),
                   ],
                 ),
-                onPressed: () {
-                  if (widget.option == "professeur" ||
-                      widget.option == 'admin') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              OneCoursePage(course: widget.course)),
-                    );
-                  } else if (widget.option == "etudiant") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              seeMyAttendance(course: widget.course)),
-                    );
-                  }
-                },
               ),
             ),
           );

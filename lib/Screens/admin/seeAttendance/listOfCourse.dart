@@ -22,22 +22,11 @@ class listOfCourse extends StatefulWidget {
 
 class _listOfCourseState extends State<listOfCourse> {
   bool dataIsLoaded = false;
-  List<Widget> myWidgets = [];
   List<Filiere> Allfilieres = [];
   Filiere? _selectedFiliere;
   final StreamController<List<dynamic>> _streamController =
       StreamController<List<dynamic>>();
   final BACKEND_URL = dotenv.env['API_URL'];
-
-  Widget courseList(List<Widget> myWidget) {
-    if (myWidget.isNotEmpty) {
-      return Column(
-        children: [for (var w in myWidget) w],
-      );
-    } else {
-      return const Center(child: NoResultWidget());
-    }
-  }
 
   Future<void> loadAllActifFilieres() async {
     List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
@@ -74,7 +63,6 @@ class _listOfCourseState extends State<listOfCourse> {
         throw Exception('Erreur lors de la récupération des cours');
       }
     } catch (e) {
-      // Gérer les erreurs ici
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Impossible de récupérer les cours. Erreur:$e'),
@@ -93,6 +81,11 @@ class _listOfCourseState extends State<listOfCourse> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double aspectRatio = screenWidth > 600
+        ? 2 / 1
+        : 1.2; // Plus de hauteur pour les petits écrans
+
     return Scaffold(
       body: !dataIsLoaded
           ? Center(
@@ -114,7 +107,6 @@ class _listOfCourseState extends State<listOfCourse> {
                       ),
                     ),
                     const SizedBox(height: 20.0),
-                    //Dropdown Filieres
                     DropdownButtonFormField<Filiere>(
                       value: _selectedFiliere,
                       elevation: 18,
@@ -132,11 +124,10 @@ class _listOfCourseState extends State<listOfCourse> {
                         );
                       }).toList(),
                       decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
                           labelText: 'Choisissez une filière'),
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
+                    const SizedBox(height: 16),
                     _selectedFiliere == null
                         ? const Center(
                             child: Text(
@@ -150,72 +141,39 @@ class _listOfCourseState extends State<listOfCourse> {
                                 return Center(
                                   child: LoadingAnimationWidget.hexagonDots(
                                       color: AppColors.secondaryColor,
-                                      size: 200),
+                                      size: 100),
                                 );
                               } else if (snapshot.hasError) {
                                 return Text('Erreur : ${snapshot.error}');
                               } else {
-                                List<dynamic>? cours = snapshot.data;
-                                if (cours!.isEmpty) {
+                                List<dynamic>? courses = snapshot.data;
+                                if (courses!.isEmpty) {
                                   return const SingleChildScrollView(
                                     child: NoResultWidget(),
                                   );
                                 } else {
-                                  int length = snapshot.data!.length;
-                                  var previous;
-                                  myWidgets.clear();
-                                  for (int i = 0; i < length; i++) {
-                                    var object = snapshot.data![i];
-                                    if (identical(previous, null) == false) {
-                                      myWidgets.add(Column(children: [
-                                        Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              CourseCard(
-                                                name: previous['nomCours'],
-                                                niveau: previous['niveau'],
-                                                filiere:
-                                                    _selectedFiliere?.idFiliere,
-                                                option: "admin",
-                                                course: previous,
-                                              ),
-                                              const SizedBox(
-                                                width: 20.0,
-                                              ),
-                                              CourseCard(
-                                                name: object['nomCours'],
-                                                niveau: object['niveau'],
-                                                filiere:
-                                                    _selectedFiliere?.idFiliere,
-                                                option: "admin",
-                                                course: object,
-                                              ),
-                                            ]),
-                                        const SizedBox(height: 10.0),
-                                      ]));
-                                      previous = null;
-                                    } else {
-                                      previous = object;
-                                    }
-                                  }
-                                  if (identical(previous, null) == false) {
-                                    myWidgets.add(Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          CourseCard(
-                                            name: previous['nomCours'],
-                                            niveau: previous['niveau'],
-                                            filiere:
-                                                _selectedFiliere?.idFiliere,
-                                            option: "admin",
-                                            course: previous,
-                                          ),
-                                        ]));
-                                  }
-
-                                  return courseList(myWidgets);
+                                  return GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: screenWidth > 600 ? 3 : 2,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      childAspectRatio: aspectRatio,
+                                    ),
+                                    itemCount: courses.length,
+                                    itemBuilder: (context, index) {
+                                      return CourseCard(
+                                        name: courses[index]['nomCours'],
+                                        niveau: courses[index]['niveau'],
+                                        filiere: _selectedFiliere?.idFiliere,
+                                        option: "admin",
+                                        course: courses[index],
+                                      );
+                                    },
+                                  );
                                 }
                               }
                             })

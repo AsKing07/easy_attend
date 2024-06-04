@@ -30,16 +30,6 @@ class _ProfDashboardState extends State<ProfDashboard> {
   final StreamController<List<dynamic>> _streamController =
       StreamController<List<dynamic>>();
 
-  Widget createCourseList(List<Widget> myWidget) {
-    if (myWidget.isNotEmpty) {
-      return Column(
-        children: [for (var w in myWidget) w],
-      );
-    } else {
-      return const Center(child: NoResultWidget());
-    }
-  }
-
   void loadProf() async {
     final x = await get_Data().loadCurrentProfData();
     setState(() {
@@ -111,6 +101,8 @@ class _ProfDashboardState extends State<ProfDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double aspectRatio = screenWidth > 600 ? 2 / 1 : 1.2;
     return Scaffold(
       body: !dataIsLoaded
           ? Center(
@@ -152,6 +144,7 @@ class _ProfDashboardState extends State<ProfDashboard> {
                         );
                       }).toList(),
                       decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
                           labelText: 'Choisissez une filière'),
                     ),
                     const SizedBox(
@@ -166,69 +159,45 @@ class _ProfDashboardState extends State<ProfDashboard> {
                         : StreamBuilder(
                             stream: _streamController.stream,
                             builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                int length = snapshot.data!.length;
-                                var previous;
-                                myWidgets.clear();
-                                for (int i = 0; i < length; i++) {
-                                  var object = snapshot.data![i];
-                                  if (identical(previous, null) == false) {
-                                    myWidgets.add(Column(children: [
-                                      Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            CourseCard(
-                                              name: previous['nomCours'],
-                                              niveau: previous['niveau'],
-                                              filiere:
-                                                  _selectedFiliere?.idFiliere,
-                                              option: "professeur",
-                                              course: previous,
-                                            ),
-                                            const SizedBox(
-                                              width: 20.0,
-                                            ),
-                                            CourseCard(
-                                              name: object['nomCours'],
-                                              niveau: object['niveau'],
-                                              filiere:
-                                                  _selectedFiliere?.idFiliere,
-                                              option: "professeur",
-                                              course: object,
-                                            ),
-                                          ]),
-                                      const SizedBox(height: 10.0),
-                                    ]));
-                                    previous = null;
-                                  } else {
-                                    previous = object;
-                                  }
-                                }
-                                if (identical(previous, null) == false) {
-                                  myWidgets.add(Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        CourseCard(
-                                          name: previous['nomCours'],
-                                          niveau: previous['niveau'],
-                                          filiere: _selectedFiliere?.idFiliere,
-                                          option: "professeur",
-                                          course: previous,
-                                        ),
-                                      ]));
-                                }
-
-                                return createCourseList(myWidgets);
-                              } else {
-                                return Material(
-                                  child: Center(
-                                    child: LoadingAnimationWidget.hexagonDots(
-                                        color: AppColors.secondaryColor,
-                                        size: 200),
-                                  ),
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: LoadingAnimationWidget.hexagonDots(
+                                      color: AppColors.secondaryColor,
+                                      size: 100),
                                 );
+                              } else if (snapshot.hasError) {
+                                return Text('Erreur : ${snapshot.error}');
+                              } else {
+                                List<dynamic>? courses = snapshot.data;
+                                if (courses!.isEmpty) {
+                                  return const SingleChildScrollView(
+                                    child: NoResultWidget(),
+                                  );
+                                } else {
+                                  return GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: screenWidth > 600 ? 3 : 2,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      childAspectRatio: aspectRatio,
+                                    ),
+                                    itemCount: courses.length,
+                                    itemBuilder: (context, index) {
+                                      return CourseCard(
+                                        name: courses[index]['nomCours'],
+                                        niveau: courses[index]['niveau'],
+                                        filiere: _selectedFiliere?.idFiliere,
+                                        option: "professeur",
+                                        course: courses[index],
+                                      );
+                                    },
+                                  );
+                                }
                               }
                             })
                   ],

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, sized_box_for_whitespace
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
@@ -44,31 +44,68 @@ class _EtudiantHomeState extends State<EtudiantHome> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: HelperDrawer(
-        items: items,
-        changePage: (MenuItems page) {
-          setState(() {
-            currentPage = page;
-            for (var item in items) {
-              item.isSelected = (item == page);
-            }
-          });
-        },
-        nom: "Student",
-      ),
-      appBar: AppBar(
-        backgroundColor: AppColors.secondaryColor,
-        foregroundColor: Colors.white,
-        title: Text(
-          currentPage.text,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: FontSize.medium,
-          ),
-        ),
-      ),
-      body: currentPage.tap,
-    );
+    return MediaQuery.of(context).size.width > 600
+        //Large screen
+        ? Scaffold(
+            appBar: AppBar(
+              backgroundColor: AppColors.secondaryColor,
+              foregroundColor: Colors.white,
+              title: Text(
+                currentPage.text,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: FontSize.medium,
+                ),
+              ),
+            ),
+            body: Row(
+              children: [
+                Container(
+                  width: 250,
+                  child: HelperDrawer(
+                    items: items,
+                    changePage: (MenuItems page) {
+                      setState(() {
+                        currentPage = page;
+                        for (var item in items) {
+                          item.isSelected = (item == page);
+                        }
+                      });
+                    },
+                    nom: "Student",
+                  ),
+                ),
+                Expanded(child: currentPage.tap)
+              ],
+            ),
+          )
+
+//Small screen
+        : Scaffold(
+            drawer: HelperDrawer(
+              items: items,
+              changePage: (MenuItems page) {
+                setState(() {
+                  currentPage = page;
+                  for (var item in items) {
+                    item.isSelected = (item == page);
+                  }
+                });
+              },
+              nom: "Student",
+            ),
+            appBar: AppBar(
+              backgroundColor: AppColors.secondaryColor,
+              foregroundColor: Colors.white,
+              title: Text(
+                currentPage.text,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: FontSize.medium,
+                ),
+              ),
+            ),
+            body: currentPage.tap,
+          );
   }
 }
