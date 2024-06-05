@@ -8,6 +8,7 @@ import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/seeAttendance.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/takeAttendanceManualy.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/takeQRattendance.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:expandable/expandable.dart';
@@ -130,7 +131,7 @@ class _ListOfOneCourseSeancePageState extends State<ListOfOneCourseSeancePage> {
                                 color: AppColors.secondaryColor, size: 100),
                           );
                         } else if (snapshot.hasError) {
-                          return Text('Erreur : ${snapshot.error}');
+                          return errorWidget(error: snapshot.error.toString());
                         } else {
                           List<dynamic>? seances = snapshot.data;
                           if (seances!.isEmpty) {

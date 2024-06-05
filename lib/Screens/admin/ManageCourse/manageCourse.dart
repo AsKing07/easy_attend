@@ -9,6 +9,7 @@ import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/addNewCourse.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/editCourse.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -88,6 +89,38 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
         ),
       );
     }
+  }
+
+  void showCourseDetailsDialog(BuildContext context, dynamic course) async {
+    final prof = await get_Data().getProfById(course['idProfesseur'], context);
+    final fil = await get_Data().getFiliereById(course['idFiliere'], context);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(course['nomCours']),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Sigle: ${course['sigleCours']}'),
+              Text('Niveau: ${course['niveau']}'),
+              Text('Filière: ${fil['nomFiliere']}'),
+              Text('Professeur: ${prof['nom']} ${prof['prenom']}'),
+              // Ajoutez d'autres détails du cours ici
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Fermer'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -277,7 +310,7 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                       color: AppColors.secondaryColor, size: 100),
                 );
               } else if (snapshot.hasError) {
-                return Text('Erreur : ${snapshot.error}');
+                return errorWidget(error: snapshot.error.toString());
               } else {
                 List<dynamic>? cours = snapshot.data;
                 if (cours!.isEmpty) {
@@ -300,6 +333,12 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            IconButton(
+                              icon: const Icon(Icons.visibility),
+                              onPressed: () {
+                                showCourseDetailsDialog(context, cour);
+                              },
+                            ),
                             IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: () {

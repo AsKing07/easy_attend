@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -76,9 +77,8 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenheight = MediaQuery.of(context).size.height;
     double aspectRatio =
-        screenWidth > 600 ? 2.5 : 1; // Plus de hauteur pour les petits écrans
+        screenWidth > 600 ? 3 : 2; // Plus de hauteur pour les petits écrans
 
     return Scaffold(
       body: !dataIsLoaded
@@ -111,7 +111,8 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                                   color: AppColors.secondaryColor, size: 100),
                             );
                           } else if (snapshot.hasError) {
-                            return Text('Erreur : ${snapshot.error}');
+                            return errorWidget(
+                                error: snapshot.error.toString());
                           } else {
                             List<dynamic>? courses = snapshot.data;
                             if (courses!.isEmpty) {

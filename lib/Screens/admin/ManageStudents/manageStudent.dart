@@ -11,6 +11,7 @@ import 'package:easy_attend/Screens/admin/ManageStudents/addNewStudent.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/addStudentFromExcel.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/edit_Student.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/student_trashed.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
@@ -91,6 +92,35 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
         ),
       );
     }
+  }
+
+  void showStudentDetailsDialog(BuildContext context, dynamic etudiant) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('${etudiant['nom']} ${etudiant['prenom']}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Filière: ${etudiant['filiere']}'),
+              Text('Niveau: ${etudiant['niveau']}'),
+              Text('Email: ${etudiant['email']}'),
+              Text('Numéro: ${etudiant['phone']}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Fermer'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -341,7 +371,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                     child: LoadingAnimationWidget.hexagonDots(
                         color: AppColors.secondaryColor, size: 200));
               } else if (snapshot.hasError) {
-                return Text('Erreur : ${snapshot.error}');
+                return errorWidget(error: snapshot.error.toString());
               } else {
                 List<dynamic>? students = snapshot.data;
                 if (students!
@@ -368,6 +398,12 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              IconButton(
+                                icon: const Icon(Icons.visibility),
+                                onPressed: () {
+                                  showStudentDetailsDialog(context, etudiant);
+                                },
+                              ),
                               IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {

@@ -8,6 +8,7 @@ import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/addNewProf.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/prof_trashed.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/edit_Prof.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -176,7 +177,7 @@ class _ManageProfState extends State<ManageProf> {
                           child: LoadingAnimationWidget.hexagonDots(
                               color: AppColors.secondaryColor, size: 200));
                     } else if (snapshot.hasError) {
-                      return Text('Erreur : ${snapshot.error}');
+                      return errorWidget(error: snapshot.error.toString());
                     } else {
                       List<dynamic>? profs = snapshot.data;
                       if (profs!
@@ -195,7 +196,7 @@ class _ManageProfState extends State<ManageProf> {
                                 title:
                                     Text('${prof["nom"]}  ${prof["prenom"]}'),
                                 subtitle: Text(
-                                  'Num : ${prof["phone"]}',
+                                  'Num : ${prof["phone"]} \nEmail : ${prof["email"]}',
                                   style: const TextStyle(
                                       color: AppColors.secondaryColor,
                                       fontSize: FontSize.small),

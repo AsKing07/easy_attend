@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/seeOneStudentAttendance.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -91,7 +92,7 @@ class _listOfStudentsOfACourseState extends State<listOfStudentsOfACourse> {
                     child: LoadingAnimationWidget.hexagonDots(
                         color: AppColors.secondaryColor, size: 100));
               } else if (snapshot.hasError) {
-                return Text('Erreur : ${snapshot.error}');
+                return errorWidget(error: snapshot.error.toString());
               } else {
                 List<dynamic>? students = snapshot.data;
                 if (students!

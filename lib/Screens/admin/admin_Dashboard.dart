@@ -3,6 +3,7 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -105,10 +106,27 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                           );
                                         } else {
                                           if (snapshot.hasError) {
-                                            return Center(
-                                              child: Text(
-                                                  'Erreur lors de la récupération des étudiants actifs: ${snapshot.error}'),
-                                            );
+                                            return errorWidget(
+                                                error:
+                                                    snapshot.error.toString());
+                                            // return
+                                            // const Column(
+                                            //   mainAxisSize: MainAxisSize.min,
+                                            //   children: [
+                                            //     Icon(
+                                            //       Icons.error_outline_outlined,
+                                            //       color: Colors.red,
+                                            //       size: 50,
+                                            //     ),
+                                            //     Text(
+                                            //       'Oups... quelque chose s\'est mal passé',
+                                            //     ),
+                                            //   ],
+                                            // );
+                                            // Center(
+                                            //   child: Text(
+                                            //       'Erreur lors de la récupération des étudiants actifs: ${snapshot.error}'),
+                                            // );
                                           } else {
                                             List<dynamic> students =
                                                 snapshot.data;
@@ -183,10 +201,26 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                           );
                                         } else {
                                           if (snapshot.hasError) {
-                                            return Center(
-                                              child: Text(
-                                                  'Erreur lors de la récupération des étudiants actifs: ${snapshot.error}'),
-                                            );
+                                            return errorWidget(
+                                                error:
+                                                    snapshot.error.toString());
+                                            // return const Column(
+                                            //   mainAxisSize: MainAxisSize.min,
+                                            //   children: [
+                                            //     Icon(
+                                            //       Icons.error_outline_outlined,
+                                            //       color: Colors.red,
+                                            //       size: 50,
+                                            //     ),
+                                            //     Text(
+                                            //       'Oups... quelque chose s\'est mal passé',
+                                            //     ),
+                                            //   ],
+                                            // );
+                                            // Center(
+                                            //   child: Text(
+                                            //       'Erreur lors de la récupération des étudiants actifs: ${snapshot.error}'),
+                                            // );
                                           } else {
                                             List<dynamic> profs = snapshot.data;
 
@@ -266,10 +300,27 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                             );
                                           } else {
                                             if (snapshot.hasError) {
-                                              return Center(
-                                                child: Text(
-                                                    'Erreur lors de la récupération des filières actives: ${snapshot.error}'),
-                                              );
+                                              return errorWidget(
+                                                  error: snapshot.error
+                                                      .toString());
+                                              // const Column(
+                                              //   mainAxisSize: MainAxisSize.min,
+                                              //   children: [
+                                              //     Icon(
+                                              //       Icons
+                                              //           .error_outline_outlined,
+                                              //       color: Colors.red,
+                                              //       size: 50,
+                                              //     ),
+                                              //     Text(
+                                              //       'Oups... quelque chose s\'est mal passé',
+                                              //     ),
+                                              //   ],
+                                              // );
+                                              // Center(
+                                              //   child: Text(
+                                              //       'Erreur lors de la récupération des filières actives: ${snapshot.error}'),
+                                              // );
                                             } else {
                                               List<dynamic> filiere =
                                                   snapshot.data;
@@ -346,10 +397,26 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                           );
                                         } else {
                                           if (snapshot.hasError) {
-                                            return Center(
-                                              child: Text(
-                                                  'Erreur lors de la récupération des cours actives: ${snapshot.error}'),
-                                            );
+                                            return errorWidget(
+                                                error:
+                                                    snapshot.error.toString());
+                                            // return const Column(
+                                            //   mainAxisSize: MainAxisSize.min,
+                                            //   children: [
+                                            //     Icon(
+                                            //       Icons.error_outline_outlined,
+                                            //       color: Colors.red,
+                                            //       size: 50,
+                                            //     ),
+                                            //     Text(
+                                            //       'Oups... quelque chose s\'est mal passé',
+                                            //     ),
+                                            //   ],
+                                            // );
+                                            // Center(
+                                            //   child: Text(
+                                            //       'Erreur lors de la récupération des cours actives: ${snapshot.error}'),
+                                            // );
                                           } else {
                                             List<dynamic> cours = snapshot.data;
                                             return Card(
@@ -422,63 +489,83 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                 size: 50),
                                       );
                                     } else {
-                                      List<dynamic> queries = snapshot.data;
-                                      return Card(
-                                        color: Colors.white,
-                                        elevation: 8.0,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.query_stats,
-                                                      color: AppColors
-                                                          .filiereColor,
-                                                      size: 50.0,
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 10.0,
-                                                    ),
-                                                    const Text(
-                                                      "Requetes",
-                                                      style: TextStyle(
-                                                        color:
-                                                            AppColors.textColor,
-                                                        fontSize:
-                                                            FontSize.xxLarge,
+                                      if (snapshot.hasError) {
+                                        return errorWidget(
+                                            error: snapshot.error.toString());
+                                        // return const Column(
+                                        //   mainAxisSize: MainAxisSize.min,
+                                        //   children: [
+                                        //     Icon(
+                                        //       Icons.error_outline_outlined,
+                                        //       color: Colors.red,
+                                        //       size: 50,
+                                        //     ),
+                                        //     Text(
+                                        //       'Oups... quelque chose s\'est mal passé',
+                                        //     ),
+                                        //   ],
+                                        // );
+                                      } else {
+                                        List<dynamic> queries = snapshot.data;
+                                        return Card(
+                                          color: Colors.white,
+                                          elevation: 8.0,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          child: Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.query_stats,
+                                                        color: AppColors
+                                                            .filiereColor,
+                                                        size: 50.0,
                                                       ),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 100.0,
-                                                    ),
-                                                    Text(
-                                                      queries.length.toString(),
-                                                      style: const TextStyle(
-                                                        color:
-                                                            AppColors.textColor,
-                                                        fontSize: 25.0,
+                                                      const SizedBox(
+                                                        width: 10.0,
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const Text(
-                                                  "En attente de traitement",
-                                                  style: TextStyle(
-                                                      color: AppColors
-                                                          .accentColor),
-                                                )
-                                              ],
+                                                      const Text(
+                                                        "Requetes",
+                                                        style: TextStyle(
+                                                          color: AppColors
+                                                              .textColor,
+                                                          fontSize:
+                                                              FontSize.xxLarge,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 100.0,
+                                                      ),
+                                                      Text(
+                                                        queries.length
+                                                            .toString(),
+                                                        style: const TextStyle(
+                                                          color: AppColors
+                                                              .textColor,
+                                                          fontSize: 25.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const Text(
+                                                    "En attente de traitement",
+                                                    style: TextStyle(
+                                                        color: AppColors
+                                                            .accentColor),
+                                                  )
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      );
+                                        );
+                                      }
                                     }
                                   },
                                 ),

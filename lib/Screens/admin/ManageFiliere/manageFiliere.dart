@@ -7,6 +7,7 @@ import 'package:easy_attend/Screens/admin/ManageFiliere/addNewFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/editFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/filiere_trashed.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -125,7 +126,7 @@ class _ManageFilierePageState extends State<ManageFilierePage> {
                         color: AppColors.secondaryColor, size: 100),
                   );
                 } else if (snapshot.hasError) {
-                  return Text('Erreur : ${snapshot.error}');
+                  return errorWidget(error: snapshot.error.toString());
                 } else {
                   List<dynamic>? filieres = snapshot.data;
                   if (filieres!.isEmpty) {

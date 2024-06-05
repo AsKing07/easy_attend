@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/pdfHelper.dart';
+import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -117,7 +118,7 @@ class _seeOneStudentAttendanceState extends State<seeMyAttendance> {
                         );
                       }
                       if (snapshot.hasError) {
-                        return Center(child: Text('Erreur: ${snapshot.error}'));
+                        return errorWidget(error: snapshot.error.toString());
                       }
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
