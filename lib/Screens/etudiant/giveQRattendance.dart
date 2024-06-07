@@ -46,7 +46,7 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
     !screenSize()
             .isWeb() // Vérifier si l'application est en cours d'exécution dans un navigateur web
         ? res = await FlutterBarcodeScanner.scanBarcode(
-            "#ff6666", 'Arreter le scan', true, ScanMode.QR)
+            "#ff6666", 'Arrêter le scan', true, ScanMode.QR)
         : null;
     final x = await get_Data().getSeanceByCode(res, context);
 
