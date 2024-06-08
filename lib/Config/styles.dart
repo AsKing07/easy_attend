@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/colors/gf_color.dart';
 
 // colors to use in app
 class AppColors {
   static const Color primaryColor = Color(0xFF9DD1F1);
-  static const Color secondaryColor = Color(0xFF508AA8);
+  static const Color secondaryColor = GFColors.SECONDARY;
+  // static const Color secondaryColor = Color(0xFF508AA8);
   static const Color tertiaryColor = Color(0xFFC8E0F4);
   static const Color textColor = Color(0xFF031927);
   static const Color accentColor = Color(0xFFBA1200);

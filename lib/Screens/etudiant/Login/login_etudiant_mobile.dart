@@ -1,59 +1,76 @@
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/etudiant/etudiantMethods/connexion_methods_etudiant.dart';
 import 'package:easy_attend/Screens/professeur/profMethods/auth_methods_prof.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginStudent extends StatefulWidget {
-  const LoginStudent({super.key});
+import '../etudiantMethods/connexion_methods_etudiant.dart';
+
+class LoginEtudiantMobile extends StatefulWidget {
+  const LoginEtudiantMobile({super.key});
 
   @override
-  State<LoginStudent> createState() => _LoginStudentState();
+  State<LoginEtudiantMobile> createState() => _LoginEtudiantMobileState();
 }
 
-class _LoginStudentState extends State<LoginStudent> {
+class _LoginEtudiantMobileState extends State<LoginEtudiantMobile> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  bool _passwordVisible = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: SingleChildScrollView(
-          child: Padding(
+      body: Center(
+        child: Container(
+            decoration: BoxDecoration(
+              // image: DecorationImage(
+              //   image: Svg('assets/students.svg'),
+              //   fit: BoxFit.cover,
+              //   // Autres propriétés de l'image SVG
+              // ),
+              color: Colors.white.withOpacity(0.5), // Opacité de 0.7 (70%),
+            ),
+            child: Padding(
               padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 20),
                   Text(
-                    "Allons-y",
+                    "Allons-y!",
                     style: GoogleFonts.poppins(
                         color: AppColors.textColor,
                         fontSize: FontSize.xxLarge,
                         fontWeight: FontWeight.w600),
                   ),
+                  SvgPicture.asset(
+                    'assets/students.svg',
+                    height: 200,
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(top: 7),
                     child: Text(
-                      "Connectez-vous à votre compte étudiant!",
+                      "Bon Retour! Veuillez entrez vos informations de connexion",
+                      textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                           color: AppColors.secondaryColor,
                           fontSize: FontSize.medium,
                           fontWeight: FontWeight.w600),
                     ),
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 40),
                   Form(
                       key: _formKey,
                       child: Column(
                         children: [
                           const Center(
                             child: Text(
-                              "Section Etudiant",
+                              "Connexion Etudiant",
                               style: TextStyle(
                                   color: AppColors.secondaryColor,
                                   fontSize: FontSize.xLarge,
@@ -65,9 +82,11 @@ class _LoginStudentState extends State<LoginStudent> {
                           TextFormField(
                               controller: _emailController,
                               validator: (value) {
-                                if (_emailController.text.isEmpty ||
-                                    !value!.contains('@')) {
+                                if (!value!.contains('@')) {
                                   return "Veuillez entrer un email valide";
+                                }
+                                if (_emailController.text.isEmpty) {
+                                  return "Ce champ est requis";
                                 }
                                 return null;
                               },
@@ -75,7 +94,7 @@ class _LoginStudentState extends State<LoginStudent> {
                               style: GoogleFonts.poppins(
                                   color: AppColors.textColor),
                               decoration: InputDecoration(
-                                labelText: 'Adresse Email',
+                                labelText: 'Adresse Email*',
                                 prefixIcon: const Icon(Icons.email),
                                 contentPadding: const EdgeInsets.only(top: 10),
                                 border: OutlineInputBorder(
@@ -111,13 +130,26 @@ class _LoginStudentState extends State<LoginStudent> {
                                 }
                                 return null;
                               },
-                              obscureText: true,
+                              obscureText: !_passwordVisible,
                               style: GoogleFonts.poppins(
                                   color: AppColors.textColor),
                               keyboardType: TextInputType.visiblePassword,
                               decoration: InputDecoration(
-                                labelText: "Mot de passe",
+                                labelText: "Mot de passe*",
                                 prefixIcon: const Icon(Icons.password),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: AppColors.shadow,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                ),
                                 contentPadding: const EdgeInsets.only(top: 10),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -143,15 +175,15 @@ class _LoginStudentState extends State<LoginStudent> {
                             alignment: Alignment.centerRight,
                             child: Padding(
                               padding: const EdgeInsets.only(top: 12),
-                              child: GestureDetector(
+                              child: InkWell(
                                 onTap: () {},
                                 child: Text(
                                   "Mot de passe oublié?",
                                   style: GoogleFonts.poppins(
-                                      color: AppColors.secondaryColor,
-                                      fontSize: FontSize.medium,
-                                      fontWeight: FontWeight.w600,
-                                      decoration: TextDecoration.underline),
+                                    color: AppColors.secondaryColor,
+                                    fontSize: FontSize.medium,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
@@ -174,6 +206,7 @@ class _LoginStudentState extends State<LoginStudent> {
                               fontSize: FontSize.medium,
                               fontWeight: FontWeight.bold,
                             ),
+                            color: AppColors.secondaryColor,
                             shape: GFButtonShape.pills,
                             fullWidthButton: true,
                           ),
@@ -191,12 +224,13 @@ class _LoginStudentState extends State<LoginStudent> {
                               fontSize: FontSize.medium,
                               fontWeight: FontWeight.w600),
                         ),
-                        GestureDetector(
+                        InkWell(
                           onTap: () {
                             auth_methods_prof().requestProfAccount(context);
                           },
                           child: Text(
                             "Inscrivez-vous",
+                            textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                                 color: AppColors.secondaryColor,
                                 fontWeight: FontWeight.w600,
@@ -207,7 +241,9 @@ class _LoginStudentState extends State<LoginStudent> {
                     ),
                   )
                 ],
-              ))),
+              ),
+            )),
+      ),
     );
   }
 }

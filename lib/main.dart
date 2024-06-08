@@ -1,6 +1,6 @@
-import 'package:easy_attend/Screens/admin/AdminHome.dart';
+import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
-import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
+import 'package:easy_attend/Screens/etudiant/Home/EtudiantHome.dart';
 import 'package:easy_attend/Screens/professeur/ProfHome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

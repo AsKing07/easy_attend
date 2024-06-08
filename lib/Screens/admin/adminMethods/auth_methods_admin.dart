@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
-import 'package:easy_attend/Screens/admin/AdminHome.dart';
+import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';

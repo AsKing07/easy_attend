@@ -5,8 +5,13 @@ import 'dart:convert';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
+import 'package:easy_attend/Screens/etudiant/etudiant_dashboard.dart';
+import 'package:easy_attend/Screens/etudiant/giveQRattendance.dart';
+import 'package:easy_attend/Screens/etudiant/makeAquery.dart';
+import 'package:easy_attend/Screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,97 +56,88 @@ class _HelperDrawerState extends State<HelperDrawer> {
   Future<void> _loadUserName() async {
     final prefs = await SharedPreferences.getInstance();
     var utilisateur = json.decode(prefs.getString('user')!);
-
-    name = '${utilisateur['nom']}  ${utilisateur['prenom']}';
+    setState(() {
+      name = '${utilisateur['nom']}  ${utilisateur['prenom']}';
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: (ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(
-              color: AppColors.secondaryColor,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircleAvatar(
+    return GFDrawer(
+        color: AppColors.secondaryColor,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GFDrawerHeader(
+                  closeButton: const Text(""),
+                  centerAlign: true,
+                  decoration: const BoxDecoration(
+                      color: AppColors.secondaryColor,
+                      border: Border(
+                          bottom:
+                              BorderSide(width: 3, color: AppColors.white))),
+                  currentAccountPicture: const GFAvatar(
+                    radius: 80.0,
                     backgroundImage: AssetImage("assets/admin.jpg"),
-                    radius: 30.0,
                   ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: FontSize.medium,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Center(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () async {
-                              auth_methods_admin().logUserOut(context);
-                            },
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.logout,
-                                  color: AppColors.white,
-                                  size: 21,
-                                ),
-                                Text(
-                                  "Deconnexion",
-                                  style: TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: FontSize.small,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: FontSize.medium,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          auth_methods_admin().logUserOut(context);
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.logout,
+                              color: AppColors.white,
+                              size: 21,
                             ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
+                            Text(
+                              "Deconnexion",
+                              style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: FontSize.small,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            ...widget.items
+                .map((item) => menuItem(item, widget.changePage, context))
+                .toList(),
+            Center(
+              child: Text(
+                'Version: ${widget.AppVersion}',
+                style: const TextStyle(color: AppColors.white),
               ),
-            ),
-          ),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Column(
-                children: widget.items
-                    .map((item) => menuItem(item, widget.changePage, context))
-                    .toList(),
-              ),
-            ),
-          ),
-          Center(
-            child: Text(
-              'Version: ${widget.AppVersion}',
-              style: const TextStyle(color: AppColors.textColor),
-            ),
-          )
-        ],
-      )),
-    );
+            )
+          ],
+        ));
   }
 }
 
@@ -152,7 +148,7 @@ Widget menuItem(MenuItems item, Function changePage, BuildContext context) {
     },
     child: Container(
       color:
-          item.isSelected ? Colors.grey.withOpacity(0.2) : Colors.transparent,
+          item.isSelected ? Colors.white.withOpacity(0.2) : Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
         child: Row(
@@ -161,7 +157,7 @@ Widget menuItem(MenuItems item, Function changePage, BuildContext context) {
               child: Icon(
                 item.icon,
                 size: 21,
-                color: AppColors.textColor,
+                color: AppColors.white,
               ),
             ),
             Expanded(
@@ -169,7 +165,7 @@ Widget menuItem(MenuItems item, Function changePage, BuildContext context) {
               child: Text(
                 item.text,
                 style: const TextStyle(
-                    color: AppColors.textColor,
+                    color: AppColors.white,
                     fontSize: FontSize.small,
                     fontWeight: FontWeight.bold),
               ),

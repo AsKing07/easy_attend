@@ -8,6 +8,7 @@ import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -60,7 +61,9 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Impossible de récupérer les cours. Erreur:$e'),
+          content: kReleaseMode
+              ? const Text('Impossible de récupérer les cours.')
+              : Text('Impossible de récupérer les cours. Erreur:$e'),
           duration: const Duration(seconds: 6),
           backgroundColor: Colors.red,
         ),
@@ -87,7 +90,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
                   color: AppColors.secondaryColor, size: 100),
             )
           : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
               child: SingleChildScrollView(
                 child: Column(
                   children: [

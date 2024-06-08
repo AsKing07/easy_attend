@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
+import 'package:easy_attend/Screens/etudiant/Home/EtudiantHome.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';

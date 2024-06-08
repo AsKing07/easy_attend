@@ -2,12 +2,15 @@
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
+import 'package:easy_attend/Screens/etudiant/Home/EtudiantHome_Mobile.dart';
 import 'package:easy_attend/Screens/etudiant/etudiant_dashboard.dart';
 import 'package:easy_attend/Screens/etudiant/giveQRattendance.dart';
 import 'package:easy_attend/Screens/etudiant/makeAquery.dart';
 import 'package:easy_attend/Screens/settings_screen.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:getwidget/getwidget.dart';
 
 class EtudiantHome extends StatefulWidget {
   const EtudiantHome({super.key});
@@ -24,7 +27,7 @@ class _EtudiantHomeState extends State<EtudiantHome> {
       isSelected: true);
   List<MenuItems> items = [
     MenuItems(
-        text: 'Dashboard',
+        text: 'Mes cours',
         icon: Icons.dashboard_outlined,
         tap: const EtudiantDashboard()),
     MenuItems(
@@ -80,32 +83,7 @@ class _EtudiantHomeState extends State<EtudiantHome> {
             ),
           )
 
-//Small screen
-        : Scaffold(
-            drawer: HelperDrawer(
-              items: items,
-              changePage: (MenuItems page) {
-                setState(() {
-                  currentPage = page;
-                  for (var item in items) {
-                    item.isSelected = (item == page);
-                  }
-                });
-              },
-              nom: "Student",
-            ),
-            appBar: AppBar(
-              backgroundColor: AppColors.secondaryColor,
-              foregroundColor: Colors.white,
-              title: Text(
-                currentPage.text,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: FontSize.medium,
-                ),
-              ),
-            ),
-            body: currentPage.tap,
-          );
+//Mobile screen
+        : const EtudiantHomeMobile();
   }
 }
