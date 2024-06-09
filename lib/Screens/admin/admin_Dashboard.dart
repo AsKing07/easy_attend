@@ -532,7 +532,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                                                         width: 10.0,
                                                       ),
                                                       const Text(
-                                                        "Requetes",
+                                                        "Requêtes",
                                                         style: TextStyle(
                                                           color: AppColors
                                                               .textColor,

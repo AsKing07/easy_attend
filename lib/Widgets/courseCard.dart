@@ -2,40 +2,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Methods/get_data.dart';
-import 'package:easy_attend/Screens/etudiant/seeMyAttendance.dart';
-import 'package:easy_attend/Screens/professeur/ManageAttendance/OneCoursePage.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class CourseCard extends StatefulWidget {
-  String? name, filiere, niveau;
-  String option;
+  String? filiere;
+
   final course;
+  final VoidCallback onTap;
   CourseCard(
-      {super.key,
-      required this.name,
-      required this.niveau,
-      this.filiere,
-      required this.course,
-      required this.option});
+      {super.key, this.filiere, required this.course, required this.onTap});
 
   @override
   State<CourseCard> createState() => _CourseCardState();
 }
 
 class _CourseCardState extends State<CourseCard> {
-  var professeur;
-  //bool dataIsLoaded = false;
-
-  // void loadProf() async {
-  //   final prof =
-  //       await get_Data().getProfById(widget.course['idProfesseur'], context);
-  //   setState(() {
-  //     professeur = prof;
-  //     dataIsLoaded = true;
-  //   });
-  // }
-
   @override
   void initState() {
     //  loadProf();
@@ -45,9 +25,9 @@ class _CourseCardState extends State<CourseCard> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double cardPadding = screenWidth > 600 ? 22 : 12;
-    double fontSizeTitle = screenWidth > 600 ? 17 : 10;
-    double fontSizeSubTitle = screenWidth > 600 ? 15 : 8;
+    double cardPadding = screenWidth > 1200 ? 22 : 10;
+    double fontSizeTitle = screenWidth > 1200 ? 17 : 15;
+    double fontSizeSubTitle = screenWidth > 1200 ? 15 : 10;
 
     return
         // !dataIsLoaded
@@ -56,19 +36,14 @@ class _CourseCardState extends State<CourseCard> {
         //     :
         InkWell(
       onTap: () {
-        if (widget.option == "professeur" || widget.option == 'admin') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => OneCoursePage(course: widget.course)),
-          );
-        } else if (widget.option == "etudiant") {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => seeMyAttendance(course: widget.course)),
-          );
-        }
+        widget.onTap();
+        //   if (widget.option == "professeur" || widget.option == 'admin') {
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => OneCoursePage(course: widget.course)),
+        //   );
+        // }
       },
       child: Card(
         elevation: 5,
@@ -89,7 +64,7 @@ class _CourseCardState extends State<CourseCard> {
             children: [
               Text(
                 maxLines: 1,
-                widget.name!,
+                "${widget.course['nomCours']}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: fontSizeTitle,
@@ -98,32 +73,28 @@ class _CourseCardState extends State<CourseCard> {
               ),
               const SizedBox(height: 5),
               Text(
-                '${widget.filiere ?? ""} ${widget.niveau}',
+                'Filière: ${widget.filiere ?? ""}',
                 style: TextStyle(
                   fontSize: fontSizeSubTitle,
                   color: Colors.white,
                 ),
               ),
-              // const SizedBox(height: 5),
-              // Text(
-              //   'Sigle: ${widget.course['sigleCours']}',
-              //   style: TextStyle(
-              //     fontSize: fontSizeSubTitle,
-              //     color: Colors.white,
-              //   ),
-              // ),
-              // const SizedBox(height: 5),
-              // if ((widget.option == "admin" ||
-              //         widget.option == "etudiant") &&
-              //     professeur != null)
-              //   Text(
-              //     'Professeur : ${professeur['nom']} ${professeur['prenom']}',
-              //     style: TextStyle(
-              //       fontWeight: FontWeight.bold,
-              //       fontSize: fontSizeSubTitle,
-              //       color: Colors.white,
-              //     ),
-              //   ),
+              const SizedBox(height: 5),
+              Text(
+                'Année: ${widget.course['niveau']} ',
+                style: TextStyle(
+                  fontSize: fontSizeSubTitle,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                'Sigle: ${widget.course['sigleCours']}',
+                style: TextStyle(
+                  fontSize: fontSizeSubTitle,
+                  color: Colors.white,
+                ),
+              ),
             ],
           ),
         ),

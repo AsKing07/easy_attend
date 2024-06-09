@@ -73,6 +73,7 @@ dependencies:
   simple_barcode_scanner: ^0.0.8
   bottom_navy_bar: ^6.0.0
   flutter_svg_provider: ^1.0.7
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:
@@ -116,6 +117,8 @@ flutter:
   assets:
     - assets/admin.jpg
     - assets/ifri.jpg
+    - assets/chat.jpeg
+    - assets/makeQuery.png
     - assets/easyattend.png
     - assets/students.svg
     - assets/search.svg

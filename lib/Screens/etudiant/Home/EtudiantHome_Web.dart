@@ -1,6 +1,6 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
-import 'package:easy_attend/Screens/etudiant/etudiant_dashboard.dart';
+import 'package:easy_attend/Screens/etudiant/Dashboard/etudiant_dashboard.dart';
 import 'package:easy_attend/Screens/etudiant/giveQRattendance.dart';
 import 'package:easy_attend/Screens/etudiant/makeAquery.dart';
 import 'package:easy_attend/Screens/settings_screen.dart';
@@ -16,13 +16,13 @@ class EtudiantHomeWeb extends StatefulWidget {
 
 class _EtudiantHomeWebState extends State<EtudiantHomeWeb> {
   MenuItems currentPage = MenuItems(
-      text: 'Dashboard',
+      text: 'Mon Dashboard',
       icon: Icons.dashboard_outlined,
       tap: const EtudiantDashboard(),
       isSelected: true);
   List<MenuItems> items = [
     MenuItems(
-        text: 'Mes cours',
+        text: 'Mon Dashboard',
         icon: Icons.dashboard_outlined,
         tap: const EtudiantDashboard()),
     MenuItems(

@@ -5,10 +5,7 @@ import 'dart:convert';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
-import 'package:easy_attend/Screens/etudiant/etudiant_dashboard.dart';
-import 'package:easy_attend/Screens/etudiant/giveQRattendance.dart';
-import 'package:easy_attend/Screens/etudiant/makeAquery.dart';
-import 'package:easy_attend/Screens/settings_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/getwidget.dart';

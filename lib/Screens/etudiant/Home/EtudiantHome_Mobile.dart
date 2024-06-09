@@ -1,10 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
-import 'package:easy_attend/Screens/etudiant/etudiant_dashboard.dart';
+import 'package:easy_attend/Screens/etudiant/Dashboard/etudiant_dashboard.dart';
 import 'package:easy_attend/Screens/etudiant/giveQRattendance.dart';
 import 'package:easy_attend/Screens/etudiant/makeAquery.dart';
 import 'package:easy_attend/Screens/settings_screen.dart';
@@ -23,21 +25,9 @@ class EtudiantHomeMobile extends StatefulWidget {
 
 class _EtudiantHomeMobileState extends State<EtudiantHomeMobile> {
   int _selectedIndex = 0;
-  int _currentIndex = 0;
+
   String name = "";
   String AppVersion = "N/A";
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  void setCurrentIndex(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   Future<void> _getAppVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -54,13 +44,13 @@ class _EtudiantHomeMobileState extends State<EtudiantHomeMobile> {
   }
 
   MenuItems currentPage = MenuItems(
-      text: 'Dashboard',
+      text: 'Mon Dashboard',
       icon: Icons.dashboard_outlined,
       tap: const EtudiantDashboard(),
       isSelected: true);
   List<MenuItems> items = [
     MenuItems(
-        text: 'Mes cours',
+        text: 'Mon Dashboard',
         icon: Icons.dashboard_outlined,
         tap: const EtudiantDashboard()),
     MenuItems(
