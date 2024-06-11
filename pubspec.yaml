@@ -74,6 +74,7 @@ dependencies:
   bottom_navy_bar: ^6.0.0
   flutter_svg_provider: ^1.0.7
   animated_text_kit: ^4.2.2
+  pie_chart: ^5.4.0
 
 dev_dependencies:
   flutter_test:
@@ -119,6 +120,7 @@ flutter:
     - assets/ifri.jpg
     - assets/chat.jpeg
     - assets/makeQuery.png
+    - assets/makeQuery.jpg
     - assets/easyattend.png
     - assets/students.svg
     - assets/search.svg

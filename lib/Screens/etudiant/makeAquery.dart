@@ -3,6 +3,8 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:easy_attend/Screens/etudiant/MakeQuery/makeQueryMobile.dart';
+import 'package:easy_attend/Screens/etudiant/MakeQuery/makeQueryWeb.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -73,162 +75,11 @@ class _MakeQueryState extends State<MakeQuery> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: !dataIsLoaded
-            ? Center(
-                child: LoadingAnimationWidget.hexagonDots(
-                    color: AppColors.secondaryColor, size: 100),
-              )
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                          "Vous ne pouvez avoir qu'une seule requête en cours de traitement"),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      DecoratedBox(
-                        decoration: const ShapeDecoration(
-                          color: AppColors.secondaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15.0)),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(6.0),
-                          child: DropdownButton(
-                            isDense: true,
-                            borderRadius: BorderRadius.circular(30),
-                            hint: Text(
-                              dropdownValue,
-                              style: const TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            items: type
-                                .map(
-                                  (e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Center(
-                                      child: Text(
-                                        e,
-                                        style: const TextStyle(
-                                            color: AppColors.textColor,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                dropdownValue = value.toString();
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextField(
-                        controller: _subjectController,
-                        decoration: InputDecoration(
-                          filled: true,
-                          labelText: "Objet de la requête",
-                          hintText: "Objet en quelques mots",
-                          hintStyle: GoogleFonts.poppins(
-                            fontSize: FontSize.medium,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          border: const OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextField(
-                        controller: _queryController,
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          labelText: "Requête",
-                          filled: true,
-                          hintText: "Expliquer votre requête",
-                          hintStyle: GoogleFonts.poppins(
-                            fontSize: FontSize.medium,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          border: const OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      ElevatedButton(
-                          onPressed: () async {
-                            if (dropdownValue.isEmpty ||
-                                _subjectController.text.isEmpty ||
-                                _queryController.text.isEmpty) {
-                              GFToast.showToast(
-                                  "Tous les champs sont requis", context,
-                                  textStyle: const TextStyle(
-                                    color: AppColors.redColor,
-                                  ),
-                                  backgroundColor: AppColors.white);
-                            } else {
-                              DateTime x = DateTime.now();
-                              await set_Data().createQuery(
-                                  "${etudiant['nom']} ${etudiant['prenom']}",
-                                  etudiant['uid'],
-                                  dropdownValue,
-                                  _subjectController.text,
-                                  "${etudiant['nom']} ${etudiant['prenom']} : ${_queryController.text} ",
-                                  "2",
-                                  x,
-                                  context);
+    double screenWidth = MediaQuery.of(context).size.width;
 
-                              loadCurrentStudent();
-                            }
-                          },
-                          child: const Text('Soumettre')),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      ElevatedButton(
-                          onPressed: () {
-                            MessageDialog messageDialog = MessageDialog(
-                              dialogBackgroundColor: Colors.white,
-                              buttonOkColor: AppColors.greenColor,
-                              title: queryTypeFromDB,
-                              titleColor: Colors.black,
-                              message:
-                                  "Objet de la requête: $querySubjectFromDB  \n \n   $queryFromDB \n \n Statut:  ${queryStatusFromDB == "2" ? "En attente de traitement" : queryStatusFromDB == "1" ? "Approuvé" : queryStatusFromDB == "0" ? "Rejeté" : queryStatusFromDB}",
-                              messageColor: Colors.black,
-                              buttonOkText: 'Retour',
-                              dialogRadius: 30.0,
-                              buttonRadius: 15.0,
-                            );
-                            messageDialog.show(context,
-                                barrierColor: Colors.white);
-                          },
-                          child: const Text("Voir ma requête en cours"))
-                    ],
-                  ),
-                ),
-              ));
+    return screenWidth > 1200
+        //Large screen
+        ? const MakeQueryWeb()
+        : const MakeQueryMobile();
   }
 }

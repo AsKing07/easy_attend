@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:http/http.dart' as http;
+import 'package:pie_chart/pie_chart.dart';
 
 class seeMyAttendanceWebWidget extends StatefulWidget {
   final dynamic course;
@@ -161,7 +162,15 @@ class _seeMyAttendanceWebWidgetState extends State<seeMyAttendanceWebWidget> {
                         AttendanceData(date: date, statut: statut),
                       );
                     }
-
+                    Map<String, double> dataMap = {
+                      "Présence": nombreDePresences.toDouble(),
+                      "Absence":
+                          (nombreTotalSeances - nombreDePresences).toDouble(),
+                    };
+                    final colorList = <Color>[
+                      AppColors.greenColor,
+                      AppColors.redColor
+                    ];
                     return Column(
                       children: [
                         Row(
@@ -187,22 +196,35 @@ class _seeMyAttendanceWebWidgetState extends State<seeMyAttendanceWebWidget> {
                             Column(
                               children: [
                                 const SizedBox(height: 15),
-                                CircularPercentIndicator(
-                                  radius: 130.0,
-                                  animation: true,
-                                  animationDuration: 1200,
-                                  lineWidth: 15.0,
-                                  percent: pourcentageDePresence,
-                                  center: Text(
-                                    '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20.0),
+                                PieChart(
+                                  dataMap: dataMap,
+                                  chartType: ChartType.disc,
+                                  chartRadius: 190,
+                                  baseChartColor:
+                                      Colors.grey[50]!.withOpacity(0.15),
+                                  colorList: colorList,
+                                  chartValuesOptions: const ChartValuesOptions(
+                                    showChartValuesInPercentage: true,
+                                    // showChartValuesOutside: true,
                                   ),
-                                  circularStrokeCap: CircularStrokeCap.butt,
-                                  backgroundColor: Colors.grey,
-                                  progressColor: AppColors.secondaryColor,
+                                  //totalValue: nombreTotalSeances.toDouble(),
                                 ),
+                                // CircularPercentIndicator(
+                                //   radius: 130.0,
+                                //   animation: true,
+                                //   animationDuration: 1200,
+                                //   lineWidth: 15.0,
+                                //   percent: pourcentageDePresence,
+                                //   center: Text(
+                                //     '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
+                                //     style: const TextStyle(
+                                //         fontWeight: FontWeight.bold,
+                                //         fontSize: 20.0),
+                                //   ),
+                                //   circularStrokeCap: CircularStrokeCap.butt,
+                                //   backgroundColor: Colors.grey,
+                                //   progressColor: AppColors.secondaryColor,
+                                // ),
                                 const SizedBox(height: 15),
                                 InkWell(
                                   onTap: () async {
@@ -215,7 +237,7 @@ class _seeMyAttendanceWebWidgetState extends State<seeMyAttendanceWebWidget> {
                                         color: Colors.black,
                                         size: 50,
                                       ),
-                                      Text("Imprimer"),
+                                      Text("Imprimer un rapport"),
                                     ],
                                   ),
                                 )

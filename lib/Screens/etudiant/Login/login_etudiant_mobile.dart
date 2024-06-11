@@ -2,7 +2,6 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/professeur/profMethods/auth_methods_prof.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -24,14 +23,10 @@ class _LoginEtudiantMobileState extends State<LoginEtudiantMobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+        body: SingleChildScrollView(
+      child: Center(
         child: Container(
             decoration: BoxDecoration(
-              // image: DecorationImage(
-              //   image: Svg('assets/students.svg'),
-              //   fit: BoxFit.cover,
-              //   // Autres propriétés de l'image SVG
-              // ),
               color: Colors.white.withOpacity(0.5), // Opacité de 0.7 (70%),
             ),
             child: Padding(
@@ -244,6 +239,6 @@ class _LoginEtudiantMobileState extends State<LoginEtudiantMobile> {
               ),
             )),
       ),
-    );
+    ));
   }
 }

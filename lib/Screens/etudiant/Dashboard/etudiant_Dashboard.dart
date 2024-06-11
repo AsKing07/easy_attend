@@ -83,7 +83,7 @@ class _EtudiantDashboardState extends State<EtudiantDashboard> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return MediaQuery.of(context).size.width > 1200
+    return screenWidth > 1200
         //Large screen
         ? const EtudiantDashboardWeb()
         //Mobile screen

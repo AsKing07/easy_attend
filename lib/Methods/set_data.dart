@@ -9,6 +9,7 @@ import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/listOfOneCourseSeance.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/components/toast/gf_toast.dart';
@@ -727,25 +728,26 @@ class set_Data {
       );
 
       if (response.statusCode == 200) {
-        // Cours ajouté avec succès
+        // Requête créée avec succès
         Navigator.pop(context);
         Helper().succesMessage(context);
       } else {
-        // Une erreur s'est produite lors de l'ajout du cours
+        // Une erreur s'est produite
 
         Navigator.pop(context);
         Helper().ErrorMessage(context);
       }
     } catch (e) {
       Navigator.pop(context);
-      Helper().ErrorMessage(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: $e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      kReleaseMode
+          ? Helper().ErrorMessage(context)
+          : ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Erreur: $e'),
+                duration: const Duration(seconds: 6),
+                backgroundColor: Colors.red,
+              ),
+            );
     }
   }
 

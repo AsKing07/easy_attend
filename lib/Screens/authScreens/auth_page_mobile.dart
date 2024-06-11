@@ -76,6 +76,7 @@ class _AuthPageMobileState extends State<AuthPageMobile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       // appBar: AppBar(
       //   backgroundColor: AppColors.tertiaryColor,
       //   title: const Text(
@@ -84,102 +85,100 @@ class _AuthPageMobileState extends State<AuthPageMobile> {
       //   ),
       //   centerTitle: true,
       // ),
-      body: Container(
-        color: AppColors.backgroundColor,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(50, 0, 50, 50),
-                  child: Text(
-                    "Bienvenue sur EasyAttend !",
-                    style: TextStyle(
-                      fontSize: FontSize.xxLarge,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.secondaryColor,
-                    ),
-                  ),
-                ),
-                const Image(
-                  image: AssetImage("easyattend.png"),
-                  height: 200, // Taille adéquate à l'image
-                ),
-                const Text(
-                  'Veuillez sélectionner votre école et votre rôle.',
+      body: Center(
+        child: SingleChildScrollView(
+            child: Padding(
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Center(
+                child: Text(
+                  "Bienvenue sur EasyAttend !",
                   style: TextStyle(
-                      fontSize: FontSize.large, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16.0),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: Column(
-                    children: [
-                      DropdownButtonFormField<String>(
-                        value: _selectedSchool,
-                        onChanged: (String? value) {
-                          if (value != 'Selectionner une école') {
-                            setState(() {
-                              _selectedSchool = value!;
-                            });
-                          }
-                        },
-                        items: _schools
-                            .map<DropdownMenuItem<String>>(
-                              (String school) => DropdownMenuItem<String>(
-                                value: school,
-                                child: Text(school),
-                              ),
-                            )
-                            .toList(),
-                        decoration: const InputDecoration(
-                          labelText: 'Choisissez votre école',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 32.0),
-                      DropdownButtonFormField<String>(
-                        value: _selectedRole,
-                        onChanged: (String? value) {
-                          setState(() {
-                            _selectedRole = value!;
-                          });
-                        },
-                        items: <String>[
-                          'Administrateur',
-                          'Professeur',
-                          //if (!screenSize().isWeb() && screenSize().isAndroid())
-                          'Etudiant'
-                        ]
-                            .map<DropdownMenuItem<String>>(
-                              (String value) => DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              ),
-                            )
-                            .toList(),
-                        decoration: const InputDecoration(
-                          labelText: 'Choisissez votre rôle',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 32.0),
-                      GFButton(
-                        onPressed: _validateAndRedirect,
-                        text: "Valider",
-                        shape: GFButtonShape.pills,
-                        fullWidthButton: true,
-                      ),
-                    ],
+                    fontSize: FontSize.xxLarge,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.secondaryColor,
                   ),
                 ),
-              ],
-            ),
+              ),
+              const Image(
+                image: AssetImage("assets/easyattend.png"),
+                height: 200, // Taille adéquate à l'image
+              ),
+              const Text(
+                'Veuillez sélectionner votre école et votre rôle.',
+                style: TextStyle(
+                    fontSize: FontSize.large, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16.0),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Column(
+                  children: [
+                    DropdownButtonFormField<String>(
+                      value: _selectedSchool,
+                      onChanged: (String? value) {
+                        if (value != 'Selectionner une école') {
+                          setState(() {
+                            _selectedSchool = value!;
+                          });
+                        }
+                      },
+                      items: _schools
+                          .map<DropdownMenuItem<String>>(
+                            (String school) => DropdownMenuItem<String>(
+                              value: school,
+                              child: Text(school),
+                            ),
+                          )
+                          .toList(),
+                      decoration: const InputDecoration(
+                        labelText: 'Choisissez votre école',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 32.0),
+                    DropdownButtonFormField<String>(
+                      value: _selectedRole,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedRole = value!;
+                        });
+                      },
+                      items: <String>[
+                        'Administrateur',
+                        'Professeur',
+                        //if (!screenSize().isWeb() && screenSize().isAndroid())
+                        'Etudiant'
+                      ]
+                          .map<DropdownMenuItem<String>>(
+                            (String value) => DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            ),
+                          )
+                          .toList(),
+                      decoration: const InputDecoration(
+                        labelText: 'Choisissez votre rôle',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 32.0),
+                    GFButton(
+                      color: AppColors.secondaryColor,
+                      onPressed: _validateAndRedirect,
+                      text: "Continuer",
+                      shape: GFButtonShape.pills,
+                      fullWidthButton: true,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ),
+        )),
       ),
     );
   }

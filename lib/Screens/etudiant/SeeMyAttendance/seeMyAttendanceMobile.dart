@@ -2,15 +2,13 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
-
+import 'package:pie_chart/pie_chart.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/pdfHelper.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -170,6 +168,15 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
                           AttendanceData(date: date, statut: statut),
                         );
                       }
+                      Map<String, double> dataMap = {
+                        "Présence": nombreDePresences.toDouble(),
+                        "Absence":
+                            (nombreTotalSeances - nombreDePresences).toDouble(),
+                      };
+                      final colorList = <Color>[
+                        AppColors.greenColor,
+                        AppColors.redColor
+                      ];
                       return Column(
                         children: [
                           Text(
@@ -182,22 +189,34 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 15),
-                          CircularPercentIndicator(
-                            radius: 90.0,
-                            animation: true,
-                            animationDuration: 1200,
-                            lineWidth: 15.0,
-                            percent: pourcentageDePresence,
-                            center: Text(
-                              '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20.0),
+                          PieChart(
+                            dataMap: dataMap,
+                            chartType: ChartType.disc,
+                            chartRadius: 150,
+                            baseChartColor: Colors.grey[50]!.withOpacity(0.15),
+                            colorList: colorList,
+                            chartValuesOptions: const ChartValuesOptions(
+                              showChartValuesInPercentage: true,
+                              // showChartValuesOutside: true,
                             ),
-                            circularStrokeCap: CircularStrokeCap.butt,
-                            backgroundColor: Colors.grey,
-                            progressColor: AppColors.secondaryColor,
+                            //totalValue: nombreTotalSeances.toDouble(),
                           ),
+                          // CircularPercentIndicator(
+                          //   radius: 90.0,
+                          //   animation: true,
+                          //   animationDuration: 1200,
+                          //   lineWidth: 15.0,
+                          //   percent: pourcentageDePresence,
+                          //   center: Text(
+                          //     '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
+                          //     textAlign: TextAlign.center,
+                          //     style: const TextStyle(
+                          //         fontWeight: FontWeight.bold, fontSize: 20.0),
+                          //   ),
+                          //   circularStrokeCap: CircularStrokeCap.butt,
+                          //   backgroundColor: Colors.grey,
+                          //   progressColor: AppColors.secondaryColor,
+                          // ),
                           Padding(
                             padding: const EdgeInsets.all(5),
                             child: Center(
@@ -295,7 +314,7 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 15,
                           ),
                           SizedBox(
@@ -407,7 +426,10 @@ class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
             },
             icon: const Icon(Icons.print))
       ],
-      header: Text('Liste de présence'),
+      header: const Text(
+        'Liste de présence',
+        textAlign: TextAlign.center,
+      ),
       columns: const [
         DataColumn(
           label: Text(
