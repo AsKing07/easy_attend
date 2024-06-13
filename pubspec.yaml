@@ -75,6 +75,10 @@ dependencies:
   flutter_svg_provider: ^1.0.7
   animated_text_kit: ^4.2.2
   pie_chart: ^5.4.0
+  image_picker: ^1.1.2
+  http_parser: ^4.0.0
+  mime: ^1.0.5
+  image_picker_web: any
 
 dev_dependencies:
   flutter_test:
@@ -121,10 +125,12 @@ flutter:
     - assets/chat.jpeg
     - assets/makeQuery.png
     - assets/makeQuery.jpg
+    - assets/scan.jpg
     - assets/easyattend.png
     - assets/students.svg
     - assets/search.svg
     - assets/qrAnim.json
+    - assets/qrAnim2.json
     - assets/failed.json
     - assets/done.json
     - .env

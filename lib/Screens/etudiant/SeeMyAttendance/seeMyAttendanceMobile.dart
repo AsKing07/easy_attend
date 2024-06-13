@@ -150,7 +150,9 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
                       }
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return const NoResultWidget();
+                        return const Center(
+                          child: NoResultWidget(),
+                        );
                       }
 
                       List<AttendanceData> attendanceData = [];

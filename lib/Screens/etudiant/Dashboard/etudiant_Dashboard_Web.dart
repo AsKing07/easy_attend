@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -21,6 +22,8 @@ class EtudiantDashboardWeb extends StatefulWidget {
 }
 
 class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
+  String imageUrl = "assets/admin.jpg"; // Default image
+
   late Map<String, dynamic> etudiant;
   bool dataIsLoaded = false;
   final BACKEND_URL = dotenv.env['API_URL'];
@@ -48,6 +51,7 @@ class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
     final x = await get_Data().loadCurrentStudentData();
     setState(() {
       etudiant = x;
+      imageUrl = x['image'] ?? imageUrl;
     });
     http.Response response;
     //load Student Course
@@ -133,14 +137,22 @@ class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              CircleAvatar(
-                                                radius: 40,
-                                                backgroundImage:
-                                                    const AssetImage(
-                                                        "assets/admin.jpg"),
-                                                backgroundColor:
-                                                    Colors.grey[200],
-                                              ),
+                                              imageUrl.startsWith('http')
+                                                  ? GFAvatar(
+                                                      radius: 40,
+                                                      backgroundColor:
+                                                          Colors.grey[200],
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                        imageUrl,
+                                                      ))
+                                                  : GFAvatar(
+                                                      radius: 40,
+                                                      backgroundColor:
+                                                          Colors.grey[200],
+                                                      backgroundImage:
+                                                          AssetImage(imageUrl),
+                                                    ),
                                               const SizedBox(height: 10),
                                               Text(
                                                 ' ${etudiant['nom']} ${etudiant['prenom']}',

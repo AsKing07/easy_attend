@@ -13,8 +13,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:getwidget/components/toast/gf_toast.dart';
+
 import 'package:excel/excel.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart' as html;
@@ -160,7 +161,10 @@ class auth_methods_admin {
         );
       } else {
         Navigator.pop(context);
-        Helper().notAuthorizedMessage(context);
+        Helper().ErrorMessage(context,
+            content:
+                "Désolé, vous n'êtes pas autorisé(e) à accéder à cette page.");
+
         FirebaseAuth.instance.signOut();
       }
     } catch (e) {
@@ -169,15 +173,41 @@ class auth_methods_admin {
         if (e.code == 'user-not-found' ||
             e.code == 'wrong-password' ||
             e.code == 'invalid-credential') {
-          Helper().badCredential(context);
+          Helper().ErrorMessage(context,
+              content: "Veuillez vérifier vos informations de connexion.");
         } else {
           Helper().ErrorMessage(context);
         }
       } else if (e is SocketException) {
-        Helper().networkErrorMessage(context);
+        Helper().ErrorMessage(context,
+            content: "Oups... veuillez vérifiez votre connexion internet");
       } else {
         Helper().ErrorMessage(context);
       }
+    }
+  }
+
+  Future getAdminById(id, BuildContext context) async {
+    try {
+      http.Response response = await http.get(
+        Uri.parse('$BACKEND_URL/api/admin/$id'),
+      );
+
+      if (response.statusCode == 200) {
+        // La requête a réussi, traiter la réponse ici
+        dynamic admin = jsonDecode(response.body);
+        // Utiliser les données des profs ici
+        return admin;
+      } else {
+        // La requête a échoué, gérer l'erreur ici
+        Helper().ErrorMessage(context,
+            content:
+                "Une erreur est subvenue lors de la récupération des données");
+      }
+    } catch (e) {
+      Helper().ErrorMessage(context,
+          content:
+              "Une erreur est subvenue lors de la récupération des données");
     }
   }
 
@@ -272,14 +302,14 @@ class auth_methods_admin {
       if (response.statusCode == 200 && response.body.isNotEmpty) {
         // L' étudiant existe déjà, afficher un message d'erreur
         Navigator.pop(context);
-        showDialog(
-          context: context,
-          builder: (context) {
-            return myErrorWidget(
-                content: "Un étudiant avec le même matricule existe déjà.",
-                height: 160);
-          },
-        );
+        double screenWidth = MediaQuery.of(context).size.width;
+        GFToast.showToast(
+            "Un étudiant avec le même matricule existe déjà.", context,
+            trailing: const Icon(Icons.close),
+            toastPosition: screenWidth > 1200
+                ? GFToastPosition.TOP_RIGHT
+                : GFToastPosition.TOP,
+            backgroundColor: AppColors.redColor);
       } else {
         FirebaseApp firebaseApp = await Firebase.initializeApp(
             name: 'Secondary', options: Firebase.app().options);
@@ -502,15 +532,14 @@ class auth_methods_admin {
       // throw Exception(
       //     'Le fichier Excel ne contient pas les colonnes attendues.');
       Navigator.pop(context);
-      showDialog(
-        context: context,
-        builder: (context) {
-          return myErrorWidget(
-              content:
-                  "Le fichier Excel ne contient pas les colonnes attendues.",
-              height: 160);
-        },
-      );
+      double screenWidth = MediaQuery.of(context).size.width;
+      GFToast.showToast(
+          "Le fichier Excel ne contient pas les colonnes attendues.", context,
+          trailing: const Icon(Icons.close),
+          toastPosition: screenWidth > 1200
+              ? GFToastPosition.TOP_RIGHT
+              : GFToastPosition.TOP,
+          backgroundColor: AppColors.redColor);
     } else {
       FirebaseApp firebaseApp = await Firebase.initializeApp(
           name: 'Secondary', options: Firebase.app().options);
@@ -601,16 +630,14 @@ class auth_methods_admin {
 
       if (!headerRow.every((cell) => expectedColumns.contains(cell))) {
         Navigator.pop(context);
-        showDialog(
-          context: context,
-          builder: (context) {
-            return myErrorWidget(
-              content:
-                  "Le fichier Excel ne contient pas les colonnes attendues.",
-              height: 160,
-            );
-          },
-        );
+        double screenWidth = MediaQuery.of(context).size.width;
+        GFToast.showToast(
+            "Le fichier Excel ne contient pas les colonnes attendues.", context,
+            trailing: const Icon(Icons.close),
+            toastPosition: screenWidth > 1200
+                ? GFToastPosition.TOP_RIGHT
+                : GFToastPosition.TOP,
+            backgroundColor: AppColors.redColor);
       } else {
         FirebaseApp firebaseApp = await Firebase.initializeApp(
             name: 'Secondary', options: Firebase.app().options);

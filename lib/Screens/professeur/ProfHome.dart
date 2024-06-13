@@ -25,12 +25,7 @@ class _ProfHomeState extends State<ProfHome> {
         text: 'Dashboard',
         icon: Icons.dashboard_outlined,
         tap: const ProfDashboard()),
-    MenuItems(
-        text: 'Paramètres',
-        icon: Icons.settings,
-        tap: SettingsScreen(
-          nom: "Prof",
-        )),
+    MenuItems(text: 'Paramètres', icon: Icons.settings, tap: SettingsScreen()),
   ];
 
   @override

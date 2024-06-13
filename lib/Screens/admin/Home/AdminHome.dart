@@ -56,10 +56,7 @@ class _AdminHomeState extends State<AdminHome> {
         text: 'Gérer les présences',
         icon: Icons.assignment_turned_in_sharp,
         tap: const listOfCourse()),
-    MenuItems(
-        text: 'Paramètres',
-        icon: Icons.settings,
-        tap: SettingsScreen(nom: "Admin")),
+    MenuItems(text: 'Paramètres', icon: Icons.settings, tap: SettingsScreen()),
   ];
 
   @override

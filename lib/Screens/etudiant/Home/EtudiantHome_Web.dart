@@ -1,8 +1,8 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/etudiant/Dashboard/etudiant_dashboard.dart';
-import 'package:easy_attend/Screens/etudiant/giveQRattendance.dart';
-import 'package:easy_attend/Screens/etudiant/makeAquery.dart';
+import 'package:easy_attend/Screens/etudiant/GiveAttendance/giveQRattendance.dart';
+import 'package:easy_attend/Screens/etudiant/MakeQuery/makeAquery.dart';
 import 'package:easy_attend/Screens/settings_screen.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +33,7 @@ class _EtudiantHomeWebState extends State<EtudiantHomeWeb> {
         text: 'Scanner une présence',
         icon: Icons.qr_code_scanner,
         tap: const GiveQrAttendancePage()),
-    MenuItems(
-        text: 'Paramètres',
-        icon: Icons.settings,
-        tap: SettingsScreen(
-          nom: "student",
-        )),
+    MenuItems(text: 'Paramètres', icon: Icons.settings, tap: SettingsScreen()),
   ];
 
   @override

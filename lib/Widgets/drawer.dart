@@ -34,6 +34,9 @@ class HelperDrawer extends StatefulWidget {
 class _HelperDrawerState extends State<HelperDrawer> {
   final BACKEND_URL = dotenv.env['API_URL'];
   String name = "";
+  var user;
+  String imageUrl = "assets/admin.jpg"; // Default image
+
   // User? user = FirebaseAuth.instance.currentUser;
 
   @override
@@ -55,6 +58,8 @@ class _HelperDrawerState extends State<HelperDrawer> {
     var utilisateur = json.decode(prefs.getString('user')!);
     setState(() {
       name = '${utilisateur['nom']}  ${utilisateur['prenom']}';
+      user = utilisateur;
+      imageUrl = utilisateur['image'] ?? imageUrl;
     });
   }
 
@@ -77,10 +82,16 @@ class _HelperDrawerState extends State<HelperDrawer> {
                       border: Border(
                           bottom:
                               BorderSide(width: 3, color: AppColors.white))),
-                  currentAccountPicture: const GFAvatar(
-                    radius: 80.0,
-                    backgroundImage: AssetImage("assets/admin.jpg"),
-                  ),
+                  currentAccountPicture: imageUrl.startsWith('http')
+                      ? GFAvatar(
+                          radius: 80,
+                          backgroundColor: Colors.grey[200],
+                          backgroundImage: NetworkImage(imageUrl))
+                      : GFAvatar(
+                          radius: 80,
+                          backgroundColor: Colors.grey[200],
+                          backgroundImage: AssetImage(imageUrl),
+                        ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,

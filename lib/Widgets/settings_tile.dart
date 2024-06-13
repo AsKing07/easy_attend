@@ -46,10 +46,13 @@ class SettingsTile extends StatelessWidget {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: Colors.blue[50],
+              color: AppColors.secondaryColor,
               borderRadius: BorderRadius.circular(25),
             ),
-            child: const Icon(Icons.chevron_right_outlined),
+            child: const Icon(
+              Icons.chevron_right_outlined,
+              color: AppColors.white,
+            ),
           ),
         )
       ],

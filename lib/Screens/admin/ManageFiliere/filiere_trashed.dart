@@ -9,6 +9,7 @@ import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -141,9 +142,14 @@ class _TrashFilierePageState extends State<TrashFilierePage> {
                     );
                   }
                 } else if (snapshot.hasError) {
-                  return myErrorWidget(
-                      content: "Une erreur innatendue s'est produite",
-                      height: 40);
+                  double screenWidth = MediaQuery.of(context).size.width;
+                  return GFToast.showToast(
+                      "Une erreur innatendue s'est produite", context,
+                      trailing: const Icon(Icons.close),
+                      toastPosition: screenWidth > 1200
+                          ? GFToastPosition.TOP_RIGHT
+                          : GFToastPosition.TOP,
+                      backgroundColor: AppColors.redColor);
                 } else {
                   return Center(
                     child: LoadingAnimationWidget.hexagonDots(

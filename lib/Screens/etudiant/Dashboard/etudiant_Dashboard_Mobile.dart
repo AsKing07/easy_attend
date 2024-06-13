@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -7,6 +9,7 @@ import 'package:easy_attend/Screens/etudiant/SeeMyAttendance/seeMyAttendanceMobi
 
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -69,15 +72,16 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: kReleaseMode
-              ? const Text('Impossible de récupérer les cours.')
-              : Text('Impossible de récupérer les cours. Erreur:$e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      kReleaseMode
+          ? Helper().ErrorMessage(context,
+              content: "Impossible de récupérer les cours.")
+          : ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Impossible de récupérer les cours. Erreur:$e'),
+                duration: const Duration(seconds: 6),
+                backgroundColor: Colors.red,
+              ),
+            );
     }
     //load Student Query
     final dynamic query = await get_Data().getQueryById(x['uid'], context);

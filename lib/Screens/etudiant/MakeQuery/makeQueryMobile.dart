@@ -22,6 +22,7 @@ class MakeQueryMobile extends StatefulWidget {
 }
 
 class _MakeQueryMobileState extends State<MakeQueryMobile> {
+  final ScrollController _scrollController = ScrollController();
   final BACKEND_URL = dotenv.env['API_URL'];
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _objetController = TextEditingController();
@@ -206,12 +207,14 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
                             contentChild: SizedBox(
                                 width: double.infinity,
                                 child: Scrollbar(
+                                    controller: _scrollController,
                                     thumbVisibility: true,
                                     child: SingleChildScrollView(
+                                      controller: _scrollController,
                                       scrollDirection: Axis.horizontal,
                                       child: DataTable(
                                           border: TableBorder.all(width: 2),
-                                          dataRowMaxHeight: 150,
+                                          dataRowMaxHeight: 100,
                                           headingRowColor:
                                               MaterialStateColor.resolveWith(
                                                   (states) => Colors.black),
@@ -265,7 +268,7 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
                         ),
                       Center(
                         child: Padding(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(5),
                           child: Column(
                             children: [
                               SizedBox(
@@ -273,7 +276,7 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
                                     ? screenHeight / 4
                                     : screenHeight / 1.5,
                                 child: const Image(
-                                  image: AssetImage("makeQuery.jpg"),
+                                  image: AssetImage("assets/makeQuery.jpg"),
                                 ),
                               ),
                               Container(
@@ -308,212 +311,165 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.all(15),
+                                padding: const EdgeInsets.all(5),
                                 child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Form(
-                                        key: _formKey,
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: DropdownButtonFormField(
-                                                hint: const Text(
-                                                  'Choisissez le type de requête',
-                                                  style: TextStyle(
+                                    Form(
+                                      key: _formKey,
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: DropdownButtonFormField(
+                                              hint: const Text(
+                                                'Choisissez le type de requête',
+                                                style: TextStyle(
+                                                    color: AppColors
+                                                        .secondaryColor),
+                                              ),
+                                              items: type
+                                                  .map((item) => DropdownMenuItem(
+                                                      value: item,
+                                                      child: Text(
+                                                          item.toString(),
+                                                          style: const TextStyle(
+                                                              color: AppColors
+                                                                  .secondaryColor))))
+                                                  .toList(),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _selectedType = value;
+                                                });
+                                              },
+                                              iconEnabledColor: AppColors
+                                                  .secondaryColor, // Arrow color
+                                              dropdownColor: Colors
+                                                  .white, // Dropdown background color
+                                              style: const TextStyle(
+                                                  color: Colors
+                                                      .black), // Text color
+                                              decoration: const InputDecoration(
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: AppColors
+                                                          .secondaryColor,
+                                                    ),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: AppColors
+                                                          .secondaryColor,
+                                                    ),
+                                                  )),
+                                              validator: (value) {
+                                                if (value == null) {
+                                                  return "Champ obligatoire";
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: TextFormField(
+                                              controller: _objetController,
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return "Champ obligatoire";
+                                                }
+                                                return null;
+                                              },
+                                              decoration: const InputDecoration(
+                                                  labelText:
+                                                      "Objet de la requête",
+                                                  labelStyle: TextStyle(
                                                       color: AppColors
                                                           .secondaryColor),
-                                                ),
-                                                items: type
-                                                    .map((item) => DropdownMenuItem(
-                                                        value: item,
-                                                        child: Text(
-                                                            item.toString(),
-                                                            style: const TextStyle(
-                                                                color: AppColors
-                                                                    .secondaryColor))))
-                                                    .toList(),
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    _selectedType = value;
-                                                  });
-                                                },
-                                                iconEnabledColor: AppColors
-                                                    .secondaryColor, // Arrow color
-                                                dropdownColor: Colors
-                                                    .white, // Dropdown background color
-                                                style: const TextStyle(
-                                                    color: Colors
-                                                        .black), // Text color
-                                                decoration:
-                                                    const InputDecoration(
-                                                        enabledBorder:
-                                                            OutlineInputBorder(
-                                                          borderSide:
-                                                              BorderSide(
-                                                            color: Colors.grey,
-                                                            width: 3.0,
-                                                          ),
-                                                        ),
-                                                        focusedBorder:
-                                                            OutlineInputBorder(
-                                                          borderSide:
-                                                              BorderSide(
-                                                            color: AppColors
-                                                                .secondaryColor,
-                                                            width: 3.0,
-                                                          ),
-                                                        )),
-                                                validator: (value) {
-                                                  if (value == null) {
-                                                    return "Champ obligatoire";
-                                                  }
-                                                  return null;
-                                                },
-                                              ),
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: AppColors
+                                                          .secondaryColor,
+                                                    ),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: AppColors
+                                                          .secondaryColor,
+                                                    ),
+                                                  )),
                                             ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: TextFormField(
-                                                controller: _objetController,
-                                                validator: (value) {
-                                                  if (value == null ||
-                                                      value.isEmpty) {
-                                                    return "Champ obligatoire";
-                                                  }
-                                                  return null;
-                                                },
-                                                decoration:
-                                                    const InputDecoration(
-                                                        labelText:
-                                                            "Objet de la requête",
-                                                        labelStyle: TextStyle(
-                                                            color: AppColors
-                                                                .secondaryColor),
-                                                        enabledBorder:
-                                                            OutlineInputBorder(
-                                                          borderSide:
-                                                              BorderSide(
-                                                            color: Colors.grey,
-                                                            width: 3.0,
-                                                          ),
-                                                        ),
-                                                        focusedBorder:
-                                                            OutlineInputBorder(
-                                                          borderSide:
-                                                              BorderSide(
-                                                            color: AppColors
-                                                                .secondaryColor,
-                                                            width: 3.0,
-                                                          ),
-                                                        )),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(10.0),
-                                              child: TextFormField(
-                                                controller: _detailsController,
-                                                maxLines: 5,
-                                                minLines: 1,
-                                                validator: (value) {
-                                                  if (value == null ||
-                                                      value.isEmpty) {
-                                                    return "Champ obligatoire";
-                                                  }
-                                                  return null;
-                                                },
-                                                decoration:
-                                                    const InputDecoration(
-                                                        labelText:
-                                                            "Détails de la requête",
-                                                        labelStyle: TextStyle(
-                                                            color: AppColors
-                                                                .secondaryColor),
-                                                        enabledBorder:
-                                                            OutlineInputBorder(
-                                                          borderSide:
-                                                              BorderSide(
-                                                            color: Colors.grey,
-                                                            width: 3.0,
-                                                          ),
-                                                        ),
-                                                        focusedBorder: OutlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: AppColors
-                                                                    .secondaryColor))),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 15),
-                                            GFButton(
-                                              onPressed: () async {
-                                                if (_formKey.currentState!
-                                                    .validate()) {
-                                                  // showDialog(
-                                                  //     context: context,
-                                                  //     builder: (context) =>
-                                                  //         Center(
-                                                  //           child: LoadingAnimationWidget
-                                                  //               .hexagonDots(
-                                                  //                   color: AppColors
-                                                  //                       .secondaryColor,
-                                                  //                   size: 100),
-                                                  //         ));
-
-                                                  DateTime x = DateTime.now();
-                                                  await set_Data().createQuery(
-                                                      "${etudiant['nom']} ${etudiant['prenom']}",
-                                                      etudiant['uid'],
-                                                      _selectedType,
-                                                      _objetController.text,
-                                                      "${etudiant['nom']} ${etudiant['prenom']} : ${_detailsController.text} ",
-                                                      "2",
-                                                      x,
-                                                      context);
-
-                                                  setState(() {
-                                                    rows.clear();
-                                                  });
-                                                  loadCurrentStudent();
-                                                  //   Navigator.pop(context);
-                                                  // ScaffoldMessenger.of(
-                                                  //         context)
-                                                  //     .showSnackBar(
-                                                  //         GFToast.showToast(
-                                                  //   "Requête soumise avec succès",
-                                                  //   context,
-                                                  //   toastPosition:
-                                                  //       GFToastPosition
-                                                  //           .TOP_RIGHT,
-                                                  //   toastDuration:
-                                                  //       const Duration(
-                                                  //           seconds: 6),
-                                                  //   backgroundColor: AppColors
-                                                  //       .secondaryColor,
-                                                  //   textStyle:
-                                                  //       const TextStyle(
-                                                  //           color: AppColors
-                                                  //               .white),
-                                                  // ));
-
-                                                  _objetController.clear();
-                                                  _detailsController.clear();
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: TextFormField(
+                                              controller: _detailsController,
+                                              maxLines: 5,
+                                              minLines: 1,
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return "Champ obligatoire";
                                                 }
+                                                return null;
                                               },
-                                              text: "Soumettre",
-                                              textStyle: const TextStyle(
-                                                  color: AppColors.white),
-                                              fullWidthButton: true,
-                                              color: AppColors.secondaryColor,
-                                            )
-                                          ],
-                                        ),
+                                              decoration: const InputDecoration(
+                                                  labelText:
+                                                      "Détails de la requête",
+                                                  labelStyle: TextStyle(
+                                                      color: AppColors
+                                                          .secondaryColor),
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: AppColors
+                                                          .secondaryColor,
+                                                    ),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: AppColors
+                                                              .secondaryColor))),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 15),
+                                          GFButton(
+                                            onPressed: () async {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                DateTime x = DateTime.now();
+                                                await set_Data().createQuery(
+                                                    "${etudiant['nom']} ${etudiant['prenom']}",
+                                                    etudiant['uid'],
+                                                    _selectedType,
+                                                    _objetController.text,
+                                                    "${etudiant['nom']} ${etudiant['prenom']} : ${_detailsController.text} ",
+                                                    "2",
+                                                    x,
+                                                    context);
+
+                                                setState(() {
+                                                  rows.clear();
+                                                });
+                                                loadCurrentStudent();
+
+                                                _objetController.clear();
+                                                _detailsController.clear();
+                                              }
+                                            },
+                                            text: "Soumettre",
+                                            textStyle: const TextStyle(
+                                                color: AppColors.white),
+                                            fullWidthButton: true,
+                                            color: AppColors.secondaryColor,
+                                          )
+                                        ],
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               ),

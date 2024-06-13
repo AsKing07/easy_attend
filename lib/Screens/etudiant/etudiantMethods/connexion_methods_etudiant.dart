@@ -44,7 +44,10 @@ class auth_methods_etudiant {
           if (student["statut"] == "0") {
             Navigator.pop(context);
 
-            Helper().notAuthorizedMessage(context);
+            Helper().ErrorMessage(context,
+                content:
+                    "Désolé, vous n'êtes pas autorisé(e) à accéder à cette page.");
+
             FirebaseAuth.instance.signOut();
           } else {
             final SharedPreferences prefs = await _prefs;
@@ -59,7 +62,9 @@ class auth_methods_etudiant {
         } else {
           Navigator.pop(context);
 
-          Helper().notAuthorizedMessage(context);
+          Helper().ErrorMessage(context,
+              content:
+                  "Désolé, vous n'êtes pas autorisé(e) à accéder à cette page.");
           FirebaseAuth.instance.signOut();
         }
       }
@@ -69,12 +74,14 @@ class auth_methods_etudiant {
         if (e.code == 'user-not-found' ||
             e.code == 'wrong-password' ||
             e.code == 'invalid-credential') {
-          Helper().badCredential(context);
+          Helper().ErrorMessage(context,
+              content: "Veuillez vérifier vos informations de connexion.");
         } else {
           Helper().ErrorMessage(context);
         }
       } else if (e is SocketException) {
-        Helper().networkErrorMessage(context);
+        Helper().ErrorMessage(context,
+            content: "Oups... veuillez vérifiez votre connexion internet");
       } else {
         Helper().ErrorMessage(context);
       }
