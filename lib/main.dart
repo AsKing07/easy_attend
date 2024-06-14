@@ -1,7 +1,7 @@
 import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
 import 'package:easy_attend/Screens/etudiant/Home/EtudiantHome.dart';
-import 'package:easy_attend/Screens/professeur/ProfHome.dart';
+import 'package:easy_attend/Screens/professeur/Home/ProfHome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +9,7 @@ import 'firebase_options.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

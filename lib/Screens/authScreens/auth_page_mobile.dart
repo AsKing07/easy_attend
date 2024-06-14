@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/login_admin.dart';
 import 'package:easy_attend/Screens/etudiant/Login/login_etudiant.dart';
-import 'package:easy_attend/Screens/professeur/login_prof.dart';
+import 'package:easy_attend/Screens/professeur/Login/login_prof.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 

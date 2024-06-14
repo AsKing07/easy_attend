@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Screens/professeur/ProfHome.dart';
+import 'package:easy_attend/Screens/professeur/Home/ProfHome.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -1,23 +1,20 @@
-// ignore_for_file: avoid_unnecessary_containers
-
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/changePassword.dart';
+import 'package:easy_attend/Screens/professeur/profMethods/auth_methods_prof.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:getwidget/getwidget.dart';
+import 'package:getwidget/components/button/gf_button.dart';
+import 'package:getwidget/shape/gf_button_shape.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../professeur/profMethods/auth_methods_prof.dart';
-import '../etudiantMethods/connexion_methods_etudiant.dart';
-
-class LoginEtudiantWeb extends StatefulWidget {
-  const LoginEtudiantWeb({super.key});
+class LoginProfWeb extends StatefulWidget {
+  const LoginProfWeb({super.key});
 
   @override
-  State<LoginEtudiantWeb> createState() => _LoginEtudiantWebState();
+  State<LoginProfWeb> createState() => _LoginProfWebState();
 }
 
-class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
+class _LoginProfWebState extends State<LoginProfWeb> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
@@ -26,7 +23,7 @@ class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColors.white,
       body: Row(
         children: [
           Expanded(
@@ -63,7 +60,7 @@ class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
                             children: [
                               const Center(
                                 child: Text(
-                                  "Connexion Etudiant",
+                                  "Connexion Professeur",
                                   style: TextStyle(
                                       color: AppColors.textColor,
                                       fontSize: FontSize.xLarge,
@@ -195,7 +192,7 @@ class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
                               GFButton(
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    await auth_methods_etudiant().logStudentIn(
+                                    await auth_methods_prof().logProfIn(
                                         _emailController.text,
                                         _passwordController.text,
                                         context);

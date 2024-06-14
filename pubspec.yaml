@@ -126,12 +126,15 @@ flutter:
     - assets/makeQuery.png
     - assets/makeQuery.jpg
     - assets/scan.jpg
+    - assets/studentlogo.png
     - assets/easyattend.png
     - assets/students.svg
+    - assets/courslogo.svg
     - assets/search.svg
     - assets/qrAnim.json
     - assets/qrAnim2.json
     - assets/failed.json
+    - assets/maintenance.json
     - assets/done.json
     - .env
   #   - images/a_dot_burr.jpeg

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/login_admin.dart';
 import 'package:easy_attend/Screens/etudiant/Login/login_etudiant.dart';
-import 'package:easy_attend/Screens/professeur/login_prof.dart';
+import 'package:easy_attend/Screens/professeur/Login/login_prof.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 
@@ -113,7 +113,7 @@ class _AuthPageWebState extends State<AuthPageWeb> {
                       child: const Column(
                         children: [
                           Image(
-                            image: AssetImage("easyattend.png"),
+                            image: AssetImage("assets/easyattend.png"),
                             height: 300,
                           ),
                           Text(
@@ -190,6 +190,7 @@ class _AuthPageWebState extends State<AuthPageWeb> {
                               ),
                               const SizedBox(height: 32.0),
                               GFButton(
+                                color: AppColors.secondaryColor,
                                 onPressed: _validateAndRedirect,
                                 text: "Continuer",
                                 shape: GFButtonShape.pills,

@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -10,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -240,11 +243,16 @@ class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
                                                   const EdgeInsets.all(8.0),
                                               child: Column(
                                                 children: [
-                                                  const Icon(
-                                                    Icons
-                                                        .settings_applications_outlined,
-                                                    color: AppColors.courColor,
-                                                    size: 70.0,
+                                                  // const Icon(
+                                                  //   Icons
+                                                  //       .settings_applications_outlined,
+                                                  //   color: AppColors.courColor,
+                                                  //   size: 70.0,
+                                                  // ),
+                                                  SvgPicture.asset(
+                                                    height: 70,
+                                                    width: 70,
+                                                    'assets/courslogo.svg',
                                                   ),
                                                   const SizedBox(
                                                     height: 20.0,

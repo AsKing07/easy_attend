@@ -256,7 +256,7 @@ class _MakeQueryWebState extends State<MakeQueryWeb> {
                             child: SizedBox(
                               height: screenHeight / 1.5,
                               child: const Image(
-                                image: AssetImage("makeQuery.jpg"),
+                                image: AssetImage("assets/makeQuery.jpg"),
                               ),
                             ),
                           ),

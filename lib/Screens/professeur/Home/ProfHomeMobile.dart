@@ -1,27 +1,23 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
 
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
-import 'package:easy_attend/Screens/etudiant/Dashboard/etudiant_dashboard.dart';
-import 'package:easy_attend/Screens/etudiant/GiveAttendance/giveQRattendance.dart';
-import 'package:easy_attend/Screens/etudiant/MakeQuery/makeAquery.dart';
+import 'package:easy_attend/Screens/professeur/Dashboard/prof_Dashboard.dart';
 import 'package:easy_attend/Screens/settings_screen.dart';
+import 'package:easy_attend/Widgets/PageOnMaintenance.dart';
 import 'package:flutter/material.dart';
-
 import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class EtudiantHomeMobile extends StatefulWidget {
-  const EtudiantHomeMobile({super.key});
+class ProfHomeMobile extends StatefulWidget {
+  const ProfHomeMobile({super.key});
 
   @override
-  State<EtudiantHomeMobile> createState() => _EtudiantHomeMobileState();
+  State<ProfHomeMobile> createState() => _ProfHomeMobileState();
 }
 
-class _EtudiantHomeMobileState extends State<EtudiantHomeMobile> {
+class _ProfHomeMobileState extends State<ProfHomeMobile> {
   int _selectedIndex = 0;
 
   String name = "";
@@ -44,21 +40,15 @@ class _EtudiantHomeMobileState extends State<EtudiantHomeMobile> {
   MenuItems currentPage = MenuItems(
       text: 'Mon Dashboard',
       icon: Icons.dashboard_outlined,
-      tap: const EtudiantDashboard(),
+      tap: const ProfDashboard(),
       isSelected: true);
   List<MenuItems> items = [
     MenuItems(
         text: 'Mon Dashboard',
         icon: Icons.dashboard_outlined,
-        tap: const EtudiantDashboard()),
+        tap: const ProfDashboard()),
     MenuItems(
-        text: 'Faire une requete',
-        icon: Icons.query_stats,
-        tap: const MakeQuery()),
-    MenuItems(
-        text: 'Scanner une présence',
-        icon: Icons.qr_code_scanner,
-        tap: const GiveQrAttendancePage()),
+        text: 'Chat', icon: Icons.query_stats, tap: const MaintenancePage()),
     MenuItems(
         text: 'Paramètres', icon: Icons.settings, tap: const SettingsScreen()),
   ];
@@ -108,14 +98,10 @@ class _EtudiantHomeMobileState extends State<EtudiantHomeMobile> {
             activeColor: Colors.blue,
           ),
           BottomNavyBarItem(
-            icon: const Icon(Icons.query_stats),
-            title: const Text('Requête'),
+            icon: const Icon(Icons.contact_support_rounded),
+            title: const Text('Chat'),
             activeColor: Colors.green,
           ),
-          BottomNavyBarItem(
-              icon: const Icon(Icons.qr_code_scanner),
-              title: const Text('Présence'),
-              activeColor: Colors.orange),
           BottomNavyBarItem(
               icon: const Icon(Icons.person),
               title: const Text('Compte'),

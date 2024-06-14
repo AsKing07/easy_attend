@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:easy_attend/Config/styles.dart';
@@ -18,6 +20,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:mime/mime.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -98,7 +101,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           await set_Data().UpdateCurrentUserData(context);
           setState(() {
             imageUrl = jsonResponse['imageUrl'];
-            print(imageUrl);
+
             _loadUserName();
           });
           Navigator.pop(context);
@@ -222,10 +225,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                                 .getImageAsBytes();
                                         XFile? xFile =
                                             XFile.fromData(bytesFromPicker!);
-                                        print(xFile.path);
+
                                         await uploadPhoto(context, xFile);
                                       } catch (e) {
-                                        print(e);
+                                        kReleaseMode
+                                            ? Helper().ErrorMessage(context,
+                                                content:
+                                                    "Erreur de téléchargement")
+                                            : Helper().ErrorMessage(context,
+                                                content:
+                                                    "Erreur de téléchargement: $e");
                                       }
                                     }
                                   },
@@ -319,7 +328,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           ),
                         ),
-
+                        const SizedBox(height: 20),
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          elevation: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Column(
+                              children: [
+                                SettingsTile(
+                                  color: AppColors.secondaryColor,
+                                  icon: Icons.open_in_browser_rounded,
+                                  title: 'Visiter le site Web',
+                                  onTap: () async {
+                                    const url =
+                                        'https://easyattend.alwaysdata.net/';
+                                    if (await canLaunch(url)) {
+                                      await launch(url);
+                                    } else {
+                                      throw 'Impossible d\'ouvrir le lien $url';
+                                    }
+                                  },
+                                ),
+                                Divider(color: Colors.grey[400]),
+                                SettingsTile(
+                                  color: AppColors.secondaryColor,
+                                  icon: Icons.policy,
+                                  title: 'Politique de confidentialité',
+                                  onTap: () {},
+                                ),
+                                Divider(color: Colors.grey[400]),
+                                SettingsTile(
+                                  color: AppColors.secondaryColor,
+                                  icon: Icons.developer_board_rounded,
+                                  title: 'A Propos du développeur',
+                                  onTap: () {},
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 40),
                         if (isSmallScreen) ...[
                           ElevatedButton(

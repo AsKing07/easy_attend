@@ -15,13 +15,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HelperDrawer extends StatefulWidget {
   List<MenuItems> items;
   Function changePage;
-  String nom;
+
   String? AppVersion;
   HelperDrawer(
       {Key? key,
       required this.items,
       required this.changePage,
-      required this.nom,
       String? AppVersion})
       : super(key: key) {
     this.AppVersion = AppVersion ?? "N/A";

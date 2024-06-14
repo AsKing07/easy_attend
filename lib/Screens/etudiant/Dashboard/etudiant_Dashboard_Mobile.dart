@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:convert';
@@ -14,6 +14,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -254,10 +255,17 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                                           padding: const EdgeInsets.all(8.0),
                                           child: Column(
                                             children: [
-                                              const Icon(
-                                                Icons.query_stats,
-                                                color: AppColors.filiereColor,
-                                                size: 70.0,
+                                              // const Icon(
+                                              //   Icons.query_stats,
+                                              //   color: AppColors.filiereColor,
+                                              //   size: 70.0,
+                                              // ),
+                                              SizedBox(
+                                                height: 70,
+                                                width: 70,
+                                                child: SvgPicture.asset(
+                                                  'assets/courslogo.svg',
+                                                ),
                                               ),
                                               const SizedBox(
                                                 height: 20.0,
@@ -331,7 +339,7 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                       ],
                     ),
                   ),
-                  Container(
+                  SizedBox(
                       height: 150, // Hauteur du conteneur principal
                       width: double.infinity,
                       child: Padding(
@@ -378,7 +386,6 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                                                 setState(() {
                                                   _selectedCourse = course;
                                                 });
-                                                print(_selectedCourse);
                                               },
                                               child: SizedBox(
                                                   height: 120,
@@ -388,7 +395,6 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                                                         etudiant['filiere'],
                                                     course: course,
                                                     onTap: () {
-                                                      // TODO: SeeMyAttendancePage
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(

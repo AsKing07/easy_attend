@@ -203,7 +203,7 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
                                 ? screenHeight / 4
                                 : screenHeight / 1.5,
                             child: const Image(
-                              image: AssetImage("scan.jpg"),
+                              image: AssetImage("assets/scan.jpg"),
                             ),
                           ),
                     Center(

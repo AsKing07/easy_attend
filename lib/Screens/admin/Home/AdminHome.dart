@@ -89,7 +89,6 @@ class _AdminHomeState extends State<AdminHome> {
                         }
                       });
                     },
-                    nom: "Admin",
                   ),
                 ),
                 Expanded(child: currentPage.tap)
@@ -110,7 +109,6 @@ class _AdminHomeState extends State<AdminHome> {
                   }
                 });
               },
-              nom: "Admin",
             ),
             appBar: AppBar(
               backgroundColor: AppColors.secondaryColor,

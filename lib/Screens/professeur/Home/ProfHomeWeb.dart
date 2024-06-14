@@ -1,42 +1,34 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
-import 'package:easy_attend/Screens/etudiant/Dashboard/etudiant_dashboard.dart';
-import 'package:easy_attend/Screens/etudiant/GiveAttendance/giveQRattendance.dart';
-import 'package:easy_attend/Screens/etudiant/MakeQuery/makeAquery.dart';
+import 'package:easy_attend/Screens/professeur/Dashboard/prof_Dashboard.dart';
 import 'package:easy_attend/Screens/settings_screen.dart';
+import 'package:easy_attend/Widgets/PageOnMaintenance.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
 import 'package:flutter/material.dart';
 
-class EtudiantHomeWeb extends StatefulWidget {
-  const EtudiantHomeWeb({super.key});
+class ProfHomeWeb extends StatefulWidget {
+  const ProfHomeWeb({super.key});
 
   @override
-  State<EtudiantHomeWeb> createState() => _EtudiantHomeWebState();
+  State<ProfHomeWeb> createState() => _ProfHomeWebState();
 }
 
-class _EtudiantHomeWebState extends State<EtudiantHomeWeb> {
+class _ProfHomeWebState extends State<ProfHomeWeb> {
   MenuItems currentPage = MenuItems(
       text: 'Mon Dashboard',
       icon: Icons.dashboard_outlined,
-      tap: const EtudiantDashboard(),
+      tap: const ProfDashboard(),
       isSelected: true);
   List<MenuItems> items = [
     MenuItems(
         text: 'Mon Dashboard',
         icon: Icons.dashboard_outlined,
-        tap: const EtudiantDashboard()),
+        tap: const ProfDashboard()),
     MenuItems(
-        text: 'Faire une requete',
-        icon: Icons.query_stats,
-        tap: const MakeQuery()),
-    MenuItems(
-        text: 'Scanner une présence',
-        icon: Icons.qr_code_scanner,
-        tap: const GiveQrAttendancePage()),
+        text: 'Chat', icon: Icons.query_stats, tap: const MaintenancePage()),
     MenuItems(
         text: 'Paramètres', icon: Icons.settings, tap: const SettingsScreen()),
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
