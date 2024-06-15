@@ -18,7 +18,7 @@ class screenSize {
 
 // Fonction pour vérifier si l'appareil est un grand écran
   bool isLargeScreen(BuildContext context) {
-    return MediaQuery.of(context).size.shortestSide >= 960;
+    return MediaQuery.of(context).size.shortestSide >= 1200;
   }
 
   bool isAndroid() {

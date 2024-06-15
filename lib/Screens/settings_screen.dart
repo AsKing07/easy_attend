@@ -1,5 +1,6 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_prefixes
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:easy_attend/Config/styles.dart';
@@ -13,13 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:image_picker_web/image_picker_web.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:universal_html/html.dart' as universalHtml;
+
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
-import 'package:mime/mime.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -39,6 +40,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String imageUrl = "assets/admin.jpg"; // Default image
   final BACKEND_URL = dotenv.env['API_URL'];
   final auth = FirebaseAuth.instance;
+
+  Future<Uint8List> selectImage() async {
+    final fileInput = universalHtml.FileUploadInputElement();
+    fileInput.accept = 'image/*'; // Accepts all image formats
+
+    fileInput.click(); // Simulate a click event to open the file picker dialog
+
+    final completer = Completer<Uint8List>();
+
+    fileInput.onChange.listen((event) {
+      final file = fileInput.files!.first;
+      final reader = universalHtml.FileReader();
+
+      reader.onLoadEnd.listen((e) {
+        final result = reader.result;
+        if (result is Uint8List) {
+          completer.complete(result);
+        }
+      });
+
+      reader.readAsArrayBuffer(file);
+    });
+
+    return completer.future;
+  }
 
   Future<void> uploadPhoto(BuildContext context, XFile? pickedFile) async {
     // final picker = ImagePicker();
@@ -221,8 +247,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     } else {
                                       try {
                                         Uint8List? bytesFromPicker =
-                                            await ImagePickerWeb
-                                                .getImageAsBytes();
+                                            await selectImage();
                                         XFile? xFile =
                                             XFile.fromData(bytesFromPicker!);
 

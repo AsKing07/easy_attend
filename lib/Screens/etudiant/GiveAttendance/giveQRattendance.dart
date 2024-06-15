@@ -28,10 +28,6 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
   static const double campusLongitude = 2.3405719; //  longitude du campus
   static const double maxDistance = 100500.0; // Distance maximale en mètres
   String? statusMessage;
-  List<Map<String, String>> pages = [
-    {"page": "Instruction", "valeur": "0"},
-    {"page": "Scan", "valeur": "1"},
-  ];
 
   String studentId = "";
   dynamic student;
@@ -180,10 +176,6 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
             ),
           ),
 
-          const SizedBox(
-            height: 16,
-          ),
-
           SingleChildScrollView(
             child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -208,7 +200,7 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
                           ),
                     Center(
                       child: Text(
-                        'Comment Scanner le Code QR',
+                        'Comment Scanner le Code QR?',
                         style: GoogleFonts.poppins(
                           textStyle: const TextStyle(
                             fontSize: FontSize.large,
@@ -220,6 +212,8 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
                     const SizedBox(height: 20),
                     Center(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const InstructionStep(
                             number: 1,
@@ -420,7 +414,10 @@ class InstructionStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Center(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircleAvatar(
           radius: 20,
@@ -436,6 +433,8 @@ class InstructionStep extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(icon, color: Colors.teal),
               const SizedBox(width: 10),
@@ -449,6 +448,6 @@ class InstructionStep extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ));
   }
 }

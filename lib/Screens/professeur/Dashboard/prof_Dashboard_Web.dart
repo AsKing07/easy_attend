@@ -7,7 +7,8 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
-import 'package:easy_attend/Screens/professeur/ManageAttendance/OneCoursePage.dart';
+import 'package:easy_attend/Screens/professeur/CoursePage/coursePageWebWidget.dart';
+import 'package:easy_attend/Screens/professeur/CoursePage/OneCourseMobilePage.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/helper.dart';
@@ -35,6 +36,7 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
   Filiere? _selectedFiliere;
   int nbreCours = 0;
   Set<dynamic> profFiliere = {};
+  dynamic _selectedCourse;
 
   final StreamController<List<dynamic>> _coursFilterstreamController =
       StreamController<List<dynamic>>();
@@ -43,6 +45,7 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
 
   Future<void> loadProf() async {
     final x = await get_Data().loadCurrentProfData();
+
     setState(() {
       prof = x;
       imageUrl = prof['image'] ?? imageUrl;
@@ -376,7 +379,6 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                               const SizedBox(
                                 height: 10,
                               ),
-
                               DropdownButtonHideUnderline(
                                 child: GFDropdown(
                                   elevation: 18,
@@ -412,30 +414,6 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                   },
                                 ),
                               )
-                              // DropdownButtonFormField<Filiere>(
-                              //   value: _selectedFiliere,
-                              //   elevation: 18,
-                              // onChanged: (Filiere? value) {
-                              //   setState(() {
-                              //     _selectedFiliere = value!;
-                              //     filterCourses();
-                              //   });
-                              // },
-                              // items: Allfilieres.map<
-                              //     DropdownMenuItem<Filiere>>(
-                              //   (Filiere value) {
-                              //     return DropdownMenuItem<Filiere>(
-                              //       value: value,
-                              //       child: Text(value.nomFiliere),
-                              //     );
-                              //   },
-                              // ).toList(),
-                              //   decoration: const InputDecoration(
-                              //     border: OutlineInputBorder(),
-                              //     labelText:
-                              //         'Choisissez une filière pour trier',
-                              //   ),
-                              // ),
                             ],
                           )
                         ],
@@ -512,14 +490,17 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                                                 ).nomFiliere,
                                                   course: course,
                                                   onTap: () {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            OneCoursePage(
-                                                                course: course),
-                                                      ),
-                                                    );
+                                                    setState(() {
+                                                      _selectedCourse = course;
+                                                    });
+                                                    // Navigator.push(
+                                                    //   context,
+                                                    //   MaterialPageRoute(
+                                                    //     builder: (context) =>
+                                                    //         OneCoursePage(
+                                                    //             course: course),
+                                                    //   ),
+                                                    // );
                                                   },
                                                 ),
                                               ),
@@ -531,6 +512,41 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                 }
                               },
                             ))),
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: _selectedCourse == null
+                          ? SizedBox(
+                              width: double.infinity,
+                              child: Card(
+                                elevation: 8.0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: const Padding(
+                                    padding: EdgeInsets.all(50),
+                                    child: Text(
+                                      'Une fois que vous aurez sélectionné un cours, il apparaîtra ici',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: FontSize.xxLarge,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                              ))
+                          : Card(
+                              elevation: 8.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              child: OneCoursePageWebWidget(
+                                key: ValueKey(_selectedCourse['idCours']),
+                                course: _selectedCourse,
+                                nomFiliere: Allfilieres.firstWhere(
+                                  (filiere) =>
+                                      filiere.idDoc ==
+                                      _selectedCourse['idFiliere'],
+                                ).nomFiliere,
+                              )),
+                    )
                   ],
                 ),
               ));

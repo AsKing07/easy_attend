@@ -7,13 +7,12 @@ import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Cours.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
-import 'package:easy_attend/Screens/professeur/ManageAttendance/listOfOneCourseSeance.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:random_string/random_string.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -909,14 +908,14 @@ class set_Data {
         // Séance ajouté avec succès
 
         Navigator.pop(context);
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ListOfOneCourseSeancePage(
-                    course: course,
-                  )),
-        );
+        GFToast.showToast("Séance créée!", context,
+            trailing: const Icon(
+              Icons.check_box_rounded,
+              color: AppColors.white,
+            ),
+            toastPosition: GFToastPosition.TOP,
+            toastDuration: 8,
+            backgroundColor: AppColors.greenColor);
       } else {
         // Une erreur s'est produite
 

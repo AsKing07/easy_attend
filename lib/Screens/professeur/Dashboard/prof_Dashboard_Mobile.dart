@@ -5,7 +5,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
-import 'package:easy_attend/Screens/professeur/ManageAttendance/OneCoursePage.dart';
+import 'package:easy_attend/Screens/professeur/CoursePage/OneCourseMobilePage.dart';
 import 'package:easy_attend/Widgets/PageOnMaintenance.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
@@ -221,7 +221,7 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                             height: 20.0,
                                           ),
                                           const Text(
-                                            "Filières Tenues",
+                                            "Filières",
                                             style: TextStyle(
                                               color: AppColors.textColor,
                                               fontSize: FontSize.xxLarge,
@@ -275,7 +275,7 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                             height: 20.0,
                                           ),
                                           const Text(
-                                            "Cours enseignés",
+                                            "Cours",
                                             style: TextStyle(
                                               color: AppColors.textColor,
                                               fontSize: FontSize.xxLarge,
@@ -328,7 +328,7 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                 fontWeight: FontWeight.w600),
                           ),
                           const Text(
-                            "Sélectionnez pour le gérer :",
+                            "Sélectionnez en un pour le gérer :",
                             style: TextStyle(
                                 color: AppColors.secondaryColor,
                                 fontSize: FontSize.medium,
@@ -444,8 +444,15 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                        OneCoursePage(
-                                                            course: course),
+                                                        OneCourseMobilePage(
+                                                      course: course,
+                                                      nomFiliere: Allfilieres
+                                                          .firstWhere(
+                                                        (filiere) =>
+                                                            filiere.idDoc ==
+                                                            course['idFiliere'],
+                                                      ).nomFiliere,
+                                                    ),
                                                   ),
                                                 );
                                               },

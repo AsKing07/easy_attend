@@ -8,7 +8,7 @@ import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Screens/professeur/Dashboard/prof_Dashboard_Mobile.dart';
 import 'package:easy_attend/Screens/professeur/Dashboard/prof_Dashboard_Web.dart';
-import 'package:easy_attend/Screens/professeur/ManageAttendance/OneCoursePage.dart';
+import 'package:easy_attend/Screens/professeur/CoursePage/OneCourseMobilePage.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';

@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
-import 'package:easy_attend/Screens/professeur/ManageAttendance/OneCoursePage.dart';
+import 'package:easy_attend/Screens/professeur/CoursePage/OneCourseMobilePage.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
@@ -173,7 +173,10 @@ class _listOfCourseState extends State<listOfCourse> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    OneCoursePage(
+                                                    OneCourseMobilePage(
+                                                        nomFiliere:
+                                                            _selectedFiliere!
+                                                                .nomFiliere,
                                                         course:
                                                             courses[index])),
                                           );

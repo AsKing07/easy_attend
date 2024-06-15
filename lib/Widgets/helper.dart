@@ -20,22 +20,19 @@ class Helper {
   }
 
   void succesMessage(BuildContext context, {String? content}) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    // double screenWidth = MediaQuery.of(context).size.width;
 
     GFToast.showToast(content ?? "Fait avec succès", context,
         trailing: const Icon(
           Icons.check_box_rounded,
           color: AppColors.white,
         ),
-        toastPosition: screenWidth > 1200
-            ? GFToastPosition.TOP_RIGHT
-            : GFToastPosition.TOP,
         toastDuration: 8,
         backgroundColor: AppColors.greenColor);
   }
 
   void ErrorMessage(BuildContext context, {String? content}) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    // double screenWidth = MediaQuery.of(context).size.width;
     GFToast.showToast(
         toastDuration: 8,
         content ?? "Oups... quelque chose s'est mal passé",
@@ -44,9 +41,9 @@ class Helper {
           Icons.close,
           color: AppColors.white,
         ),
-        toastPosition: screenWidth > 1200
-            ? GFToastPosition.TOP_RIGHT
-            : GFToastPosition.TOP,
+        // toastPosition: screenWidth > 1200
+        //     ? GFToastPosition.TOP_RIGHT
+        //     : GFToastPosition.TOP,
         backgroundColor: AppColors.redColor);
   }
 }

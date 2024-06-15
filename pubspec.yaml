@@ -79,6 +79,7 @@ dependencies:
   http_parser: ^4.0.0
   mime: ^1.0.5
   image_picker_web: any
+  omni_datetime_picker: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -124,7 +125,7 @@ flutter:
     - assets/ifri.jpg
     - assets/chat.jpeg
     - assets/makeQuery.png
-    - assets/makeQuery.jpg
+    - assets/coursImage.jpg
     - assets/scan.jpg
     - assets/studentlogo.png
     - assets/easyattend.png

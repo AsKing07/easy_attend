@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_attend/Config/styles.dart';
@@ -89,26 +90,22 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
           dataIsLoaded = true;
         });
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Impossible de récupérer les informations du cours.'),
-            duration: Duration(seconds: 6),
-            backgroundColor: Colors.red,
-          ),
-        );
+        Helper().ErrorMessage(context,
+            content: "Impossible de récupérer les informations du cours");
       }
     } catch (e) {
       // Gérer les erreurs ici
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: kReleaseMode
-              ? const Text('Impossible de récupérer les informations du cours.')
-              : Text(
-                  'Impossible de récupérer les informations du cours. Erreur:$e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      !kReleaseMode
+          ? ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Impossible de récupérer les informations du cours. Erreur:$e'),
+                duration: const Duration(seconds: 6),
+                backgroundColor: Colors.red,
+              ),
+            )
+          : Helper().ErrorMessage(context,
+              content: "Impossible de récupérer les informations du cours");
     }
   }
 
@@ -159,7 +156,9 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
                       for (var seance in snapshot.data!) {
                         String date =
                             DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr').format(
-                                DateTime.parse(seance['dateSeance']).toLocal());
+                                DateTime.parse(seance['dateSeance'])
+                                    .toLocal()
+                                    .subtract(Duration(hours: 1)));
 
                         Map<String, dynamic> presenceEtudiant =
                             jsonDecode(seance['presenceEtudiant']);
