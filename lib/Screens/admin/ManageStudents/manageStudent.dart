@@ -4,21 +4,19 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/addNewStudent.dart';
-import 'package:easy_attend/Screens/admin/ManageStudents/addStudentFromExcel.dart';
+import 'package:easy_attend/Screens/admin/ManageStudents/addStudent.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/edit_Student.dart';
-import 'package:easy_attend/Screens/admin/ManageStudents/student_trashed.dart';
-import 'package:easy_attend/Widgets/errorWidget2.dart';
+
 import 'package:easy_attend/Widgets/helper.dart';
-import 'package:easy_attend/Widgets/my_warning_widget.dart';
-import 'package:easy_attend/Widgets/noResultWidget.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
@@ -65,7 +63,7 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
       List<dynamic> students;
       List<dynamic> inactifStudents;
       response =
-          await http.get(Uri.parse('$BACKEND_URL/api/student/getStudentData}'));
+          await http.get(Uri.parse('$BACKEND_URL/api/student/getStudentData'));
 
       if (response.statusCode == 200) {
         students = jsonDecode(response.body);
@@ -82,9 +80,12 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
             dataIsLoading = false;
           });
         } else {
+          print(newResponse.body);
           Helper().ErrorMessage(context);
         }
       } else {
+        print(response.body);
+
         Helper().ErrorMessage(context);
       }
     } catch (e) {
@@ -274,7 +275,7 @@ class StudentDataSource extends DataTableSource {
         DataCell(Text('${data.student['matricule']}'.toUpperCase())),
         DataCell(Text('${data.student['nom']}'.toUpperCase())),
         DataCell(Text('${data.student['prenom']}'.toUpperCase())),
-        DataCell(Text('${data.student['email']}'.toUpperCase())),
+        DataCell(Text('${data.student['email']}'.toLowerCase())),
         DataCell(Text('${data.student['phone']}'.toUpperCase())),
         DataCell(
           imageUrl.startsWith('http')
@@ -384,7 +385,7 @@ class StudentDataSource extends DataTableSource {
                             ),
                             SizedBox(width: 10),
                             Text(
-                              "Restaurer le professeur",
+                              "Restaurer l'étudiant",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20.0,
@@ -532,7 +533,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
           _selectedFiltre
               ? const Text(
                   textAlign: TextAlign.center,
-                  "Gestion des professeurs",
+                  "Gestion des étudiants",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.secondaryColor,
@@ -540,7 +541,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                 )
               : const Text(
                   textAlign: TextAlign.center,
-                  "Corbeille des professeurs",
+                  "Corbeille des étudiants",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.secondaryColor,
@@ -714,8 +715,8 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                                       MediaQuery.of(context).size.width * 0.8,
                                   height:
                                       MediaQuery.of(context).size.height * 0.8,
-                                  child: addNewStudentPage(
-                                      callback: widget.callback2)),
+                                  child:
+                                      AddStudent(callback: widget.callback2)),
                             ));
                   },
                 ),
@@ -922,16 +923,14 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                               context: context,
                               builder: (context) => Dialog(
                                     child: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.8,
                                         height:
                                             MediaQuery.of(context).size.height *
                                                 0.8,
-                                        child: Padding(
-                                            padding: const EdgeInsets.all(5),
-                                            child: addNewStudentPage(
-                                                callback: widget.callback2))),
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.8,
+                                        child: AddStudent(
+                                            callback: widget.callback2)),
                                   ));
                         },
                       ),
@@ -949,7 +948,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                                   ),
                                   SizedBox(width: 10),
                                   Text(
-                                    "Supprimer tous les professeurs",
+                                    "Supprimer tous les étudiants",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20.0,
@@ -958,7 +957,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                                 ],
                               ),
                               content: const Text(
-                                  'Êtes-vous sûr de vouloir supprimer tous les professeurs?'),
+                                  'Êtes-vous sûr de vouloir supprimer tous les étudiants?'),
                               actions: [
                                 TextButton(
                                   onPressed: () {
@@ -968,7 +967,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                                 ),
                                 TextButton(
                                   onPressed: () async {
-                                    await set_Data().deleteAllFiliere(context);
+                                    await set_Data().deleteAllStudents(context);
                                     Navigator.of(context).pop();
                                     await widget.callback2();
                                   },
@@ -1058,13 +1057,6 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
-                const DataColumn(
-                  label: Text(
-                    'Actions',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                ),
                 DataColumn(
                   label: const Text(
                     'Filiere',
@@ -1075,6 +1067,24 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                       (StudentData d) => d.student['filiere'],
                       columnIndex,
                       ascending),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Niveau',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (StudentData d) => d.student['niveau'],
+                      columnIndex,
+                      ascending),
+                ),
+                const DataColumn(
+                  label: Text(
+                    'Actions',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
               source: _dataSource,

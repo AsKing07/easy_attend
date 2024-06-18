@@ -73,6 +73,8 @@ class _CourseCardState extends State<CourseCard> {
               ),
               const SizedBox(height: 5),
               Text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 'Filière: ${widget.filiere ?? ""}',
                 style: TextStyle(
                   fontSize: fontSizeSubTitle,

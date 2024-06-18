@@ -9,7 +9,8 @@ import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
-import 'package:easy_attend/Widgets/my_warning_widget.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 class EditStudentPage extends StatefulWidget {
   final String studentId;
@@ -28,6 +29,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
   final _nomController = TextEditingController();
   final _prenomController = TextEditingController();
   final _phoneController = TextEditingController();
+  String phoneNumber = "";
 
   var _selectedNiveau;
   Filiere? _selectedFiliere;
@@ -45,6 +47,13 @@ class _EditStudentPageState extends State<EditStudentPage> {
       _phoneController.text = etudiant['phone'];
       _matriculeController.text = etudiant['matricule'];
     }
+  }
+
+  void _inputPhoneChange(
+      String number, PhoneNumber internationlizedPhoneNumber, String isoCode) {
+    setState(() {
+      phoneNumber = internationlizedPhoneNumber.completeNumber;
+    });
   }
 
   Future<void> loadAllActifFilieres() async {
@@ -105,7 +114,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
         //   ],
         // ),
         // body:
-        !screenSize().isWeb()
+        !screenSize().isLargeScreen(context)
             ?
             //MobileApp
             SingleChildScrollView(
@@ -251,18 +260,24 @@ class _EditStudentPageState extends State<EditStudentPage> {
                             const SizedBox(
                               height: 15,
                             ),
-                            TextFormField(
-                              controller: _phoneController,
-                              keyboardType: TextInputType.phone,
+                            IntlPhoneField(
+                              showDropdownIcon: false,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              focusNode: FocusNode(),
                               decoration: InputDecoration(
-                                labelText: "Entrez le numéro",
-                                prefixIcon:
-                                    const Icon(Icons.contact_phone_outlined),
-                                contentPadding: const EdgeInsets.only(top: 10),
+                                labelText: 'Numéro de téléphone',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
                                     color: Colors.grey,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
                                     width: 3.0,
                                   ),
                                 ),
@@ -272,21 +287,14 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                       color: AppColors.secondaryColor,
                                       width: 3.0),
                                 ),
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.red,
-                                    width: 3.0,
-                                  ),
-                                ),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'S\'il vous plâit entrez un numéro valide';
-                                }
-                                return null;
+                              languageCode: "fr",
+                              onChanged: (number) {
+                                _inputPhoneChange(number!.number, number,
+                                    number.countryISOCode);
                               },
                             ),
+
                             const SizedBox(
                               height: 15,
                             ),
@@ -313,8 +321,29 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                   child: Text(value.nomFiliere),
                                 );
                               }).toList(),
-                              decoration: const InputDecoration(
-                                  labelText: 'Choisissez la filière'),
+                              decoration: InputDecoration(
+                                labelText: 'Choisissez la filière',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 3.0,
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(
                               height: 16,
@@ -341,19 +370,42 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                   child: Text(value),
                                 );
                               }).toList(),
-                              hint: const Text('Choisissez le niveau'),
+                              decoration: InputDecoration(
+                                labelText: "Choisissez un niveau",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.grey,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: Colors.red,
+                                    width: 3.0,
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(
                               height: 16,
                             ),
                             GFButton(
+                              color: AppColors.secondaryColor,
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   await set_Data().modifierEtudiantByAdmin(
                                       widget.studentId,
                                       _nomController.text,
                                       _prenomController.text,
-                                      _phoneController.text,
+                                      phoneNumber,
                                       _selectedFiliere!.nomFiliere,
                                       _selectedFiliere!.idDoc,
                                       _selectedNiveau,
@@ -380,7 +432,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
                 ),
               )
             :
-            //WebView
+            //LargeScreen
             Center(
                 child: SingleChildScrollView(
                   child: Column(
@@ -532,19 +584,24 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                 const SizedBox(
                                   height: 15,
                                 ),
-                                TextFormField(
-                                  controller: _phoneController,
-                                  keyboardType: TextInputType.phone,
+                                IntlPhoneField(
+                                  showDropdownIcon: false,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  focusNode: FocusNode(),
                                   decoration: InputDecoration(
-                                    labelText: "Entrez le numéro",
-                                    prefixIcon: const Icon(
-                                        Icons.contact_phone_outlined),
-                                    contentPadding:
-                                        const EdgeInsets.only(top: 10),
+                                    labelText: 'Numéro de téléphone',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
                                         color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
                                         width: 3.0,
                                       ),
                                     ),
@@ -554,21 +611,14 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                           color: AppColors.secondaryColor,
                                           width: 3.0),
                                     ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: const BorderSide(
-                                        color: Colors.red,
-                                        width: 3.0,
-                                      ),
-                                    ),
                                   ),
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'S\'il vous plâit entrez un numéro valide';
-                                    }
-                                    return null;
+                                  languageCode: "fr",
+                                  onChanged: (number) {
+                                    _inputPhoneChange(number!.number, number,
+                                        number.countryISOCode);
                                   },
                                 ),
+
                                 const SizedBox(
                                   height: 15,
                                 ),
@@ -596,8 +646,29 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                       child: Text(value.nomFiliere),
                                     );
                                   }).toList(),
-                                  decoration: const InputDecoration(
-                                      labelText: 'Choisissez la filière'),
+                                  decoration: InputDecoration(
+                                    labelText: 'Choisissez la filière',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(
                                   height: 16,
@@ -624,19 +695,42 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                       child: Text(value),
                                     );
                                   }).toList(),
-                                  hint: const Text('Choisissez le niveau'),
+                                  decoration: InputDecoration(
+                                    labelText: 'Choisissez le niveau',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(
                                   height: 16,
                                 ),
                                 GFButton(
+                                  color: AppColors.secondaryColor,
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
                                       await set_Data().modifierEtudiantByAdmin(
                                           widget.studentId,
                                           _nomController.text,
                                           _prenomController.text,
-                                          _phoneController.text,
+                                          phoneNumber,
                                           _selectedFiliere!.nomFiliere,
                                           _selectedFiliere!.idDoc,
                                           _selectedNiveau,

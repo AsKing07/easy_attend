@@ -6,6 +6,8 @@ import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:getwidget/components/button/gf_button.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -27,6 +29,7 @@ class _EditProfPageState extends State<EditProfPage> {
   final _prenomController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  String phoneNumber = "";
 
   @override
   void dispose() {
@@ -41,7 +44,7 @@ class _EditProfPageState extends State<EditProfPage> {
   void _inputPhoneChange(
       String number, PhoneNumber internationlizedPhoneNumber, String isoCode) {
     setState(() {
-      _phoneController.text = internationlizedPhoneNumber.completeNumber;
+      phoneNumber = internationlizedPhoneNumber.completeNumber;
     });
   }
 
@@ -235,7 +238,7 @@ class _EditProfPageState extends State<EditProfPage> {
                                 ),
                               ),
                               languageCode: "fr",
-                              onSaved: (number) {
+                              onChanged: (number) {
                                 _inputPhoneChange(number!.number, number,
                                     number.countryISOCode);
                               },
@@ -281,19 +284,27 @@ class _EditProfPageState extends State<EditProfPage> {
                             const SizedBox(
                               height: 16,
                             ),
-                            ElevatedButton(
+                            GFButton(
+                              color: AppColors.secondaryColor,
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   await set_Data().modifierProfByAdmin(
                                       widget.profId,
                                       _nomController.text,
                                       _prenomController.text,
-                                      _phoneController.text,
+                                      phoneNumber,
                                       context);
                                   widget.callback();
                                 }
                               },
-                              child: const Text('Modifier le professseur'),
+                              text: 'Modifier le professseur',
+                              textStyle: GoogleFonts.poppins(
+                                color: AppColors.white,
+                                fontSize: FontSize.large,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              shape: GFButtonShape.pills,
+                              fullWidthButton: true,
                             ),
                           ],
                         ),
@@ -303,7 +314,7 @@ class _EditProfPageState extends State<EditProfPage> {
                 ),
               )
             :
-            //web view
+            //large screen
             Center(
                 child: SingleChildScrollView(
                   child: Column(
@@ -424,62 +435,64 @@ class _EditProfPageState extends State<EditProfPage> {
                                 const SizedBox(
                                   height: 16,
                                 ),
-                                TextFormField(
-                                    controller: _phoneController,
-                                    validator: (value) {
-                                      if (_phoneController.text.isEmpty) {
-                                        return "Ce champ est obligatoire";
-                                      }
-                                      return null;
-                                    },
-                                    keyboardType: TextInputType.phone,
-                                    style: GoogleFonts.poppins(
-                                        color: AppColors.textColor),
-                                    decoration: InputDecoration(
-                                      labelText: 'Téléphone',
-                                      prefixIcon: const Icon(Icons.phone),
-                                      contentPadding:
-                                          const EdgeInsets.only(top: 10),
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        borderSide: const BorderSide(
-                                          color: Colors.grey,
-                                          width: 3.0,
-                                        ),
+                                IntlPhoneField(
+                                  showDropdownIcon: false,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  focusNode: FocusNode(),
+                                  decoration: InputDecoration(
+                                    labelText: 'Numéro de téléphone',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.grey,
+                                        width: 3.0,
                                       ),
-                                      errorBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        borderSide: const BorderSide(
-                                          color: Colors.red,
-                                          width: 3.0,
-                                        ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
+                                        width: 3.0,
                                       ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        borderSide: const BorderSide(
-                                            color: AppColors.secondaryColor,
-                                            width: 3.0),
-                                      ),
-                                    )),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
+                                    ),
+                                  ),
+                                  languageCode: "fr",
+                                  onChanged: (number) {
+                                    _inputPhoneChange(number!.number, number,
+                                        number.countryISOCode);
+                                  },
+                                ),
                                 const SizedBox(
                                   height: 16,
                                 ),
-                                ElevatedButton(
+                                GFButton(
+                                  color: AppColors.secondaryColor,
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
                                       await set_Data().modifierProfByAdmin(
                                           widget.profId,
                                           _nomController.text,
                                           _prenomController.text,
-                                          _phoneController.text,
+                                          phoneNumber,
                                           context);
                                       widget.callback();
                                     }
                                   },
-                                  child: const Text('Modifier le professseur'),
+                                  text: 'Modifier le professseur',
+                                  textStyle: GoogleFonts.poppins(
+                                    color: AppColors.white,
+                                    fontSize: FontSize.large,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  shape: GFButtonShape.pills,
+                                  fullWidthButton: true,
                                 ),
                               ],
                             ),

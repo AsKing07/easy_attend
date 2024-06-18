@@ -6,7 +6,6 @@ import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 
@@ -27,6 +26,7 @@ class _addNewProfPageState extends State<addNewProfPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  String phoneNumber = "";
 
   bool _passwordVisible = false;
   bool _passwordVisible2 = false;
@@ -34,7 +34,7 @@ class _addNewProfPageState extends State<addNewProfPage> {
   void _inputPhoneChange(
       String number, PhoneNumber internationlizedPhoneNumber, String isoCode) {
     setState(() {
-      _phoneController.text = internationlizedPhoneNumber.completeNumber;
+      phoneNumber = internationlizedPhoneNumber.completeNumber;
     });
   }
 
@@ -66,7 +66,7 @@ class _addNewProfPageState extends State<addNewProfPage> {
         //   ),
         //   body:
 
-        !screenSize().isWeb()
+        !screenSize().isLargeScreen(context)
             //App mobile
             ? SingleChildScrollView(
                 child: Padding(
@@ -374,7 +374,7 @@ class _addNewProfPageState extends State<addNewProfPage> {
                                       _passwordController.text,
                                       _nomController.text,
                                       _prenomController.text,
-                                      _phoneController.text,
+                                      phoneNumber,
                                       context);
                                   widget.callback();
                                 }
@@ -554,19 +554,24 @@ class _addNewProfPageState extends State<addNewProfPage> {
                                 const SizedBox(
                                   height: 15,
                                 ),
-                                TextFormField(
-                                  controller: _phoneController,
-                                  keyboardType: TextInputType.phone,
+                                IntlPhoneField(
+                                  showDropdownIcon: false,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  focusNode: FocusNode(),
                                   decoration: InputDecoration(
-                                    labelText: "Entrez le numéro",
-                                    prefixIcon: const Icon(
-                                        Icons.contact_phone_outlined),
-                                    contentPadding:
-                                        const EdgeInsets.only(top: 10),
+                                    labelText: 'Numéro de téléphone',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
                                         color: Colors.grey,
+                                        width: 3.0,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderSide: const BorderSide(
+                                        color: Colors.red,
                                         width: 3.0,
                                       ),
                                     ),
@@ -576,32 +581,37 @@ class _addNewProfPageState extends State<addNewProfPage> {
                                           color: AppColors.secondaryColor,
                                           width: 3.0),
                                     ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      borderSide: const BorderSide(
-                                        color: Colors.red,
-                                        width: 3.0,
-                                      ),
-                                    ),
                                   ),
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'S\'il vous plâit entrez un numéro valide';
-                                    }
-                                    return null;
+                                  languageCode: "fr",
+                                  onSaved: (number) {
+                                    _inputPhoneChange(number!.number, number,
+                                        number.countryISOCode);
                                   },
                                 ),
+
                                 const SizedBox(
                                   height: 15,
                                 ),
                                 TextFormField(
                                   controller: _passwordController,
                                   keyboardType: TextInputType.text,
-                                  obscureText: true,
+                                  obscureText: !_passwordVisible,
                                   decoration: InputDecoration(
                                     hintText: "Mot de passe ",
-                                    prefixIcon:
-                                        const Icon(Icons.lock_outline_rounded),
+                                    prefixIcon: const Icon(Icons.password),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _passwordVisible
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: AppColors.shadow,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _passwordVisible = !_passwordVisible;
+                                        });
+                                      },
+                                    ),
                                     contentPadding:
                                         const EdgeInsets.only(top: 10),
                                     border: OutlineInputBorder(
@@ -640,11 +650,25 @@ class _addNewProfPageState extends State<addNewProfPage> {
                                 TextFormField(
                                   controller: _confirmPasswordController,
                                   keyboardType: TextInputType.text,
-                                  obscureText: true,
+                                  obscureText: !_passwordVisible2,
                                   decoration: InputDecoration(
                                     labelText: "Confirmez le mot de passe",
                                     prefixIcon:
                                         const Icon(Icons.lock_outline_rounded),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _passwordVisible2
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: AppColors.shadow,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _passwordVisible2 =
+                                              !_passwordVisible2;
+                                        });
+                                      },
+                                    ),
                                     contentPadding:
                                         const EdgeInsets.only(top: 10),
                                     border: OutlineInputBorder(
@@ -684,6 +708,7 @@ class _addNewProfPageState extends State<addNewProfPage> {
                                 ),
 
                                 GFButton(
+                                  color: AppColors.secondaryColor,
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
                                       await auth_methods_admin().createProf(
@@ -691,7 +716,7 @@ class _addNewProfPageState extends State<addNewProfPage> {
                                           _passwordController.text,
                                           _nomController.text,
                                           _prenomController.text,
-                                          _phoneController.text,
+                                          phoneNumber,
                                           context);
                                       widget.callback();
                                     }

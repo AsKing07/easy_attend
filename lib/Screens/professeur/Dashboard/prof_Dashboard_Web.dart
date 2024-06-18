@@ -369,7 +369,7 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                     fontWeight: FontWeight.w400),
                               ),
                               const Text(
-                                "Sélectionnez en un pour le gérer :",
+                                "Sélectionnez-en un pour le gérer :",
                                 style: TextStyle(
                                     color: AppColors.secondaryColor,
                                     fontSize: FontSize.medium,

@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:expandable/expandable.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,7 +34,6 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
   };
 
   String selectedFilter = '';
-
   final BACKEND_URL = dotenv.env['API_URL'];
   final StreamController<List<dynamic>> _streamController =
       StreamController<List<dynamic>>();
@@ -46,6 +44,9 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
           '$BACKEND_URL/api/requete/getRequestData?filtre=${filter['valeur']}'));
       if (response.statusCode == 200) {
         List<dynamic> requete = jsonDecode(response.body);
+        for (var item in requete) {
+          item['isExpanded'] = false; // Initialize isExpanded to false
+        }
         _streamController.add(requete);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -57,7 +58,6 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
         );
       }
     } catch (e) {
-      // Gérer les erreurs ici
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Impossible de récupérer les requêtes. Erreur:$e'),
@@ -69,18 +69,14 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
   }
 
   String getAuteur(String input) {
-    List<String> words = input.split(' '); // Split the input string by space
-
-    return '${words[0]} ${words[1]}'; // Concatenate the first two words
+    List<String> words = input.split(' ');
+    return '${words[0]} ${words[1]}';
   }
 
   String getDetailsExceptAuteur(String input) {
-    List<String> words = input.split(' '); // Split the input string by space
-
-    List<String> remainingWords =
-        words.sublist(3); // Get sublist starting from index 3
-    return remainingWords
-        .join(' '); // Join the remaining words back into a string
+    List<String> words = input.split(' ');
+    List<String> remainingWords = words.sublist(3);
+    return remainingWords.join(' ');
   }
 
   @override
@@ -94,7 +90,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -136,13 +132,9 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                   );
                 }).toList(),
               ),
-              const SizedBox(
-                height: 16,
-              ),
-              // ignore: sized_box_for_whitespace
+              const SizedBox(height: 16),
               Container(
-                height: MediaQuery.of(context).size.height -
-                    180, // Définir la hauteur en fonction de la taille de l'écran
+                height: MediaQuery.of(context).size.height - 180,
                 child: StreamBuilder<List<dynamic>>(
                   stream: _streamController.stream,
                   builder: (context, snapshot) {
@@ -161,226 +153,146 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                         );
                       } else {
                         return ListView.builder(
-                            itemCount: requetes.length,
-                            itemBuilder: (context, index) {
-                              final query = requetes[index];
-
-                              return Column(
+                          itemCount: requetes.length,
+                          itemBuilder: (context, index) {
+                            final query = requetes[index];
+                            return Card(
+                              elevation: 4,
+                              margin: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Column(
                                 children: [
-                                  Container(
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        boxShadow: const [
-                                          BoxShadow(
-                                              color: AppColors.shadow,
-                                              blurRadius: 100,
-                                              spreadRadius: 5,
-                                              offset: Offset(0, 60)),
+                                  ListTile(
+                                    title: Text(
+                                      query['type'].toString(),
+                                      style: const TextStyle(
+                                          color: AppColors.secondaryColor,
+                                          fontSize: FontSize.medium,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    trailing: query['statut'] == "1"
+                                        ? const Icon(Icons.check,
+                                            color: AppColors.greenColor)
+                                        : query['statut'] == "2"
+                                            ? const Icon(Icons.sync,
+                                                color: AppColors.studColor)
+                                            : const Icon(Icons.cancel,
+                                                color: AppColors.redColor),
+                                    onTap: () {
+                                      setState(() {
+                                        query['isExpanded'] =
+                                            !query['isExpanded'];
+                                      });
+                                    },
+                                  ),
+                                  if (query['isExpanded'])
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Auteur : ${getAuteur(query['details'])}",
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: AppColors.textColor,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Text(
+                                            "Détails: \n  ${getDetailsExceptAuteur(query['details'])}",
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: AppColors.textColor,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          Row(
+                                            children: [
+                                              Flexible(
+                                                child: GFButton(
+                                                  color: AppColors.greenColor,
+                                                  onPressed: () async {
+                                                    await set_Data()
+                                                        .approuverRequete(
+                                                            query['idRequete'],
+                                                            context);
+                                                    setState(() {
+                                                      selectedFilter = "1";
+                                                      filter['valeur'] = "1";
+                                                      fetchData();
+                                                    });
+                                                  },
+                                                  text: "Approuver",
+                                                  textStyle: const TextStyle(
+                                                      color: AppColors.white,
+                                                      fontSize: FontSize.large,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  shape: GFButtonShape.pills,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Flexible(
+                                                child: GFButton(
+                                                  color: AppColors.redColor,
+                                                  onPressed: () async {
+                                                    await set_Data()
+                                                        .desapprouverRequete(
+                                                            query['idRequete'],
+                                                            context);
+                                                    setState(() {
+                                                      selectedFilter = "0";
+                                                      filter['valeur'] = "0";
+                                                      fetchData();
+                                                    });
+                                                  },
+                                                  text: "Rejeter",
+                                                  textStyle: const TextStyle(
+                                                      color: AppColors.white,
+                                                      fontSize: FontSize.large,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  shape: GFButtonShape.pills,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Flexible(
+                                                child: GFButton(
+                                                  color: AppColors.studColor,
+                                                  onPressed: () async {
+                                                    await set_Data()
+                                                        .mettreEnAttenteRequete(
+                                                            query['idRequete'],
+                                                            context);
+                                                    setState(() {
+                                                      selectedFilter = "2";
+                                                      filter['valeur'] = "2";
+                                                      fetchData();
+                                                    });
+                                                  },
+                                                  text: "En attente",
+                                                  textStyle: const TextStyle(
+                                                      color: AppColors.white,
+                                                      fontSize: FontSize.large,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  shape: GFButtonShape.pills,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ],
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: AppColors.white,
                                       ),
-                                      child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 30.0, right: 30),
-                                          child: Column(children: [
-                                            const SizedBox(
-                                              height: 20,
-                                            ),
-                                            ExpandablePanel(
-                                              header: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 160,
-                                                    child: Text(
-                                                      query['type'].toString(),
-                                                      overflow:
-                                                          TextOverflow.visible,
-                                                      maxLines: null,
-                                                      softWrap: true,
-                                                      style: const TextStyle(
-                                                          color: AppColors
-                                                              .secondaryColor,
-                                                          fontSize:
-                                                              FontSize.medium,
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    child: query['statut'] ==
-                                                            "1"
-                                                        ? const Icon(
-                                                            Icons.check,
-                                                            color: AppColors
-                                                                .greenColor,
-                                                          )
-                                                        : query['statut'] == "2"
-                                                            ? const Icon(
-                                                                Icons.sync,
-                                                                color: AppColors
-                                                                    .studColor)
-                                                            : const Icon(
-                                                                Icons.cancel,
-                                                                color: AppColors
-                                                                    .redColor),
-                                                  )
-                                                ],
-                                              ),
-                                              collapsed: Text(
-                                                query['sujet'].toString(),
-                                                softWrap: true,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                    fontSize: FontSize.medium,
-                                                    color: AppColors.textColor,
-                                                    fontWeight:
-                                                        FontWeight.w400),
-                                              ),
-                                              expanded: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      "Auteur : ${getAuteur(query['details'])}",
-                                                      softWrap: true,
-                                                      maxLines: 2,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                          fontSize: 14,
-                                                          color: AppColors
-                                                              .textColor,
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Text(
-                                                      "Détails: \n  ${getDetailsExceptAuteur(query['details'])}",
-                                                      softWrap: true,
-                                                      style: const TextStyle(
-                                                          fontSize: 14,
-                                                          color: AppColors
-                                                              .textColor,
-                                                          fontWeight:
-                                                              FontWeight.w400),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    GFButton(
-                                                      onPressed: () async {
-                                                        // Approuver la requete
-                                                        await set_Data()
-                                                            .approuverRequete(
-                                                                query[
-                                                                    'idRequete'],
-                                                                context);
-                                                        setState(() {
-                                                          selectedFilter = "1";
-                                                          filter['valeur'] =
-                                                              "1";
-                                                          fetchData();
-                                                        });
-                                                      },
-                                                      text: "Approuver",
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: AppColors
-                                                                  .white,
-                                                              fontSize: FontSize
-                                                                  .large,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                      shape:
-                                                          GFButtonShape.pills,
-                                                      fullWidthButton: true,
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    GFButton(
-                                                      onPressed: () async {
-                                                        // Désapprouver la requete
-                                                        await set_Data()
-                                                            .desapprouverRequete(
-                                                                query[
-                                                                    'idRequete'],
-                                                                context);
-                                                        setState(() {
-                                                          selectedFilter = "0";
-                                                          filter['valeur'] =
-                                                              "0";
-                                                          fetchData();
-                                                        });
-                                                      },
-                                                      text: "Désapprouver",
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: AppColors
-                                                                  .white,
-                                                              fontSize: FontSize
-                                                                  .large,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                      shape:
-                                                          GFButtonShape.pills,
-                                                      fullWidthButton: true,
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    GFButton(
-                                                      onPressed: () async {
-                                                        // mettre en attente la requete
-                                                        await set_Data()
-                                                            .mettreEnAttenteRequete(
-                                                                query[
-                                                                    'idRequete'],
-                                                                context);
-                                                        setState(() {
-                                                          selectedFilter = "2";
-                                                          filter['valeur'] =
-                                                              "2";
-                                                          fetchData();
-                                                        });
-                                                      },
-                                                      text: "Mettre en attente",
-                                                      textStyle:
-                                                          const TextStyle(
-                                                              color: AppColors
-                                                                  .white,
-                                                              fontSize: FontSize
-                                                                  .large,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                      shape:
-                                                          GFButtonShape.pills,
-                                                      fullWidthButton: true,
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                  ]),
-                                            ),
-                                          ]))),
-                                  const SizedBox(
-                                    height: 10,
-                                  )
+                                    ),
                                 ],
-                              );
-                            });
+                              ),
+                            );
+                          },
+                        );
                       }
                     }
                   },

@@ -365,12 +365,27 @@ class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
+    final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
     TextField searchField = TextField(
         controller: _searchController,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           labelText: 'Rechercher',
-          prefixIcon: Icon(Icons.search),
+          prefixIcon: const Icon(Icons.search),
+          contentPadding: const EdgeInsets.only(top: 10),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(
+              color: Colors.blue,
+              width: 3.0,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.blue, width: 3.0),
+          ),
         ),
         onChanged: (value) {
           setState(() {
@@ -379,24 +394,45 @@ class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
         });
     return PaginatedDataTable(
       actions: [
-        searchField,
+        Container(
+          width: isSmallScreen ? 100 : 200,
+          child: searchField,
+        ),
         // Menu déroulant pour filtrer par statut
-        DropdownButton<String>(
-          hint: const Text('Filtrer par statut'),
-          value: _selectedCategory,
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedCategory = newValue;
-              _dataSource.filter(newValue);
-            });
-          },
-          items: <String>['Présent', 'Absent']
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
+        Container(
+          width: isSmallScreen ? 150 : 250,
+          child: DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              labelText: 'Filtrer par statut',
+              contentPadding: const EdgeInsets.all(10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(
+                  color: AppColors.secondaryColor,
+                  width: 3.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(
+                    color: AppColors.secondaryColor, width: 3.0),
+              ),
+            ),
+            value: _selectedCategory,
+            onChanged: (String? newValue) {
+              setState(() {
+                _selectedCategory = newValue;
+                _dataSource.filter(newValue);
+              });
+            },
+            items: <String>['Présent', 'Absent']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
         ),
         // Bouton pour rafraîchir les données
         IconButton(

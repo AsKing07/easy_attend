@@ -33,11 +33,12 @@ class _SignUpAdminWebState extends State<SignUpAdminWeb> {
   bool _passwordVisible = false;
   bool _passwordVisible2 = false;
   bool _passwordVisible3 = false;
+  String phoneNumber = "";
 
   void _inputPhoneChange(
       String number, PhoneNumber internationlizedPhoneNumber, String isoCode) {
     setState(() {
-      _phoneController.text = internationlizedPhoneNumber.completeNumber;
+      phoneNumber = internationlizedPhoneNumber.completeNumber;
     });
   }
 
@@ -281,7 +282,7 @@ class _SignUpAdminWebState extends State<SignUpAdminWeb> {
                                       ),
                                     ),
                                     languageCode: "fr",
-                                    onSaved: (number) {
+                                    onChanged: (number) {
                                       _inputPhoneChange(number!.number, number,
                                           number.countryISOCode);
                                     },
@@ -508,7 +509,7 @@ class _SignUpAdminWebState extends State<SignUpAdminWeb> {
                                                 _passwordController.text,
                                                 _nomController.text,
                                                 _prenomController.text,
-                                                _phoneController.text,
+                                                phoneNumber,
                                                 context);
                                           }
                                         });

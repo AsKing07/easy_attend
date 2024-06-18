@@ -36,7 +36,7 @@ class _AdminHomeWebState extends State<AdminHomeWeb> {
     MenuItems(
         text: 'Professeurs', icon: Icons.person_3, tap: const ManageProf()),
     MenuItems(
-        text: 'Etudiants', icon: Icons.person, tap: const ManageStudentPage()),
+        text: 'Etudiants', icon: Icons.people, tap: const ManageStudentPage()),
     MenuItems(
         text: 'Cours',
         icon: Icons.settings_applications_outlined,

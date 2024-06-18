@@ -718,7 +718,7 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
                                 ),
                                 TextButton(
                                   onPressed: () async {
-                                    await set_Data().deleteAllFiliere(context);
+                                    await set_Data().deleteAllProf(context);
                                     Navigator.of(context).pop();
                                     await widget.callback2();
                                   },

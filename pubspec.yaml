@@ -124,6 +124,7 @@ flutter:
   assets:
     - assets/admin.jpg
     - assets/ifri.jpg
+    - assets/upload.jpg
     - assets/chat.jpeg
     - assets/makeQuery.png
     - assets/coursImage.jpg
@@ -138,6 +139,7 @@ flutter:
     - assets/failed.json
     - assets/maintenance.json
     - assets/done.json
+    - assets/uploadAnim.json
     - .env
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
