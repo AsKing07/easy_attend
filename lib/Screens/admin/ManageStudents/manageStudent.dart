@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, file_names, prefer_typing_uninitialized_variables, non_constant_identifier_names
+// ignore_for_file: use_build_context_synchronously, file_names, prefer_typing_uninitialized_variables, non_constant_identifier_names, library_private_types_in_public_api
 
 import 'dart:async';
 import 'dart:convert';
@@ -12,11 +12,14 @@ import 'package:easy_attend/Screens/admin/ManageStudents/addStudentFromExcel.dar
 import 'package:easy_attend/Screens/admin/ManageStudents/edit_Student.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/student_trashed.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,14 +30,10 @@ class ManageStudentPage extends StatefulWidget {
 }
 
 class _ManageStudentPageState extends State<ManageStudentPage> {
-  final TextEditingController _searchController = TextEditingController();
   final BACKEND_URL = dotenv.env['API_URL'];
-  final StreamController<List<dynamic>> _streamController =
-      StreamController<List<dynamic>>();
-  String searchFilter = 'Nom';
+  List<StudentData> studentData = [];
+  bool dataIsLoading = true;
   List<Filiere> Allfilieres = [];
-  Filiere? _selectedFiliere;
-  var _selectedNiveau;
 
   Future<void> loadAllActifFilieres() async {
     List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
@@ -57,548 +56,1043 @@ class _ManageStudentPageState extends State<ManageStudentPage> {
     });
   }
 
-  void _onSearchChanged() {
-    fetchData();
-  }
-
   Future<void> fetchData() async {
+    setState(() {
+      dataIsLoading = true;
+    });
     http.Response response;
     try {
-      if (_selectedFiliere != null) {
-        if (_selectedNiveau != null) {
-          response = await http.get(Uri.parse(
-              '$BACKEND_URL/api/student/getStudentData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}&niveau=$_selectedNiveau'));
+      List<dynamic> students;
+      List<dynamic> inactifStudents;
+      response =
+          await http.get(Uri.parse('$BACKEND_URL/api/student/getStudentData}'));
+
+      if (response.statusCode == 200) {
+        students = jsonDecode(response.body);
+        final newResponse = await http
+            .get(Uri.parse(('$BACKEND_URL/api/student/getInactifStudentData')));
+        if (newResponse.statusCode == 200) {
+          inactifStudents = json.decode(newResponse.body);
+          List<dynamic> allStudents = [...students, ...inactifStudents];
+          studentData.clear();
+          for (var entry in allStudents) {
+            studentData.add(StudentData(student: entry));
+          }
+          setState(() {
+            dataIsLoading = false;
+          });
         } else {
-          response = await http.get(Uri.parse(
-              '$BACKEND_URL/api/student/getStudentData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}'));
+          Helper().ErrorMessage(context);
         }
       } else {
-        response = await http.get(Uri.parse(
-            '$BACKEND_URL/api/student/getStudentData?search=${_searchController.text}'));
-      }
-      if (response.statusCode == 200) {
-        List<dynamic> students = jsonDecode(response.body);
-        _streamController.add(students);
-      } else {
-        throw Exception('Erreur lors de la récupération des étudiants');
+        Helper().ErrorMessage(context);
       }
     } catch (e) {
       // Gérer les erreurs ici
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Impossible de récupérer les étudiants. Erreur:$e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      kReleaseMode
+          ? Helper().ErrorMessage(context)
+          : ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text('Impossible de récupérer les étudiants. Erreur:$e'),
+                duration: const Duration(seconds: 100),
+                backgroundColor: Colors.red,
+              ),
+            );
     }
-  }
-
-  void showStudentDetailsDialog(BuildContext context, dynamic etudiant) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('${etudiant['nom']} ${etudiant['prenom']}'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Filière: ${etudiant['filiere']}'),
-              Text('Niveau: ${etudiant['niveau']}'),
-              Text('Email: ${etudiant['email']}'),
-              Text('Numéro: ${etudiant['phone']}'),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Fermer'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_onSearchChanged);
-    loadAllActifFilieres();
-
     fetchData();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _streamController.close();
-    super.dispose();
+    loadAllActifFilieres();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-              color: AppColors.secondaryColor,
-              height: 75,
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: MediaQuery.of(context).size.width >= 1024
-                    ? MediaQuery.of(context).size.width * 0.2
-                    : MediaQuery.of(context).size.width >= 600
-                        ? MediaQuery.of(context).size.width * 0.05
-                        : 10,
-              ),
-              child: Row(
+    return dataIsLoading
+        ? Container(
+            decoration: const BoxDecoration(color: AppColors.white),
+            child: Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 100),
+            ),
+          )
+        : Scaffold(
+            body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: StudentPaginatedTable(
+                        key: ValueKey(studentData),
+                        studentData: studentData,
+                        callback: fetchData,
+                        callback2: fetchData,
+                        allFilieres: Allfilieres,
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ));
+  }
+}
+
+// Classe représentant les données de etudiants
+class StudentData {
+  final dynamic student;
+
+  StudentData({
+    required this.student,
+  });
+}
+
+// Classe représentant la source des données pour le DataTable
+class StudentDataSource extends DataTableSource {
+  BuildContext context;
+  void Function() callback;
+  List<StudentData> studentData;
+  List<StudentData> filteredData;
+  final Set<int> _selectedRows = {};
+
+  StudentDataSource({
+    required this.studentData,
+    required this.context,
+    required this.callback,
+  }) : filteredData = List.from(studentData);
+
+  // Méthode pour trier les données
+  void sort<T>(Comparable<T> Function(StudentData d) getField, bool ascending) {
+    filteredData.sort((a, b) {
+      if (!ascending) {
+        final StudentData c = a;
+        a = b;
+        b = c;
+      }
+      final Comparable<T> aValue = getField(a);
+      final Comparable<T> bValue = getField(b);
+      if (getField(a) is int) {
+        return ascending
+            ? aValue.compareTo(bValue as T)
+            : bValue.compareTo(aValue as T);
+      } else {
+        return Comparable.compare(aValue, bValue);
+      }
+    });
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  // Méthode pour filtrer les données par filiere
+  void filterByStatut(bool? statut) {
+    if (statut == null) {
+      filteredData = List.from(studentData);
+    } else {
+      filteredData = studentData.where((data) {
+        return (data.student['statut'] == 1) == statut;
+      }).toList();
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  // Méthode pour filtrer les données par filiere
+  void filterByFiliere(String? filiere) {
+    if (filiere == null || filiere.isEmpty) {
+      filteredData = List.from(studentData);
+    } else {
+      filteredData = studentData
+          .where((data) =>
+              data.student['filiere'].toUpperCase() == filiere.toUpperCase())
+          .toList();
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  // Méthode pour filtrer les données par niveau
+  void filterByNiveau(String? niveau) {
+    if (niveau == null || niveau.isEmpty || niveau == 'Toutes les niveau') {
+      filteredData = List.from(studentData);
+    } else {
+      filteredData = studentData
+          .where((data) =>
+              data.student['niveau'].toUpperCase() == niveau.toUpperCase())
+          .toList();
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  void filterBySearch(String searchQuery) {
+    if (searchQuery.isEmpty) {
+      filteredData = List.from(studentData);
+    } else {
+      filteredData = studentData
+          .where((data) =>
+              data.student['nom']
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()) ||
+              data.student['prenom']
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()) ||
+              data.student['filiere']
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()) ||
+              data.student['matricule']
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()) ||
+              data.student['email']
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()) ||
+              data.student['niveau']
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()))
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  @override
+  DataRow getRow(int index) {
+    String imageUrl = filteredData[index].student['image'] ??
+        "assets/admin.jpg"; // Default image
+
+    final data = filteredData[index];
+    return DataRow(
+      selected: _selectedRows.contains(index),
+      onSelectChanged: (selected) {
+        _handleRowSelected(selected, index);
+      },
+      color: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+        return _getRowColor(index);
+      }),
+      cells: [
+        DataCell(Text('${data.student['matricule']}'.toUpperCase())),
+        DataCell(Text('${data.student['nom']}'.toUpperCase())),
+        DataCell(Text('${data.student['prenom']}'.toUpperCase())),
+        DataCell(Text('${data.student['email']}'.toUpperCase())),
+        DataCell(Text('${data.student['phone']}'.toUpperCase())),
+        DataCell(
+          imageUrl.startsWith('http')
+              ? GFAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: NetworkImage(imageUrl))
+              : GFAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: AssetImage(imageUrl),
+                ),
+        ),
+        DataCell(Text('${data.student['filiere']}'.toUpperCase())),
+        DataCell(Text('${data.student['niveau']}'.toUpperCase())),
+        data.student['statut'] == 1
+            ? DataCell(Column(
                 children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      //Page de modification en passant l'ID
+                      showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                                child: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.8,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: EditStudentPage(
+                                          studentId: data.student['uid'],
+                                          callback: callback),
+                                    )),
+                              ));
+                    },
+                  ),
+                  const SizedBox(
+                    height: 3,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: AppColors.redColor),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Row(
+                            children: [
+                              Icon(Icons.warning, color: Colors.orange),
+                              SizedBox(width: 10),
+                              Text(
+                                "Supprimer l' étudiant",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                            ],
+                          ),
+                          content: const Text(
+                            'Êtes-vous sûr de vouloir supprimer cet étudiant ? ',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Annuler'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                await set_Data().deleteOneStudent(
+                                  data.student['uid'],
+                                  context,
+                                );
+                                callback();
+
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Supprimer'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ))
+            : DataCell(
+                IconButton(
+                  icon: const Icon(
+                    Icons.restore,
+                    color: AppColors.greenColor,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Row(
+                          children: [
+                            Icon(
+                              Icons.warning,
+                              color: Colors.orange,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Restaurer le professeur",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.orange),
+                            ),
+                          ],
+                        ),
+                        content: const Text(
+                            'Êtes-vous sûr de vouloir restaurer cet étudiant ? '),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Annuler'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await set_Data().restoreOneStudent(
+                                  data.student['uid'], context);
+                              callback();
+
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Restaurer'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              )
+      ],
+    );
+  }
+
+  // Méthode pour gérer la sélection d'une ligne
+  void _handleRowSelected(bool? selected, int rowIndex) {
+    if (selected!) {
+      _selectedRows.add(rowIndex);
+    } else {
+      _selectedRows.remove(rowIndex);
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => filteredData.length;
+
+  @override
+  int get selectedRowCount => _selectedRows.length;
+
+  // Méthode pour obtenir la couleur d'une ligne en fonction de sa sélection
+  Color _getRowColor(int index) {
+    return _selectedRows.contains(index) ? Colors.green : Colors.grey[200]!;
+  }
+}
+
+// Widget représentant la table paginée des cours
+
+class StudentPaginatedTable extends StatefulWidget {
+  final List<StudentData> studentData;
+  final Future<void> Function() callback;
+  final Future<void> Function() callback2;
+  final List<Filiere> allFilieres;
+
+  const StudentPaginatedTable({
+    Key? key,
+    required this.studentData,
+    required this.callback,
+    required this.callback2,
+    required this.allFilieres,
+  }) : super(key: key);
+
+  @override
+  _StudentPaginatedTableState createState() => _StudentPaginatedTableState();
+}
+
+class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
+  late StudentDataSource _dataSource;
+  bool _sortAscending = true;
+  int _sortColumnIndex = 0;
+  bool _selectedFiltre = true;
+  String? _selectedNiveau;
+  Filiere? _selectedFiliere;
+  late final TextEditingController _searchController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _dataSource = StudentDataSource(
+      studentData: widget.studentData,
+      context: context,
+      callback: widget.callback,
+    );
+  }
+
+  // Méthode pour trier les colonnes
+  void _sort<T>(Comparable<T> Function(StudentData d) getField, int columnIndex,
+      bool ascending) {
+    _dataSource.sort<T>(getField, ascending);
+    setState(() {
+      _sortColumnIndex = columnIndex;
+      _sortAscending = ascending;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
+    TextFormField searchField = TextFormField(
+      controller: _searchController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Rechercher',
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.only(top: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: AppColors.secondaryColor,
+            width: 3.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(color: Colors.blue, width: 3.0),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          _dataSource.filterBySearch(value);
+        });
+      },
+    );
+
+    return SingleChildScrollView(
+        child: Padding(
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        children: [
+          _selectedFiltre
+              ? const Text(
+                  textAlign: TextAlign.center,
+                  "Gestion des professeurs",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondaryColor,
+                      fontSize: FontSize.xxxLarge),
+                )
+              : const Text(
+                  textAlign: TextAlign.center,
+                  "Corbeille des professeurs",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondaryColor,
+                      fontSize: FontSize.xxxLarge),
+                ),
+          const SizedBox(height: 15),
+          if (!isSmallScreen)
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: searchField,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 2,
+                  child: DropdownButtonFormField(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
+                    elevation: 18,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedFiltre = value == 'Actif' ? true : false;
+
+                        _dataSource.filterByStatut(_selectedFiltre);
+                      });
+                    },
+                    items: ['Actif', 'Corbeille']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }).toList(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Filtrer par statut',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: AppColors.secondaryColor,
+                          width: 3.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 3.0),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 2,
+                  child: DropdownButtonFormField<Filiere>(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
+                    value: _selectedFiliere,
+                    elevation: 18,
+                    onChanged: (Filiere? value) {
+                      setState(() {
+                        _selectedFiliere = value;
+                        _dataSource.filterByFiliere(value!.nomFiliere);
+                      });
+                    },
+                    items: widget.allFilieres
+                        .map<DropdownMenuItem<Filiere>>((Filiere value) {
+                      return DropdownMenuItem<Filiere>(
+                        value: value,
+                        child: Text(
+                          value.nomFiliere,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }).toList(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Filtrer par filière',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: AppColors.secondaryColor,
+                          width: 3.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                            color: AppColors.secondaryColor, width: 3.0),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                if (_selectedFiliere != null)
                   Expanded(
-                    child:
-                        //Dropdown Filieres
-                        DropdownButtonFormField<Filiere>(
-                      dropdownColor: AppColors.secondaryColor,
-                      style: const TextStyle(
-                          color: AppColors.backgroundColor,
-                          fontSize: FontSize.xSmall),
-                      value: _selectedFiliere,
-                      elevation: 18,
-                      onChanged: (Filiere? value) {
+                    flex: 2,
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedNiveau,
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black),
+                      onChanged: (String? value) {
                         setState(() {
-                          _selectedFiliere = value!;
-                          _selectedNiveau = null;
+                          _selectedNiveau = value!;
+                          _dataSource.filterByNiveau(value);
                         });
-                        fetchData();
                       },
-                      items: Allfilieres.map<DropdownMenuItem<Filiere>>(
-                          (Filiere value) {
-                        return DropdownMenuItem<Filiere>(
+                      items: _selectedFiliere!.niveaux
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
                           value: value,
                           child: Text(
-                            value.nomFiliere,
-                            style: const TextStyle(
-                                fontSize: 8.5, fontWeight: FontWeight.bold),
+                            value,
+                            style: const TextStyle(color: Colors.black),
                           ),
                         );
                       }).toList(),
                       icon: const Icon(Icons.arrow_drop_down,
-                          color: AppColors.white),
-                      decoration: const InputDecoration(
-                        labelStyle: TextStyle(color: AppColors.white),
-                        labelText: 'Filière',
-                        enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: AppColors.white, width: 2.0),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.0))),
+                          color: Colors.black),
+                      decoration: InputDecoration(
+                        labelText: 'Filtrer par niveau',
+                        contentPadding: const EdgeInsets.all(10),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: AppColors.secondaryColor,
+                            width: 3.0,
+                          ),
+                        ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.white),
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                              color: AppColors.secondaryColor, width: 3.0),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: //Dropdown Niveaux
-                        _selectedFiliere != null
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondaryColor,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(
-                                      color: AppColors.white, width: 2.0),
-                                ),
-                                child: DropdownButton<String>(
-                                  value: _selectedNiveau,
-                                  dropdownColor: AppColors.secondaryColor,
-                                  style:
-                                      const TextStyle(color: AppColors.white),
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _selectedNiveau = value!;
-                                      fetchData();
-                                    });
-                                  },
-                                  items: _selectedFiliere!.niveaux
-                                      .map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(
-                                        value,
-                                        style: const TextStyle(
-                                            color: AppColors.white),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  hint: const Text(
-                                    'Niveau',
-                                    style: TextStyle(color: AppColors.white),
-                                  ),
-                                  icon: const Icon(Icons.arrow_drop_down,
-                                      color: AppColors.white),
-                                  isExpanded: true,
-                                  underline:
-                                      const SizedBox(), // Supprime la ligne de séparation
-                                ),
-                              )
-                            : const SizedBox(),
-                  )
-                ],
-              )),
-          Container(
-            color: AppColors.secondaryColor,
-            width: double.infinity,
-            height: 80,
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: MediaQuery.of(context).size.width >= 1024
-                  ? MediaQuery.of(context).size.width * 0.2
-                  : MediaQuery.of(context).size.width >= 600
-                      ? MediaQuery.of(context).size.width * 0.05
-                      : 10,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: AppColors.white,
-                      ),
-                      iconColor: AppColors.white,
-                      hintText: "Rechercher",
-                      hintStyle: TextStyle(color: AppColors.white),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: AppColors.white, width: 2.0),
-                          borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.white),
-                      ),
-                    ),
-                    style: const TextStyle(color: AppColors.white),
-                    onChanged: (value) {
-                      _onSearchChanged();
-                    },
-                  ),
-                ),
                 const SizedBox(width: 10),
                 IconButton(
-                  color: AppColors.white,
-                  iconSize: 50,
-                  onPressed: () {
+                  color: Colors.blue,
+                  splashColor: Colors.transparent,
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () async {
+                    await widget.callback2();
+                  },
+                ),
+                IconButton(
+                  color: Colors.green,
+                  splashColor: Colors.transparent,
+                  icon: const Icon(Icons.add),
+                  onPressed: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                              child: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.8,
+                                  child: addNewStudentPage(
+                                      callback: widget.callback2)),
+                            ));
+                  },
+                ),
+                IconButton(
+                  color: Colors.red,
+                  onPressed: () async {
                     showDialog(
                       context: context,
-                      builder: (context) {
-                        return WarningWidget(
-                          title: "Information",
-                          content:
-                              "Vous pouvez rechercher un étudiant à l'aide de son nom, prénom ou matricule",
-                          height: 150,
-                        );
-                      },
-                    );
-                  },
-                  icon: const Icon(Icons.info),
-                ),
-                // Expanded(
-                //     child: Container(
-                //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                //   decoration: BoxDecoration(
-                //     color: AppColors.secondaryColor,
-                //     borderRadius: BorderRadius.circular(8.0),
-                //     border: Border.all(color: AppColors.white, width: 2.0),
-                //   ),
-                //   child: DropdownButton<String>(
-                //       dropdownColor: AppColors.secondaryColor,
-                //       style: const TextStyle(
-                //         color: AppColors.backgroundColor,
-                //       ),
-                //       value: searchFilter,
-                //       onChanged: (String? newValue) {
-                //         setState(() {
-                //           searchFilter = newValue!;
-                //         });
-                //       },
-                //       items: <String>['Nom', 'Prenom', 'Filiere', 'Matricule']
-                //           .map<DropdownMenuItem<String>>((String value) {
-                //         return DropdownMenuItem<String>(
-                //           value: value,
-                //           child: Text(
-                //             value,
-                //             style: const TextStyle(
-                //                 fontWeight: FontWeight.bold,
-                //                 fontSize: FontSize.large),
-                //           ),
-                //         );
-                //       }).toList(),
-                //       icon: const Icon(Icons.arrow_drop_down,
-                //           color: AppColors.white),
-                //       isExpanded: true,
-                //       underline: const SizedBox()),
-                // ))
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const Text(
-            "Gestion des Etudiants",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppColors.secondaryColor,
-                fontSize: FontSize.large),
-          ),
-          Expanded(
-              child: StreamBuilder<List<dynamic>>(
-            stream: _streamController.stream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                    child: LoadingAnimationWidget.hexagonDots(
-                        color: AppColors.secondaryColor, size: 200));
-              } else if (snapshot.hasError) {
-                return errorWidget(error: snapshot.error.toString());
-              } else {
-                List<dynamic>? students = snapshot.data;
-                if (students!
-                    .isEmpty) // Afficher un message si aucun résultat n'est trouvé
-                {
-                  return const SingleChildScrollView(
-                    child: NoResultWidget(),
-                  );
-                } else {
-                  return ListView.builder(
-                      itemCount: students.length,
-                      itemBuilder: (context, index) {
-                        final etudiant = students[index];
-
-                        return ListTile(
-                          title:
-                              Text('${etudiant['nom']}  ${etudiant['prenom']}'),
-                          subtitle: Text(
-                            '${etudiant['matricule']}   ${etudiant['niveau']}',
-                            style: const TextStyle(
-                                color: AppColors.secondaryColor,
-                                fontSize: FontSize.small),
+                      builder: (context) => AlertDialog(
+                        title: const Row(
+                          children: [
+                            Icon(
+                              Icons.warning,
+                              color: Colors.orange,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Supprimer tous les étudiants",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.orange),
+                            ),
+                          ],
+                        ),
+                        content: const Text(
+                            'Êtes-vous sûr de vouloir supprimer tous les étudiants?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Annuler'),
                           ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.visibility),
-                                onPressed: () {
-                                  showStudentDetailsDialog(context, etudiant);
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () {
-                                  // Naviguez vers la page de modification en passant l'ID
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EditStudentPage(
-                                              studentId: etudiant['uid'],
-                                              callback: fetchData,
-                                            )),
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: AppColors.redColor,
-                                ),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Row(
-                                        children: [
-                                          Icon(
-                                            Icons.warning,
-                                            color: Colors.orange,
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Supprimer l' étudiant",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15.0,
-                                                color: Colors.orange),
-                                          ),
-                                        ],
-                                      ),
-                                      content: const Text(
-                                          'Êtes-vous sûr de vouloir supprimer cet étudiant?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Annuler'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            // Changer le statut de l'étudiant dans Firestore
-                                            await set_Data().deleteOneStudent(
-                                                etudiant['uid'], context);
-                                            fetchData();
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Supprimer'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      });
-                }
-              }
-            },
-          ))
-        ],
-      ),
-      floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: ExpandableFab(
-        distance: 70,
-        type: ExpandableFabType.up,
-        children: [
-          Row(
-            children: [
-              const Text("Ajouter"),
-              const SizedBox(
-                width: 10,
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.add),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => addNewStudentPage(
-                              callback: fetchData,
-                            )),
-                  );
-                },
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Ajouter depuis un fichier"),
-              const SizedBox(
-                width: 10,
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.add),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddStudentFromExcel(
-                              callback: fetchData,
-                            )),
-                  );
-                },
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Tous supprimer"),
-              const SizedBox(
-                width: 10,
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.delete_forever),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Row(
-                        children: [
-                          Icon(
-                            Icons.warning,
-                            color: Colors.orange,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Tous les Supprimer ? ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20.0,
-                                color: Colors.orange),
+                          TextButton(
+                            onPressed: () async {
+                              await set_Data().deleteAllStudents(context);
+                              Navigator.of(context).pop();
+                              await widget.callback2();
+                            },
+                            child: const Text('Supprimer'),
                           ),
                         ],
                       ),
-                      content: const Text(
-                          'Êtes-vous sûr de vouloir supprimer tous les étudiants ? '),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Annuler'),
+                    );
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  searchField,
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
+                    elevation: 18,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedFiltre = value == 'Actif' ? true : false;
+
+                        _dataSource.filterByStatut(_selectedFiltre);
+                      });
+                    },
+                    items: ['Actif', 'Corbeille']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold),
                         ),
-                        TextButton(
-                          onPressed: () async {
-                            // Supprimez les étudiants de Firestore
-                            await set_Data().deleteAllStudents(context);
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Supprimer'),
+                      );
+                    }).toList(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Filtrer par statut',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: Colors.blue,
+                          width: 3.0,
                         ),
-                      ],
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 3.0),
+                      ),
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField<Filiere>(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
+                    value: _selectedFiliere,
+                    elevation: 18,
+                    onChanged: (Filiere? value) {
+                      setState(() {
+                        _selectedFiliere = value;
+                        _dataSource.filterByFiliere(value!.nomFiliere);
+                      });
+                    },
+                    items: widget.allFilieres
+                        .map<DropdownMenuItem<Filiere>>((Filiere value) {
+                      return DropdownMenuItem<Filiere>(
+                        value: value,
+                        child: Text(
+                          value.nomFiliere,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }).toList(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Filtrer par filière',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: Colors.blue,
+                          width: 3.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 3.0),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (_selectedFiliere != null)
+                    DropdownButtonFormField<String>(
+                      value: _selectedNiveau,
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedNiveau = value!;
+                          _dataSource.filterByNiveau(value);
+                        });
+                      },
+                      items: _selectedFiliere!.niveaux
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        );
+                      }).toList(),
+                      icon: const Icon(Icons.arrow_drop_down,
+                          color: Colors.black),
+                      decoration: InputDecoration(
+                        labelText: 'Filtrer par niveau',
+                        contentPadding: const EdgeInsets.all(10),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: Colors.blue,
+                            width: 3.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 3.0),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        color: Colors.blue,
+                        splashColor: Colors.transparent,
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () async {
+                          await widget.callback2();
+                        },
+                      ),
+                      IconButton(
+                        color: Colors.green,
+                        splashColor: Colors.transparent,
+                        icon: const Icon(Icons.add),
+                        onPressed: () async {
+                          showDialog(
+                              context: context,
+                              builder: (context) => Dialog(
+                                    child: SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.8,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.8,
+                                        child: Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: addNewStudentPage(
+                                                callback: widget.callback2))),
+                                  ));
+                        },
+                      ),
+                      IconButton(
+                        color: Colors.red,
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.warning,
+                                    color: Colors.orange,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Supprimer tous les professeurs",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20.0,
+                                        color: Colors.orange),
+                                  ),
+                                ],
+                              ),
+                              content: const Text(
+                                  'Êtes-vous sûr de vouloir supprimer tous les professeurs?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Annuler'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    await set_Data().deleteAllFiliere(context);
+                                    Navigator.of(context).pop();
+                                    await widget.callback2();
+                                  },
+                                  child: const Text('Supprimer'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                    ],
+                  )
+                ],
               ),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Corbeille"),
-              const SizedBox(
-                width: 10,
+            ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: PaginatedDataTable(
+              actions: isSmallScreen ? null : [],
+              header: const Text(
+                'Liste des étudiants',
+                textAlign: TextAlign.center,
               ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.delete_sweep),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            TrashStudentPage(callback: fetchData)),
-                  );
-                },
-              ),
-            ],
-          ),
+              columns: [
+                DataColumn(
+                  numeric: true,
+                  label: const Text(
+                    'Matricule',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (StudentData d) => d.student['matricule'],
+                      columnIndex,
+                      ascending),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Nom',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (StudentData d) => d.student['nom'],
+                      columnIndex,
+                      ascending),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Prénom',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (StudentData d) => d.student['prenom'],
+                      columnIndex,
+                      ascending),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Email',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (StudentData d) => d.student['email'],
+                      columnIndex,
+                      ascending),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Phone',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (StudentData d) => d.student['phone'],
+                      columnIndex,
+                      ascending),
+                ),
+                const DataColumn(
+                  label: Text(
+                    'Photo',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const DataColumn(
+                  label: Text(
+                    'Actions',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Filiere',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (StudentData d) => d.student['filiere'],
+                      columnIndex,
+                      ascending),
+                ),
+              ],
+              source: _dataSource,
+              rowsPerPage: 5,
+              columnSpacing: 10,
+              horizontalMargin: 10,
+              showCheckboxColumn: true,
+              showFirstLastButtons: true,
+              showEmptyRows: false,
+              dataRowMaxHeight: 100,
+              sortColumnIndex: _sortColumnIndex,
+              sortAscending: _sortAscending,
+              headingRowColor:
+                  MaterialStateColor.resolveWith((states) => Colors.grey),
+            ),
+          )
         ],
       ),
-    );
+    ));
   }
 }

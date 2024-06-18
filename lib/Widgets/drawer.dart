@@ -149,7 +149,7 @@ class _HelperDrawerState extends State<HelperDrawer> {
 }
 
 Widget menuItem(MenuItems item, Function changePage, BuildContext context) {
-  return GestureDetector(
+  return InkWell(
     onTap: () {
       changePage(item);
     },

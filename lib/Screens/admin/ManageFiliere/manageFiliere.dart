@@ -5,13 +5,11 @@ import 'dart:convert';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/addNewFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/editFiliere.dart';
-import 'package:easy_attend/Screens/admin/ManageFiliere/filiere_trashed.dart';
 import 'package:easy_attend/Methods/set_data.dart';
-import 'package:easy_attend/Widgets/errorWidget2.dart';
-import 'package:easy_attend/Widgets/noResultWidget.dart';
+import 'package:easy_attend/Widgets/helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -23,306 +21,775 @@ class ManageFilierePage extends StatefulWidget {
 }
 
 class _ManageFilierePageState extends State<ManageFilierePage> {
-  final TextEditingController _searchController = TextEditingController();
   final BACKEND_URL = dotenv.env['API_URL'];
-  final StreamController<List<dynamic>> _streamController =
-      StreamController<List<dynamic>>();
+  bool dataIsLoading = true;
+  List<FiliereData> filiereData = [];
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(_onSearchChanged);
 
-    fetchData();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _streamController.close();
-    super.dispose();
-  }
-
-  void _onSearchChanged() {
     fetchData();
   }
 
   Future<void> fetchData() async {
+    setState(() {
+      dataIsLoading = true;
+    });
     try {
-      final response = await http.get(Uri.parse(
-          '$BACKEND_URL/api/filiere/getFiliereData?search=${_searchController.text}'));
+      List<dynamic> filieres;
+      List<dynamic> inactifFilieres;
+      //Récupération des filières actives
+      final response =
+          await http.get(Uri.parse('$BACKEND_URL/api/filiere/getFiliereData'));
       if (response.statusCode == 200) {
-        List<dynamic> filieres = jsonDecode(response.body);
-        _streamController.add(filieres);
+        filieres = json.decode(response.body);
+        //Récupération des filières inactives
+
+        final newResponse = await http
+            .get(Uri.parse(('$BACKEND_URL/api/filiere/getInactifFiliereData')));
+        if (newResponse.statusCode == 200) {
+          inactifFilieres = jsonDecode(newResponse.body);
+          //Concaténations des deux listes
+          List<dynamic> allFilieres = [...filieres, ...inactifFilieres];
+          filiereData.clear();
+          for (var entry in allFilieres) {
+            filiereData.add(FiliereData(filiere: entry));
+          }
+          setState(() {
+            dataIsLoading = false;
+          });
+        } else {
+          Helper().ErrorMessage(context);
+        }
       } else {
-        throw Exception('Erreur lors de la récupération des filières');
+        Helper().ErrorMessage(context);
       }
     } catch (e) {
       // Gérer les erreurs ici
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Impossible de récupérer les filières. Erreur:$e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      kReleaseMode
+          ? Helper().ErrorMessage(context)
+          : ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text('Impossible de récupérer les filières. Erreur:$e'),
+                duration: const Duration(seconds: 100),
+                backgroundColor: Colors.red,
+              ),
+            );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            color: AppColors.secondaryColor,
-            height: 80,
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: MediaQuery.of(context).size.width >= 1024
-                  ? MediaQuery.of(context).size.width * 0.2
-                  : MediaQuery.of(context).size.width >= 600
-                      ? MediaQuery.of(context).size.width * 0.05
-                      : 10,
+    return dataIsLoading
+        ? Container(
+            decoration: const BoxDecoration(color: AppColors.white),
+            child: Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 100),
             ),
-            child: TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: AppColors.white,
-                ),
-                hintText: "Rechercher",
-                hintStyle: TextStyle(color: AppColors.white),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.white),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.white),
-                ),
-              ),
-              style: const TextStyle(color: AppColors.white),
-              onChanged: (value) {
-                _onSearchChanged();
-              },
+          )
+        : Scaffold(
+            body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilierePaginatedTable(
+                        key: ValueKey(filiereData),
+                        filiereData: filiereData,
+                        callback: fetchData,
+                        callback2: fetchData,
+                      ),
+                    )
+                  ],
+                )
+              ],
             ),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            "Gestion des filières",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppColors.secondaryColor,
-                fontSize: FontSize.large),
-          ),
-          Expanded(
-            child: StreamBuilder<List<dynamic>>(
-              stream: _streamController.stream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: LoadingAnimationWidget.hexagonDots(
-                        color: AppColors.secondaryColor, size: 100),
-                  );
-                } else if (snapshot.hasError) {
-                  return errorWidget(error: snapshot.error.toString());
-                } else {
-                  List<dynamic>? filieres = snapshot.data;
-                  if (filieres!.isEmpty) {
-                    return const SingleChildScrollView(
-                      child: NoResultWidget(),
-                    );
-                  } else {
-                    return ListView.builder(
-                      itemCount: filieres.length,
-                      itemBuilder: (context, index) {
-                        final filiere = filieres[index];
-                        return ListTile(
-                          title: Text(filiere['nomFiliere']),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ModifierFilierePage(
-                                        filiereId: filiere['idFiliere'],
-                                        callback: fetchData,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete,
-                                    color: AppColors.redColor),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Row(
-                                        children: [
-                                          Icon(Icons.warning,
-                                              color: Colors.orange),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Supprimer la filière",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20.0,
-                                              color: Colors.orange,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      content: const Text(
-                                        'Êtes-vous sûr de vouloir supprimer cette filière ? \n Cela entraînera la suppression automatique des \n cours et étudiants associés à cette filière.',
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Annuler'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            await set_Data().deleteFiliere(
-                                              filiere['idFiliere'],
-                                              context,
-                                            );
-                                            fetchData();
+          ));
+  }
+}
 
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('Supprimer'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+// Classe représentant les données de filiere
+class FiliereData {
+  final dynamic filiere;
+
+  FiliereData({
+    required this.filiere,
+  });
+}
+
+// Classe représentant la source des données pour le DataTable
+class FiliereDataSource extends DataTableSource {
+  BuildContext context;
+  void Function() callback;
+  List<FiliereData> filiereData;
+  List<FiliereData> filteredData;
+  final Set<int> _selectedRows = {};
+
+  FiliereDataSource({
+    required this.filiereData,
+    required this.context,
+    required this.callback,
+  }) : filteredData = List.from(filiereData);
+
+  // Méthode pour trier les données
+  void sort<T>(Comparable<T> Function(FiliereData d) getField, bool ascending) {
+    filteredData.sort((a, b) {
+      if (!ascending) {
+        final FiliereData c = a;
+        a = b;
+        b = c;
+      }
+      final Comparable<T> aValue = getField(a);
+      final Comparable<T> bValue = getField(b);
+      if (getField(a) is int) {
+        return ascending
+            ? aValue.compareTo(bValue as T)
+            : bValue.compareTo(aValue as T);
+      } else {
+        return Comparable.compare(aValue, bValue);
+      }
+    });
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  // Méthode pour filtrer les données par filiere
+  void filterByStatut(bool? statut) {
+    if (statut == null) {
+      filteredData = List.from(filiereData);
+    } else {
+      filteredData = filiereData.where((data) {
+        return (data.filiere['statut'] == 1) == statut;
+      }).toList();
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  void filterBySearch(String searchQuery) {
+    if (searchQuery.isEmpty) {
+      filteredData = List.from(filiereData);
+    } else {
+      filteredData = filiereData
+          .where((data) =>
+              data.filiere['nomFiliere']
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()) ||
+              data.filiere['sigleFiliere']
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()))
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  @override
+  DataRow getRow(int index) {
+    final data = filteredData[index];
+    return DataRow(
+      selected: _selectedRows.contains(index),
+      onSelectChanged: (selected) {
+        _handleRowSelected(selected, index);
+      },
+      color: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+        return _getRowColor(index);
+      }),
+      cells: [
+        DataCell(Text(data.filiere['sigleFiliere'].toUpperCase())),
+        DataCell(Text(data.filiere['nomFiliere'].toUpperCase())),
+        DataCell(Text(
+          data.filiere['niveaux'].toUpperCase(),
+          style: const TextStyle(fontSize: FontSize.small),
+        )),
+        data.filiere['statut'] == 1
+            ? DataCell(Column(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      //Page de modification en passant l'ID
+                      showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                                child: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.8,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: ModifierFilierePage(
+                                          filiereId: data.filiere['idFiliere'],
+                                          callback: callback),
+                                    )),
+                              ));
+                    },
+                  ),
+                  const SizedBox(
+                    height: 3,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: AppColors.redColor),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Row(
+                            children: [
+                              Icon(Icons.warning, color: Colors.orange),
+                              SizedBox(width: 10),
+                              Text(
+                                "Supprimer la filière",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.orange,
+                                ),
                               ),
                             ],
                           ),
-                        );
-                      },
-                    );
-                  }
-                }
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: ExpandableFab(
-        distance: 70,
-        type: ExpandableFabType.up,
-        children: [
-          Row(
-            children: [
-              const Text("Ajouter"),
-              const SizedBox(
-                width: 10,
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.add),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => addNewFilierePage(
-                        callback: fetchData,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Tous supprimer"),
-              const SizedBox(
-                width: 10,
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.delete_forever),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Row(
-                        children: [
-                          Icon(Icons.warning, color: Colors.orange),
-                          SizedBox(width: 10),
-                          Text(
-                            "Supprimer toutes les filières",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13.0,
+                          content: const Text(
+                            'Êtes-vous sûr de vouloir supprimer cette filière ? \n Cela entraînera la suppression automatique des \n cours et étudiants associés à cette filière.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Annuler'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                await set_Data().deleteFiliere(
+                                  data.filiere['idFiliere'],
+                                  context,
+                                );
+                                callback();
+
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Supprimer'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ))
+            : DataCell(
+                IconButton(
+                  icon: const Icon(
+                    Icons.restore,
+                    color: AppColors.greenColor,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Row(
+                          children: [
+                            Icon(
+                              Icons.warning,
                               color: Colors.orange,
                             ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Restaurer la filière",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.orange),
+                            ),
+                          ],
+                        ),
+                        content: const Text(
+                            'Êtes-vous sûr de vouloir restaurer cette filière ?  Les étudiants et cours seront également restaurés! '),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Annuler'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              // Restaurer la filière de Firestore
+                              await set_Data().restoreFiliere(
+                                  data.filiere['idFiliere'], context);
+                              callback();
+
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Restaurer'),
                           ),
                         ],
                       ),
-                      content: const Text(
-                        'Êtes-vous sûr de vouloir supprimer toutes les filières ? \n Cela entraînera la supression automatique des \n cours et étudiants associés à cette filière.',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Annuler'),
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            // Supprimez les filières de Firestore
-                            await set_Data().deleteAllFiliere(context);
-                            fetchData(); // Recharger les données après la suppression
-                            Navigator.of(context).pop();
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Supprimer'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
+                    );
+                  },
+                ),
+              )
+      ],
+    );
+  }
+
+  // Méthode pour gérer la sélection d'une ligne
+  void _handleRowSelected(bool? selected, int rowIndex) {
+    if (selected!) {
+      _selectedRows.add(rowIndex);
+    } else {
+      _selectedRows.remove(rowIndex);
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => filteredData.length;
+
+  @override
+  int get selectedRowCount => _selectedRows.length;
+
+  // Méthode pour obtenir la couleur d'une ligne en fonction de sa sélection
+  Color _getRowColor(int index) {
+    return _selectedRows.contains(index) ? Colors.green : Colors.grey[200]!;
+  }
+}
+
+// Widget représentant la table paginée des cours
+
+class FilierePaginatedTable extends StatefulWidget {
+  final List<FiliereData> filiereData;
+  final Future<void> Function() callback;
+  final Future<void> Function() callback2;
+
+  const FilierePaginatedTable({
+    Key? key,
+    required this.filiereData,
+    required this.callback,
+    required this.callback2,
+  }) : super(key: key);
+
+  @override
+  _FilierePaginatedTableState createState() => _FilierePaginatedTableState();
+}
+
+class _FilierePaginatedTableState extends State<FilierePaginatedTable> {
+  late FiliereDataSource _dataSource;
+  bool _sortAscending = true;
+  int _sortColumnIndex = 0;
+  bool _selectedFiltre = true;
+  String? _selectedNiveau;
+  late final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _dataSource = FiliereDataSource(
+      filiereData: widget.filiereData,
+      context: context,
+      callback: widget.callback,
+    );
+    // _dataSource.filterByStatut(_selectedFiltre);
+  }
+
+  // Méthode pour trier les colonnes
+  void _sort<T>(Comparable<T> Function(FiliereData d) getField, int columnIndex,
+      bool ascending) {
+    _dataSource.sort<T>(getField, ascending);
+    setState(() {
+      _sortColumnIndex = columnIndex;
+      _sortAscending = ascending;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
+    TextFormField searchField = TextFormField(
+      controller: _searchController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Rechercher',
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.only(top: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: Colors.blue,
+            width: 3.0,
           ),
-          Row(
-            children: [
-              const Text("Corbeille"),
-              const SizedBox(
-                width: 10,
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.delete_sweep),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TrashFilierePage(
-                        callback: fetchData,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(color: Colors.blue, width: 3.0),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          _dataSource.filterBySearch(value);
+        });
+      },
+    );
+
+    return SingleChildScrollView(
+        child: Padding(
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        children: [
+          _selectedFiltre
+              ? const Text(
+                  textAlign: TextAlign.center,
+                  "Gestion des filières",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondaryColor,
+                      fontSize: FontSize.xxxLarge),
+                )
+              : const Text(
+                  textAlign: TextAlign.center,
+                  "Corbeille des filières",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondaryColor,
+                      fontSize: FontSize.xxxLarge),
+                ),
+          const SizedBox(height: 15),
+          if (!isSmallScreen)
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: searchField,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 2,
+                  child: DropdownButtonFormField(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
+                    elevation: 18,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedFiltre = value == 'Actif' ? true : false;
+
+                        _dataSource.filterByStatut(_selectedFiltre);
+                      });
+                    },
+                    items: ['Actif', 'Corbeille']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }).toList(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Filtrer par statut',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: Colors.blue,
+                          width: 3.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 3.0),
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  color: Colors.blue,
+                  splashColor: Colors.transparent,
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () async {
+                    await widget.callback2();
+                  },
+                ),
+                IconButton(
+                  color: Colors.green,
+                  splashColor: Colors.transparent,
+                  icon: const Icon(Icons.add),
+                  onPressed: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) => Dialog(
+                              child: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.8,
+                                  child: addNewFilierePage(
+                                      callback: widget.callback2)),
+                            ));
+                  },
+                ),
+                IconButton(
+                  color: Colors.red,
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Row(
+                          children: [
+                            Icon(
+                              Icons.warning,
+                              color: Colors.orange,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Supprimer toutes les filières",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.orange),
+                            ),
+                          ],
+                        ),
+                        content: const Text(
+                            'Êtes-vous sûr de vouloir supprimer toutes les filieres?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Annuler'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await set_Data().deleteAllFiliere(context);
+                              Navigator.of(context).pop();
+                              await widget.callback2();
+                            },
+                            child: const Text('Supprimer'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  searchField,
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
+                    elevation: 18,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedFiltre = value == 'Actif' ? true : false;
+
+                        _dataSource.filterByStatut(_selectedFiltre);
+                      });
+                    },
+                    items: ['Actif', 'Corbeille']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }).toList(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Filtrer par statut',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: Colors.blue,
+                          width: 3.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 3.0),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        color: Colors.blue,
+                        splashColor: Colors.transparent,
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () async {
+                          await widget.callback2();
+                        },
+                      ),
+                      IconButton(
+                        color: Colors.green,
+                        splashColor: Colors.transparent,
+                        icon: const Icon(Icons.add),
+                        onPressed: () async {
+                          showDialog(
+                              context: context,
+                              builder: (context) => Dialog(
+                                    child: SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.8,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.8,
+                                        child: Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: addNewFilierePage(
+                                                callback: widget.callback2))),
+                                  ));
+                        },
+                      ),
+                      IconButton(
+                        color: Colors.red,
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.warning,
+                                    color: Colors.orange,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Supprimer toutes les filières",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20.0,
+                                        color: Colors.orange),
+                                  ),
+                                ],
+                              ),
+                              content: const Text(
+                                  'Êtes-vous sûr de vouloir supprimer toutes les filières?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Annuler'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    await set_Data().deleteAllFiliere(context);
+                                    Navigator.of(context).pop();
+                                    await widget.callback2();
+                                  },
+                                  child: const Text('Supprimer'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                    ],
+                  )
+                ],
               ),
-            ],
-          ),
+            ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: PaginatedDataTable(
+              actions: isSmallScreen ? null : [],
+              header: const Text(
+                'Liste des filières',
+                textAlign: TextAlign.center,
+              ),
+              columns: [
+                DataColumn(
+                  label: const Text(
+                    'Sigle',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (FiliereData d) => d.filiere['sigleFiliere'],
+                      columnIndex,
+                      ascending),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Filières',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (FiliereData d) => d.filiere['nomFiliere'],
+                      columnIndex,
+                      ascending),
+                ),
+                const DataColumn(
+                  label: Text(
+                    'Niveaux',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  // onSort: (int columnIndex, bool ascending) => _sort<String>(
+                  //     (FiliereData d) => d.filiere['niveaux'], columnIndex, ascending),
+                ),
+                const DataColumn(
+                  label: Text(
+                    'Actions',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+              source: _dataSource,
+              rowsPerPage: 5,
+              columnSpacing: 10,
+              horizontalMargin: 10,
+              showCheckboxColumn: true,
+              showFirstLastButtons: true,
+              showEmptyRows: false,
+              dataRowMaxHeight: 100,
+              sortColumnIndex: _sortColumnIndex,
+              sortAscending: _sortAscending,
+              headingRowColor:
+                  MaterialStateColor.resolveWith((states) => Colors.grey),
+            ),
+          )
         ],
       ),
-    );
+    ));
   }
 }

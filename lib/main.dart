@@ -82,11 +82,14 @@ class SplashScreen extends StatelessWidget {
             // Utilisateur connecté, rediriger en fonction du rôle
             final String role = prefs.getString("role") ?? "";
             if (role == "admin") {
-              return const AdminHome(); // Rediriger vers la page d'administration
+              return const SelectionArea(child: AdminHome());
+              // Rediriger vers la page d'administration
             } else if (role == "student") {
-              return const EtudiantHome(); // Rediriger vers la page d'étudiant
+              return const SelectionArea(child: EtudiantHome());
+              // Rediriger vers la page d'étudiant
             } else if (role == "prof") {
-              return const ProfHome(); // Rediriger vers la page de professeur
+              return const SelectionArea(child: ProfHome());
+              // Rediriger vers la page de professeur
             }
           }
           // Utilisateur non connecté, rediriger vers la page de connexion

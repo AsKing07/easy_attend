@@ -80,6 +80,7 @@ dependencies:
   mime: ^1.0.5
   image_picker_web: any
   omni_datetime_picker: ^1.1.0
+  intl_phone_field: ^3.2.0
 
 dev_dependencies:
   flutter_test:

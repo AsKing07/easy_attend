@@ -105,7 +105,8 @@ class _LoginProfWebState extends State<LoginProfWeb> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                   )),
                               const SizedBox(
@@ -160,7 +161,8 @@ class _LoginProfWebState extends State<LoginProfWeb> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                   )),
                               Align(
@@ -249,8 +251,6 @@ class _LoginProfWebState extends State<LoginProfWeb> {
               child: SvgPicture.asset(
                 'assets/students.svg',
               ),
-
-              // Deuxième contenu de la colonne
             ),
           ),
         ],

@@ -3,6 +3,7 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,19 +51,21 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.secondaryColor,
-          foregroundColor: Colors.white,
-          title: const Text(
-            'Ajouter une nouvelle filière',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: FontSize.medium,
-            ),
-          ),
-        ),
-        body: !screenSize().isWeb()
+    return
+        //  Scaffold(
+        //     appBar: AppBar(
+        //       backgroundColor: AppColors.secondaryColor,
+        //       foregroundColor: Colors.white,
+        //       title: const Text(
+        //         'Ajouter une nouvelle filière',
+        //         style: TextStyle(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: FontSize.medium,
+        //         ),
+        //       ),
+        //     ),
+        //     body:
+        !screenSize().isLargeScreen(context)
             ?
             //Sur mobile
             SingleChildScrollView(
@@ -132,7 +135,8 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                   )),
                               const SizedBox(
@@ -173,7 +177,8 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                   )),
                               const SizedBox(
@@ -336,7 +341,8 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                                 borderRadius:
                                                     BorderRadius.circular(10.0),
                                                 borderSide: const BorderSide(
-                                                    color: Color(0xff9DD1F1),
+                                                    color: AppColors
+                                                        .secondaryColor,
                                                     width: 3.0),
                                               ),
                                             )),
@@ -383,7 +389,8 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                                 borderRadius:
                                                     BorderRadius.circular(10.0),
                                                 borderSide: const BorderSide(
-                                                    color: Color(0xff9DD1F1),
+                                                    color: AppColors
+                                                        .secondaryColor,
                                                     width: 3.0),
                                               ),
                                             )),
@@ -413,6 +420,10 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                                 },
                                               );
                                             }).toList(),
+
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
                                             // Tag pour entrer une nouvelle valeur
                                             FilterChip(
                                               label: TextField(
@@ -437,6 +448,7 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                           height: 50,
                                         ),
                                         GFButton(
+                                          color: AppColors.secondaryColor,
                                           onPressed: () async {
                                             if (_formKey.currentState!
                                                 .validate()) {
@@ -451,14 +463,9 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                                     context);
                                                 widget.callback();
                                               } else {
-                                                GFToast.showToast(
-                                                    "Sélectionner au moins un niveau",
-                                                    context,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                    textStyle: const TextStyle(
-                                                        color: Colors.red),
-                                                    toastDuration: 6);
+                                                Helper().ErrorMessage(context,
+                                                    content:
+                                                        "Sélectionnez au moins un niveau");
                                               }
                                             }
                                           },
@@ -479,6 +486,7 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                     ),
                   ),
                 ),
-              ));
+              );
+    // );
   }
 }

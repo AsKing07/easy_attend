@@ -47,8 +47,7 @@ class _ProfHomeMobileState extends State<ProfHomeMobile> {
         text: 'Mon Dashboard',
         icon: Icons.dashboard_outlined,
         tap: const ProfDashboard()),
-    MenuItems(
-        text: 'Chat', icon: Icons.query_stats, tap: const MaintenancePage()),
+    MenuItems(text: 'Chat', icon: Icons.chat, tap: const MaintenancePage()),
     MenuItems(
         text: 'Paramètres', icon: Icons.settings, tap: const SettingsScreen()),
   ];

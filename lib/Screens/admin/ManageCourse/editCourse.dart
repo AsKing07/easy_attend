@@ -113,19 +113,21 @@ class _EditCoursePageState extends State<EditCoursePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.secondaryColor,
-          foregroundColor: Colors.white,
-          title: const Text(
-            'Modifier le cours',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: FontSize.medium,
-            ),
-          ),
-        ),
-        body: !screenSize().isWeb()
+    return
+        //  Scaffold(
+        //     appBar: AppBar(
+        //       backgroundColor: AppColors.secondaryColor,
+        //       foregroundColor: Colors.white,
+        //       title: const Text(
+        //         'Modifier le cours',
+        //         style: TextStyle(
+        //           fontWeight: FontWeight.bold,
+        //           fontSize: FontSize.medium,
+        //         ),
+        //       ),
+        //     ),
+        //     body:
+        !screenSize().isLargeScreen(context)
             ?
             //MobileApp view
 
@@ -186,9 +188,22 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                   ),
                                 );
                               }).toList(),
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Choisissez la filière',
-                                border: OutlineInputBorder(),
+                                contentPadding: const EdgeInsets.all(10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.secondaryColor,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
+                                ),
                               ),
                             ),
                             const SizedBox(
@@ -217,9 +232,22 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                   child: Text(value),
                                 );
                               }).toList(),
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Choisissez le niveau',
-                                border: OutlineInputBorder(),
+                                contentPadding: const EdgeInsets.all(10),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.secondaryColor,
+                                    width: 3.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
+                                ),
                               ),
                             ),
                             const SizedBox(
@@ -293,7 +321,8 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                     borderSide: const BorderSide(
-                                        color: Color(0xff9DD1F1), width: 3.0),
+                                        color: AppColors.secondaryColor,
+                                        width: 3.0),
                                   ),
                                 )),
 
@@ -334,7 +363,8 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),
                                     borderSide: const BorderSide(
-                                        color: Color(0xff9DD1F1), width: 3.0),
+                                        color: AppColors.secondaryColor,
+                                        width: 3.0),
                                   ),
                                 )),
 
@@ -343,6 +373,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                             ),
 
                             GFButton(
+                              color: AppColors.secondaryColor,
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   // Créer le cours
@@ -558,7 +589,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                         borderRadius:
                                             BorderRadius.circular(10.0),
                                         borderSide: const BorderSide(
-                                            color: Color(0xff9DD1F1),
+                                            color: AppColors.secondaryColor,
                                             width: 3.0),
                                       ),
                                     )),
@@ -603,7 +634,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                                         borderRadius:
                                             BorderRadius.circular(10.0),
                                         borderSide: const BorderSide(
-                                            color: Color(0xff9DD1F1),
+                                            color: AppColors.secondaryColor,
                                             width: 3.0),
                                       ),
                                     )),
@@ -656,6 +687,6 @@ class _EditCoursePageState extends State<EditCoursePage> {
                     ],
                   ),
                 ),
-              ));
+              );
   }
 }

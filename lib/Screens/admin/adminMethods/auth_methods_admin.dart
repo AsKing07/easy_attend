@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
@@ -61,13 +62,22 @@ class auth_methods_admin {
 
         // Envoi des informations de l'utilisateur au backend
         await sendUserDataToBackend(uid, nom, prenom, phone, userCredential);
+        http.Response response = await http.get(
+          Uri.parse('$BACKEND_URL/api/admin/$uid'),
+        );
 
+        Map<String, dynamic> admin = jsonDecode(response.body);
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool("loggedIn", true);
+        prefs.setString("role", "admin");
+        prefs.setString("user", json.encode(admin));
         // Redirection vers la page d'accueil de l'admin
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const AdminHome()),
         );
       } else {
+        Helper().ErrorMessage(context);
         // print('Impossible d\'obtenir l\'UID de l\'utilisateur.');
       }
     } catch (e) {

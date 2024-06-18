@@ -109,7 +109,8 @@ class _LoginEtudiantMobileState extends State<LoginEtudiantMobile> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                               )),
                           const SizedBox(
@@ -163,7 +164,8 @@ class _LoginEtudiantMobileState extends State<LoginEtudiantMobile> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                               )),
                           Align(

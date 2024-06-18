@@ -1,32 +1,30 @@
-// ignore_for_file: avoid_unnecessary_containers
-
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
+import 'package:easy_attend/Screens/admin/SignUp/signup_admin.dart';
 import 'package:easy_attend/Screens/changePassword.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../professeur/profMethods/auth_methods_prof.dart';
-import '../etudiantMethods/connexion_methods_etudiant.dart';
-
-class LoginEtudiantWeb extends StatefulWidget {
-  const LoginEtudiantWeb({super.key});
+class LoginAdmonWeb extends StatefulWidget {
+  const LoginAdmonWeb({super.key});
 
   @override
-  State<LoginEtudiantWeb> createState() => _LoginEtudiantWebState();
+  State<LoginAdmonWeb> createState() => _LoginAdmonWebState();
 }
 
-class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
+class _LoginAdmonWebState extends State<LoginAdmonWeb> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColors.white,
       body: Row(
         children: [
           Expanded(
@@ -63,7 +61,7 @@ class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
                             children: [
                               const Center(
                                 child: Text(
-                                  "Connexion Etudiant",
+                                  "Connexion Administrateur",
                                   style: TextStyle(
                                       color: AppColors.textColor,
                                       fontSize: FontSize.xLarge,
@@ -197,7 +195,7 @@ class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
                               GFButton(
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
-                                    await auth_methods_etudiant().logStudentIn(
+                                    await auth_methods_admin().logAdminIn(
                                         _emailController.text,
                                         _passwordController.text,
                                         context);
@@ -227,8 +225,12 @@ class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
                                     ),
                                     InkWell(
                                       onTap: () {
-                                        auth_methods_prof()
-                                            .requestProfAccount(context);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const SignUpAdmin(),
+                                            ));
                                       },
                                       child: Text(
                                         "Inscrivez-vous",
@@ -250,12 +252,8 @@ class _LoginEtudiantWebState extends State<LoginEtudiantWeb> {
               )),
           Expanded(
             flex: 1,
-            child: Container(
-              child: SvgPicture.asset(
-                'assets/students.svg',
-              ),
-
-              // Deuxième contenu de la colonne
+            child: SvgPicture.asset(
+              'assets/students.svg',
             ),
           ),
         ],

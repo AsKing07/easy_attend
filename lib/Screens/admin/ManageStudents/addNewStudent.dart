@@ -138,7 +138,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                               ),
                               validator: (value) {
@@ -176,7 +177,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                               ),
                               validator: (value) {
@@ -206,7 +208,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -243,7 +246,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -281,7 +285,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -377,7 +382,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -418,7 +424,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                   borderSide: const BorderSide(
-                                      color: Color(0xff9DD1F1), width: 3.0),
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -537,7 +544,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                   ),
                                   validator: (value) {
@@ -577,7 +585,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                   ),
                                   validator: (value) {
@@ -609,7 +618,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
@@ -648,7 +658,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
@@ -688,7 +699,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
@@ -786,7 +798,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
@@ -828,7 +841,8 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                       borderSide: const BorderSide(
-                                          color: Color(0xff9DD1F1), width: 3.0),
+                                          color: AppColors.secondaryColor,
+                                          width: 3.0),
                                     ),
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),

@@ -4,7 +4,7 @@ import 'package:getwidget/colors/gf_color.dart';
 
 // colors to use in app
 class AppColors {
-  static const Color primaryColor = Color(0xFF9DD1F1);
+  static const Color primaryColor = AppColors.secondaryColor;
   static const Color secondaryColor = GFColors.SECONDARY;
   // static const Color secondaryColor = Color(0xFF508AA8);
   static const Color tertiaryColor = Color(0xFFC8E0F4);
