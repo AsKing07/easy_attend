@@ -50,4 +50,6 @@ app.*.map.json
 /script_to_delete_all_users
 
 
-/lib/firebase_options.dart
+
+
+lib/firebase_options.dart
