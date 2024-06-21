@@ -1,15 +1,9 @@
 // ignore_for_file: use_build_context_synchronously, file_names
 
-import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
-import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/etudiant/MakeQuery/makeQueryMobile.dart';
 import 'package:easy_attend/Screens/etudiant/MakeQuery/makeQueryWeb.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/getwidget.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:dialogs/dialogs/message_dialog.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MakeQuery extends StatefulWidget {
   const MakeQuery({super.key});

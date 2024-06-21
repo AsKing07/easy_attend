@@ -393,7 +393,7 @@ class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
                         ],
                       ),
                     ),
-                    Container(
+                    SizedBox(
                         height: 200, // Hauteur du conteneur principal
                         width: double.infinity,
                         child: Padding(

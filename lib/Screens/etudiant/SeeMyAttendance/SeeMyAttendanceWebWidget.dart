@@ -14,7 +14,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'package:pie_chart/pie_chart.dart';
 
@@ -327,6 +326,7 @@ class AttendancePaginatedTable extends StatefulWidget {
   const AttendancePaginatedTable(
       {Key? key, required this.attendanceData, this.callback})
       : super(key: key);
+  @override
   State<AttendancePaginatedTable> createState() =>
       _AttendancePaginatedTableState();
 }

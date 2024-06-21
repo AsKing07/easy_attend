@@ -83,7 +83,7 @@ class PDFHelper {
               pw.Text('Classe: ${filiere['nomFiliere']}  ${course['niveau']}',
                   style: const pw.TextStyle(fontSize: 16)),
               pw.Text(
-                  'Date de la séance: ${DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr').format(DateTime.parse(seanceData['dateSeance']).toLocal().subtract(Duration(hours: 1)))}',
+                  'Date de la séance: ${DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr').format(DateTime.parse(seanceData['dateSeance']).toLocal().subtract(const Duration(hours: 1)))}',
                   style: const pw.TextStyle(fontSize: 16)),
 
               pw.SizedBox(height: 20),
@@ -189,7 +189,7 @@ class PDFHelper {
       String date = DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr').format(
           DateTime.parse(data['dateSeance'])
               .toLocal()
-              .subtract(Duration(hours: 1)));
+              .subtract(const Duration(hours: 1)));
       Map<String, dynamic> presenceEtudiant =
           jsonDecode(data['presenceEtudiant']);
       bool statut = presenceEtudiant[studentId] ?? false;

@@ -118,7 +118,7 @@ class _AuthPageWebState extends State<AuthPageWeb> {
                           ),
                           Text(
                               style: TextStyle(fontSize: FontSize.large),
-                              "Rationalisez la gestion de la présence, l’organisation des classes et ajoutez des étudiants et des professeurs. Suivez en toute transparence les présences et imprimez des rapports.Accédez aux enregistrements, affichez les requêtes \et communiquez sans effort."),
+                              "Rationalisez la gestion de la présence, l’organisation des classes et ajoutez des étudiants et des professeurs. Suivez en toute transparence les présences et imprimez des rapports.Accédez aux enregistrements, affichez les requêtes et communiquez sans effort."),
                         ],
                       ),
                     ),

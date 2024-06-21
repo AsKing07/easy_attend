@@ -2,13 +2,11 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:easy_attend/Screens/etudiant/GiveAttendance/giveQRattendance.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lottie/lottie.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

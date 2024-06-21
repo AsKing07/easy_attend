@@ -60,7 +60,7 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
 
       setState(() {
         date =
-            'Séance du ${DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(Duration(hours: 1))).toUpperCase()}  ';
+            'Séance du ${DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(const Duration(hours: 1))).toUpperCase()}  ';
         presenceEtudiants = jsonDecode(se['presenceEtudiant']);
         nombreTotalEtudiants = presenceEtudiants.length;
         nombreDePresences =
@@ -346,7 +346,7 @@ class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
   bool _sortAscending = true;
   int _sortColumnIndex = 0;
   String? _selectedCategory;
-  late TextEditingController _searchController = TextEditingController();
+  late final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -394,12 +394,12 @@ class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
         });
     return PaginatedDataTable(
       actions: [
-        Container(
+        SizedBox(
           width: isSmallScreen ? 100 : 200,
           child: searchField,
         ),
         // Menu déroulant pour filtrer par statut
-        Container(
+        SizedBox(
           width: isSmallScreen ? 150 : 250,
           child: DropdownButtonFormField<String>(
             decoration: InputDecoration(

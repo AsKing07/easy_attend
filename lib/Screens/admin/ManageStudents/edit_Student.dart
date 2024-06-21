@@ -290,7 +290,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
                               ),
                               languageCode: "fr",
                               onChanged: (number) {
-                                _inputPhoneChange(number!.number, number,
+                                _inputPhoneChange(number.number, number,
                                     number.countryISOCode);
                               },
                             ),
@@ -614,7 +614,7 @@ class _EditStudentPageState extends State<EditStudentPage> {
                                   ),
                                   languageCode: "fr",
                                   onChanged: (number) {
-                                    _inputPhoneChange(number!.number, number,
+                                    _inputPhoneChange(number.number, number,
                                         number.countryISOCode);
                                   },
                                 ),

@@ -4,11 +4,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
-import 'package:easy_attend/Screens/admin/ManageStudents/addNewStudent.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/addStudent.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/edit_Student.dart';
 

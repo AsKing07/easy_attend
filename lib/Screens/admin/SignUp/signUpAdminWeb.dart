@@ -283,7 +283,7 @@ class _SignUpAdminWebState extends State<SignUpAdminWeb> {
                                     ),
                                     languageCode: "fr",
                                     onChanged: (number) {
-                                      _inputPhoneChange(number!.number, number,
+                                      _inputPhoneChange(number.number, number,
                                           number.countryISOCode);
                                     },
                                   ),

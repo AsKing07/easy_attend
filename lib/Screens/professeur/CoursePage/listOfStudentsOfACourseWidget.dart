@@ -5,7 +5,6 @@ import 'dart:convert';
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
-import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/professeur/ManageAttendance/seeOneStudentAttendance.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/helper.dart';
@@ -15,11 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
-import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 
 // class listOfStudentsOfACourse extends StatefulWidget {
 //   final dynamic course;

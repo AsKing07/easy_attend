@@ -11,7 +11,6 @@ import 'package:easy_attend/Screens/professeur/CoursePage/coursePageWebWidget.da
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
 import 'package:easy_attend/Widgets/helper.dart';
-import 'package:easy_attend/Widgets/noResultWidget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

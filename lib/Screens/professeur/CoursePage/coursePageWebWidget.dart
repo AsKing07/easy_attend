@@ -101,9 +101,9 @@ class _OneCoursePageWebWidgetState extends State<OneCoursePageWebWidget>
                                 color: Colors.black,
                               ),
                             ),
-                            Container(
+                            const SizedBox(
                               height: 200,
-                              child: const Image(
+                              child: Image(
                                   image: AssetImage("assets/coursImage.jpg")),
                             )
                           ],

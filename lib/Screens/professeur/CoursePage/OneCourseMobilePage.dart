@@ -64,7 +64,7 @@ class _OneCoursePageMobileState extends State<OneCourseMobilePage>
               ),
             ),
             body: SingleChildScrollView(
-                child: Container(
+                child: SizedBox(
               width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,10 +81,10 @@ class _OneCoursePageMobileState extends State<OneCourseMobilePage>
                         fontWeight: FontWeight.w600),
                     textAlign: TextAlign.center,
                   ),
-                  Container(
+                  const SizedBox(
                     height: 200,
                     child:
-                        const Image(image: AssetImage("assets/coursImage.jpg")),
+                        Image(image: AssetImage("assets/coursImage.jpg")),
                   ),
                   Text(
                     textAlign: TextAlign.center,
@@ -126,12 +126,12 @@ class _OneCoursePageMobileState extends State<OneCourseMobilePage>
                     ),
                   ),
                   Divider(color: Colors.grey[400]),
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
+                        SizedBox(
                           width: double.infinity,
                           child: GFTabBar(
                             indicatorColor: AppColors.secondaryColor,
@@ -161,7 +161,7 @@ class _OneCoursePageMobileState extends State<OneCourseMobilePage>
                             ],
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           width: double.infinity,
                           child: GFTabBarView(
                             height: screenHeight / 1.6,

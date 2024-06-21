@@ -249,7 +249,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         Uint8List? bytesFromPicker =
                                             await selectImage();
                                         XFile? xFile =
-                                            XFile.fromData(bytesFromPicker!);
+                                            XFile.fromData(bytesFromPicker);
 
                                         await uploadPhoto(context, xFile);
                                       } catch (e) {

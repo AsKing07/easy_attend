@@ -139,7 +139,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                 }).toList(),
               ),
               const SizedBox(height: 16),
-              Container(
+              SizedBox(
                 height: MediaQuery.of(context).size.height - 180,
                 child: StreamBuilder<List<dynamic>>(
                   stream: _streamController.stream,

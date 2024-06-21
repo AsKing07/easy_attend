@@ -310,7 +310,7 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                               ),
                               languageCode: "fr",
                               onChanged: (number) {
-                                _inputPhoneChange(number!.number, number,
+                                _inputPhoneChange(number.number, number,
                                     number.countryISOCode);
                               },
                             ),
@@ -805,7 +805,7 @@ class _addNewStudentPageState extends State<addNewStudentPage> {
                                     ),
                                     languageCode: "fr",
                                     onChanged: (number) {
-                                      _inputPhoneChange(number!.number, number,
+                                      _inputPhoneChange(number.number, number,
                                           number.countryISOCode);
                                     },
                                   ),

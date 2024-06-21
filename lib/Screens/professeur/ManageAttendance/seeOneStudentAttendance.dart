@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_attend/Config/styles.dart';
@@ -18,7 +17,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:http/http.dart' as http;
 import 'package:pie_chart/pie_chart.dart';
 
@@ -162,7 +160,7 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
                               DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr')
                                   .format(DateTime.parse(seance['dateSeance'])
                                       .toLocal()
-                                      .subtract(Duration(hours: 1)));
+                                      .subtract(const Duration(hours: 1)));
 
                           Map<String, dynamic> presenceEtudiant =
                               jsonDecode(seance['presenceEtudiant']);
@@ -442,6 +440,7 @@ class AttendancePaginatedTable extends StatefulWidget {
   const AttendancePaginatedTable(
       {Key? key, required this.attendanceData, this.callback, this.imprimPdf})
       : super(key: key);
+  @override
   State<AttendancePaginatedTable> createState() =>
       _AttendancePaginatedTableState();
 }

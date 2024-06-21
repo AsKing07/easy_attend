@@ -69,7 +69,7 @@ class _AddStudentState extends State<AddStudent>
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               GFTabBarView(

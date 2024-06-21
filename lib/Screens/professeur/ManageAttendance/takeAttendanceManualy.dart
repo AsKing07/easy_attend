@@ -146,7 +146,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
                                       fontSize: FontSize.xxLarge,
                                       fontWeight: FontWeight.w600)),
                               Text(
-                                  'Séance du ${DateFormat('EEEE, d MMM yy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(Duration(hours: 1))).toUpperCase()}',
+                                  'Séance du ${DateFormat('EEEE, d MMM yy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(const Duration(hours: 1))).toUpperCase()}',
                                   style: GoogleFonts.poppins(
                                       color: AppColors.primaryColor,
                                       fontSize: FontSize.medium,
@@ -183,7 +183,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
                                     fontSize: FontSize.xxLarge,
                                     fontWeight: FontWeight.w600)),
                             Text(
-                                'Séance du ${DateFormat('EEEE, d MMM yy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(Duration(hours: 1))).toUpperCase()}',
+                                'Séance du ${DateFormat('EEEE, d MMM yy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(const Duration(hours: 1))).toUpperCase()}',
                                 style: GoogleFonts.poppins(
                                     color: AppColors.primaryColor,
                                     fontSize: FontSize.medium,
@@ -236,7 +236,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
                             ),
                             onChanged: (value) {
                               setState(() {
-                                presenceEtudiant[index]['present'] = value!;
+                                presenceEtudiant[index]['present'] = value;
                               });
                             },
                           );

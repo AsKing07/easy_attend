@@ -88,7 +88,7 @@ class _AuthPageMobileState extends State<AuthPageMobile> {
       body: Center(
         child: SingleChildScrollView(
             child: Padding(
-          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

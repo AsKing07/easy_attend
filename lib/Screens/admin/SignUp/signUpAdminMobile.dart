@@ -268,7 +268,7 @@ class _SignUpAdminMobileState extends State<SignUpAdminMobile> {
                             ),
                             languageCode: "fr",
                             onChanged: (number) {
-                              _inputPhoneChange(number!.number, number,
+                              _inputPhoneChange(number.number, number,
                                   number.countryISOCode);
                             },
                           ),

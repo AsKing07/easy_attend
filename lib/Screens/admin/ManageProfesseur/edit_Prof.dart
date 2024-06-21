@@ -4,12 +4,9 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
-import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:getwidget/components/button/gf_button.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 
@@ -239,7 +236,7 @@ class _EditProfPageState extends State<EditProfPage> {
                               ),
                               languageCode: "fr",
                               onChanged: (number) {
-                                _inputPhoneChange(number!.number, number,
+                                _inputPhoneChange(number.number, number,
                                     number.countryISOCode);
                               },
                             ),
@@ -465,7 +462,7 @@ class _EditProfPageState extends State<EditProfPage> {
                                   ),
                                   languageCode: "fr",
                                   onChanged: (number) {
-                                    _inputPhoneChange(number!.number, number,
+                                    _inputPhoneChange(number.number, number,
                                         number.countryISOCode);
                                   },
                                 ),
