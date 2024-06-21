@@ -29,7 +29,7 @@ class auth_methods_etudiant {
             ));
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
+        email: email.trim(),
         password: password,
       );
       final uid = FirebaseAuth.instance.currentUser!.uid;

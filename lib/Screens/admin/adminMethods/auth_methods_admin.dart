@@ -4,12 +4,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
 import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
 import 'package:easy_attend/Widgets/helper.dart';
-import 'package:easy_attend/Widgets/my_error_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

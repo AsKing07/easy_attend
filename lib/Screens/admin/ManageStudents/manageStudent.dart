@@ -737,7 +737,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                               "Supprimer tous les étudiants",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20.0,
+                                  fontSize: FontSize.medium,
                                   color: Colors.orange),
                             ),
                           ],
@@ -951,7 +951,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                                     "Supprimer tous les étudiants",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
+                                        fontSize: FontSize.small,
                                         color: Colors.orange),
                                   ),
                                 ],

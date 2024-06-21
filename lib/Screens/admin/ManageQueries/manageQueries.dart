@@ -7,7 +7,9 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
+import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/noResultWidget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/getwidget.dart';
@@ -58,13 +60,17 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Impossible de récupérer les requêtes. Erreur:$e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      !kReleaseMode
+          ? ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text('Impossible de récupérer les requêtes. Erreur:$e'),
+                duration: const Duration(seconds: 6),
+                backgroundColor: Colors.red,
+              ),
+            )
+          : Helper().ErrorMessage(context,
+              content: "Impossible de récupérer les requêtes.");
     }
   }
 
@@ -214,7 +220,7 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                             children: [
                                               Flexible(
                                                 child: GFButton(
-                                                  color: AppColors.greenColor,
+                                                  color: AppColors.white,
                                                   onPressed: () async {
                                                     await set_Data()
                                                         .approuverRequete(
@@ -226,19 +232,17 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                       fetchData();
                                                     });
                                                   },
-                                                  text: "Approuver",
-                                                  textStyle: const TextStyle(
-                                                      color: AppColors.white,
-                                                      fontSize: FontSize.large,
-                                                      fontWeight:
-                                                          FontWeight.bold),
                                                   shape: GFButtonShape.pills,
+                                                  child: const Icon(
+                                                    Icons.check,
+                                                    color: AppColors.greenColor,
+                                                  ),
                                                 ),
                                               ),
                                               const SizedBox(width: 10),
                                               Flexible(
                                                 child: GFButton(
-                                                  color: AppColors.redColor,
+                                                  color: AppColors.white,
                                                   onPressed: () async {
                                                     await set_Data()
                                                         .desapprouverRequete(
@@ -250,19 +254,17 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                       fetchData();
                                                     });
                                                   },
-                                                  text: "Rejeter",
-                                                  textStyle: const TextStyle(
-                                                      color: AppColors.white,
-                                                      fontSize: FontSize.large,
-                                                      fontWeight:
-                                                          FontWeight.bold),
                                                   shape: GFButtonShape.pills,
+                                                  child: const Icon(
+                                                    Icons.cancel,
+                                                    color: AppColors.redColor,
+                                                  ),
                                                 ),
                                               ),
                                               const SizedBox(width: 10),
                                               Flexible(
                                                 child: GFButton(
-                                                  color: AppColors.studColor,
+                                                  color: AppColors.white,
                                                   onPressed: () async {
                                                     await set_Data()
                                                         .mettreEnAttenteRequete(
@@ -274,13 +276,11 @@ class _ManageQueriesPageState extends State<ManageQueriesPage> {
                                                       fetchData();
                                                     });
                                                   },
-                                                  text: "En attente",
-                                                  textStyle: const TextStyle(
-                                                      color: AppColors.white,
-                                                      fontSize: FontSize.large,
-                                                      fontWeight:
-                                                          FontWeight.bold),
                                                   shape: GFButtonShape.pills,
+                                                  child: const Icon(
+                                                    Icons.sync,
+                                                    color: AppColors.studColor,
+                                                  ),
                                                 ),
                                               ),
                                             ],

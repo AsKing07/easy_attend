@@ -258,7 +258,7 @@ class ProfDataSource extends DataTableSource {
                                 "Supprimer le professeur",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20.0,
+                                  fontSize: FontSize.medium,
                                   color: Colors.orange,
                                 ),
                               ),
@@ -571,7 +571,7 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
                               "Supprimer tous les professeurs",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 20.0,
+                                  fontSize: FontSize.medium,
                                   color: Colors.orange),
                             ),
                           ],
@@ -702,7 +702,7 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
                                     "Supprimer tous les professeurs",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
+                                        fontSize: FontSize.small,
                                         color: Colors.orange),
                                   ),
                                 ],

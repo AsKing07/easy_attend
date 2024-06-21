@@ -12,7 +12,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class OneCourseMobilePage extends StatefulWidget {
   final dynamic course;
-  final String nomFiliere;
+  final String? nomFiliere;
 
   const OneCourseMobilePage(
       {super.key, required this.course, required this.nomFiliere});

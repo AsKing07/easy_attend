@@ -287,17 +287,28 @@ class _listOfCourseState extends State<listOfCourse> {
                                                                 ).nomFiliere,
                                                   course: course,
                                                   onTap: () {
-                                                    setState(() {
-                                                      _selectedCourse = course;
-                                                    });
-                                                    // Navigator.push(
-                                                    //   context,
-                                                    //   MaterialPageRoute(
-                                                    //     builder: (context) =>
-                                                    //         OneCoursePage(
-                                                    //             course: course),
-                                                    //   ),
-                                                    // );
+                                                    MediaQuery.of(context)
+                                                                .size
+                                                                .width >
+                                                            1200
+                                                        ? setState(() {
+                                                            _selectedCourse =
+                                                                course;
+                                                          })
+                                                        : Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => OneCourseMobilePage(
+                                                                  nomFiliere: _selectedFiliere != null
+                                                                      ? _selectedFiliere!.nomFiliere
+                                                                      : Allfilieres.isEmpty
+                                                                          ? null
+                                                                          : Allfilieres.firstWhere(
+                                                                              (filiere) => filiere.idDoc == course['idFiliere'],
+                                                                            ).nomFiliere,
+                                                                  course: course),
+                                                            ),
+                                                          );
                                                   },
                                                 ),
                                               ),
@@ -309,41 +320,42 @@ class _listOfCourseState extends State<listOfCourse> {
                                 }
                               },
                             ))),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: _selectedCourse == null
-                          ? SizedBox(
-                              width: double.infinity,
-                              child: Card(
+                    if (MediaQuery.of(context).size.width > 1200)
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: _selectedCourse == null
+                            ? SizedBox(
+                                width: double.infinity,
+                                child: Card(
+                                  elevation: 8.0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
+                                  child: const Padding(
+                                      padding: EdgeInsets.all(50),
+                                      child: Text(
+                                        'Une fois que vous aurez sélectionné un cours, il apparaîtra ici',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: FontSize.xxLarge,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                ))
+                            : Card(
                                 elevation: 8.0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.0),
                                 ),
-                                child: const Padding(
-                                    padding: EdgeInsets.all(50),
-                                    child: Text(
-                                      'Une fois que vous aurez sélectionné un cours, il apparaîtra ici',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: FontSize.xxLarge,
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                              ))
-                          : Card(
-                              elevation: 8.0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              child: OneCoursePageWebWidget(
-                                key: ValueKey(_selectedCourse['idCours']),
-                                course: _selectedCourse,
-                                nomFiliere: Allfilieres.firstWhere(
-                                  (filiere) =>
-                                      filiere.idDoc ==
-                                      _selectedCourse['idFiliere'],
-                                ).nomFiliere,
-                              )),
-                    )
+                                child: OneCoursePageWebWidget(
+                                  key: ValueKey(_selectedCourse['idCours']),
+                                  course: _selectedCourse,
+                                  nomFiliere: Allfilieres.firstWhere(
+                                    (filiere) =>
+                                        filiere.idDoc ==
+                                        _selectedCourse['idFiliere'],
+                                  ).nomFiliere,
+                                )),
+                      )
                   ],
                 ),
               ),
