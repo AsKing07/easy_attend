@@ -1,6 +1,7 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:easy_attend/Screens/admin/SignUp/signup_admin.dart';
+import 'package:easy_attend/Screens/changePassword.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:getwidget/getwidget.dart';
@@ -172,7 +173,13 @@ class _LoginAdminMobileState extends State<LoginAdminMobile> {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 12),
                               child: InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChangePassword()));
+                                },
                                 child: Text(
                                   "Mot de passe oublié?",
                                   style: GoogleFonts.poppins(

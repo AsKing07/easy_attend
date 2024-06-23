@@ -1,4 +1,5 @@
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Screens/changePassword.dart';
 import 'package:easy_attend/Screens/professeur/profMethods/auth_methods_prof.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -173,7 +174,13 @@ class _LoginEtudiantMobileState extends State<LoginEtudiantMobile> {
                             child: Padding(
                               padding: const EdgeInsets.only(top: 12),
                               child: InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChangePassword()));
+                                },
                                 child: Text(
                                   "Mot de passe oublié?",
                                   style: GoogleFonts.poppins(
