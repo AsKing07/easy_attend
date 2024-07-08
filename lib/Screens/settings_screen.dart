@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:easy_attend/Widgets/helper.dart';
@@ -40,6 +41,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String imageUrl = "assets/admin.jpg"; // Default image
   final BACKEND_URL = dotenv.env['API_URL'];
   final auth = FirebaseAuth.instance;
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
 
   Future<Uint8List> selectImage() async {
     final fileInput = universalHtml.FileUploadInputElement();
@@ -363,32 +367,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             padding: const EdgeInsets.all(10.0),
                             child: Column(
                               children: [
-                                SettingsTile(
-                                  color: AppColors.secondaryColor,
-                                  icon: Icons.open_in_browser_rounded,
-                                  title: 'Visiter le site Web',
-                                  onTap: () async {
-                                    const url =
-                                        'https://easyattend.alwaysdata.net/';
-                                    if (await canLaunch(url)) {
-                                      await launch(url);
-                                    } else {
-                                      throw 'Impossible d\'ouvrir le lien $url';
-                                    }
-                                  },
-                                ),
-                                Divider(color: Colors.grey[400]),
+                                if (!screenSize().isWeb())
+                                  Column(
+                                    children: [
+                                      SettingsTile(
+                                        color: AppColors.secondaryColor,
+                                        icon: Icons.open_in_browser_rounded,
+                                        title: 'Visiter le site Web',
+                                        onTap: () async {
+                                          const url =
+                                              'https://easyattend.alwaysdata.net/';
+                                          if (await canLaunch(url)) {
+                                            await launch(url);
+                                          } else {
+                                            throw 'Impossible d\'ouvrir le lien $url';
+                                          }
+                                        },
+                                      ),
+                                      Divider(color: Colors.grey[400]),
+                                    ],
+                                  ),
                                 SettingsTile(
                                   color: AppColors.secondaryColor,
                                   icon: Icons.policy,
-                                  title: 'Politique de confidentialité',
+                                  title: 'Policy',
                                   onTap: () {},
                                 ),
                                 Divider(color: Colors.grey[400]),
                                 SettingsTile(
                                   color: AppColors.secondaryColor,
                                   icon: Icons.developer_board_rounded,
-                                  title: 'A Propos du développeur',
+                                  title: 'A Propos du dev',
                                   onTap: () {},
                                 ),
                               ],

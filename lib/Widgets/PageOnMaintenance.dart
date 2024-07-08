@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -16,6 +17,9 @@ class _MaintenancePageState extends State<MaintenancePage> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     bool isSmallScreen = screenWidth < 600;
+    final isWebMobile = kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android);
     return Scaffold(
       body: Center(
           child: Column(
@@ -26,20 +30,21 @@ class _MaintenancePageState extends State<MaintenancePage> {
               // width: 600,
               height: isSmallScreen ? screenHeight / 4 : screenHeight / 1.5,
               fit: BoxFit.fill),
-          AnimatedTextKit(
-            repeatForever: true,
-            animatedTexts: [
-              WavyAnimatedText('Bientôt disponible!',
-                  textStyle: const TextStyle(
-                      color: AppColors.secondaryColor,
-                      fontSize: FontSize.xxxLarge)),
-              WavyAnimatedText("Soyez à l'écoute",
-                  textStyle: const TextStyle(
-                      color: AppColors.secondaryColor,
-                      fontSize: FontSize.xxxLarge)),
-            ],
-            isRepeatingAnimation: true,
-          ),
+          if (!isWebMobile)
+            AnimatedTextKit(
+              repeatForever: true,
+              animatedTexts: [
+                WavyAnimatedText('Bientôt disponible!',
+                    textStyle: const TextStyle(
+                        color: AppColors.secondaryColor,
+                        fontSize: FontSize.xxxLarge)),
+                WavyAnimatedText("Soyez à l'écoute",
+                    textStyle: const TextStyle(
+                        color: AppColors.secondaryColor,
+                        fontSize: FontSize.xxxLarge)),
+              ],
+              isRepeatingAnimation: true,
+            ),
         ],
       )),
     );

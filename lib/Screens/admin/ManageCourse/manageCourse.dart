@@ -318,7 +318,7 @@ class CourseDataSource extends DataTableSource {
                       ],
                     ),
                     content: const Text(
-                        'Êtes-vous sûr de vouloir supprimer ce cours ?  Cette action est irréversible'),
+                        'Êtes-vous sûr de vouloir supprimer ce cours ? \n Cette action est irréversible'),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -490,7 +490,7 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                     icon:
                         const Icon(Icons.arrow_drop_down, color: Colors.black),
                     decoration: InputDecoration(
-                      labelText: 'Filtrer par filière',
+                      labelText: 'Filière',
                       contentPadding: const EdgeInsets.all(10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -534,7 +534,7 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                       icon: const Icon(Icons.arrow_drop_down,
                           color: Colors.black),
                       decoration: InputDecoration(
-                        labelText: 'Filtrer par niveau',
+                        labelText: 'Niveau',
                         contentPadding: const EdgeInsets.all(10),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
@@ -601,7 +601,7 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                           ],
                         ),
                         content: const Text(
-                            'Êtes-vous sûr de vouloir supprimer tous les cours? Cette action est irréversible.'),
+                            'Êtes-vous sûr de vouloir supprimer tous les cours? \n Cette action est irréversible.'),
                         actions: [
                           TextButton(
                             onPressed: () {

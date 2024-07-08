@@ -80,6 +80,7 @@ class _AddStudentFromExcelState extends State<AddStudentFromExcel> {
                 child: Container(
                   child: Center(
                     child: SingleChildScrollView(
+                      physics: NeverScrollableScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -255,6 +256,7 @@ class _AddStudentFromExcelState extends State<AddStudentFromExcel> {
                 child: Container(
                   child: Center(
                     child: SingleChildScrollView(
+                      physics: NeverScrollableScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,

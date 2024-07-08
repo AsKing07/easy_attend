@@ -65,40 +65,241 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
         //       ),
         //     ),
         //     body:
-        !screenSize().isLargeScreen(context)
-            ?
-            //Sur mobile
-            SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
+        // !screenSize().isLargeScreen(context)
+        //     ?
+        //     //Sur mobile
+        //     SingleChildScrollView(
+        //         child: Padding(
+        //           padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
+        //           child: Column(
+        //             crossAxisAlignment: CrossAxisAlignment.start,
+        //             children: [
+        //               const SizedBox(
+        //                 height: 20,
+        //               ),
+        //               Text(
+        //                 "Création de filière",
+        //                 style: GoogleFonts.poppins(
+        //                     color: AppColors.textColor,
+        //                     fontSize: FontSize.xxLarge,
+        //                     fontWeight: FontWeight.w600),
+        //               ),
+        //               Padding(
+        //                 padding: const EdgeInsets.only(top: 7),
+        //                 child: Text(
+        //                   "Entrez les informations de la filière ",
+        //                   style: GoogleFonts.poppins(
+        //                       color: AppColors.secondaryColor,
+        //                       fontSize: FontSize.medium,
+        //                       fontWeight: FontWeight.w600),
+        //                 ),
+        //               ),
+        //               const SizedBox(height: 70),
+        //               Form(
+        //                   key: _formKey,
+        //                   child: Column(
+        //                     mainAxisAlignment: MainAxisAlignment.start,
+        //                     children: [
+        //                       //Filière
+        //                       TextFormField(
+        //                           controller: _nomController,
+        //                           validator: (value) {
+        //                             if (_nomController.text.isEmpty) {
+        //                               return "Ce champ est obligatoire";
+        //                             }
+        //                             return null;
+        //                           },
+        //                           keyboardType: TextInputType.text,
+        //                           style: GoogleFonts.poppins(
+        //                               color: AppColors.textColor),
+        //                           decoration: InputDecoration(
+        //                             labelText:
+        //                                 'Nom de la filière (Génie Logiciel par exemple)',
+        //                             prefixIcon: const Icon(Icons.school),
+        //                             contentPadding:
+        //                                 const EdgeInsets.only(top: 10),
+        //                             border: OutlineInputBorder(
+        //                               borderRadius: BorderRadius.circular(10.0),
+        //                               borderSide: const BorderSide(
+        //                                 color: Colors.grey,
+        //                                 width: 3.0,
+        //                               ),
+        //                             ),
+        //                             errorBorder: OutlineInputBorder(
+        //                               borderRadius: BorderRadius.circular(10.0),
+        //                               borderSide: const BorderSide(
+        //                                 color: Colors.red,
+        //                                 width: 3.0,
+        //                               ),
+        //                             ),
+        //                             focusedBorder: OutlineInputBorder(
+        //                               borderRadius: BorderRadius.circular(10.0),
+        //                               borderSide: const BorderSide(
+        //                                   color: AppColors.secondaryColor,
+        //                                   width: 3.0),
+        //                             ),
+        //                           )),
+        //                       const SizedBox(
+        //                         height: 16,
+        //                       ),
+        //                       //champ identifiant
+        //                       TextFormField(
+        //                           controller: _idController,
+        //                           validator: (value) {
+        //                             if (_idController.text.isEmpty) {
+        //                               return "Ce champ est obligatoire";
+        //                             }
+        //                             return null;
+        //                           },
+        //                           keyboardType: TextInputType.text,
+        //                           style: GoogleFonts.poppins(
+        //                               color: AppColors.textColor),
+        //                           decoration: InputDecoration(
+        //                             labelText:
+        //                                 'Identifiant de la filière (GL par exemple)',
+        //                             prefixIcon: const Icon(Icons.school),
+        //                             contentPadding:
+        //                                 const EdgeInsets.only(top: 10),
+        //                             border: OutlineInputBorder(
+        //                               borderRadius: BorderRadius.circular(10.0),
+        //                               borderSide: const BorderSide(
+        //                                 color: Colors.grey,
+        //                                 width: 3.0,
+        //                               ),
+        //                             ),
+        //                             errorBorder: OutlineInputBorder(
+        //                               borderRadius: BorderRadius.circular(10.0),
+        //                               borderSide: const BorderSide(
+        //                                 color: Colors.red,
+        //                                 width: 3.0,
+        //                               ),
+        //                             ),
+        //                             focusedBorder: OutlineInputBorder(
+        //                               borderRadius: BorderRadius.circular(10.0),
+        //                               borderSide: const BorderSide(
+        //                                   color: AppColors.secondaryColor,
+        //                                   width: 3.0),
+        //                             ),
+        //                           )),
+        //                       const SizedBox(
+        //                         height: 16,
+        //                       ),
+        //                       const Text(
+        //                         'Choisir les niveaux',
+        //                         style: TextStyle(
+        //                             fontSize: 16, fontWeight: FontWeight.bold),
+        //                         textAlign: TextAlign.start,
+        //                       ),
+        //                       const SizedBox(height: 8),
+        //                       Wrap(
+        //                         spacing: 8,
+        //                         children: [
+        //                           ...niveauxDisponibles.map((niveau) {
+        //                             final isSelected =
+        //                                 niveauxSelectionnes.contains(niveau);
+        //                             return FilterChip(
+        //                               label: Text(niveau),
+        //                               selected: isSelected,
+        //                               onSelected: (selected) {
+        //                                 toggleNiveau(niveau);
+        //                               },
+        //                             );
+        //                           }).toList(),
+        //                           // Tag pour entrer une nouvelle valeur
+        //                           FilterChip(
+        //                             label: TextField(
+        //                               decoration: const InputDecoration(
+        //                                 hintText: 'Nouveau niveau',
+        //                               ),
+        //                               onSubmitted: (value) {
+        //                                 setState(() {
+        //                                   niveauxDisponibles.add(value);
+        //                                 });
+        //                               },
+        //                             ),
+        //                             selected: false,
+        //                             onSelected: (selected) {},
+        //                           ),
+        //                         ],
+        //                       ),
+
+        //                       const SizedBox(
+        //                         height: 50,
+        //                       ),
+        //                       GFButton(
+        //                         onPressed: () async {
+        //                           if (_formKey.currentState!.validate()) {
+        //                             if (niveauxSelectionnes.isNotEmpty) {
+        //                               await set_Data().ajouterFiliere(
+        //                                   _nomController.text,
+        //                                   _idController.text,
+        //                                   niveauxSelectionnes.toSet().toList(),
+        //                                   context);
+        //                               widget.callback();
+        //                             } else {
+        //                               GFToast.showToast(
+        //                                   "Sélectionner au moins un niveau",
+        //                                   context,
+        //                                   backgroundColor: Colors.white,
+        //                                   textStyle: const TextStyle(
+        //                                       color: Colors.red),
+        //                                   toastDuration: 6);
+        //                             }
+        //                           }
+        //                         },
+        //                         text: "Ajouter la filière",
+        //                         textStyle: GoogleFonts.poppins(
+        //                           color: AppColors.white,
+        //                           fontSize: FontSize.large,
+        //                           fontWeight: FontWeight.bold,
+        //                         ),
+        //                         shape: GFButtonShape.pills,
+        //                         fullWidthButton: true,
+        //                       ),
+        //                     ],
+        //                   )),
+        //             ],
+        //           ),
+        //         ),
+        //       )
+        //     :
+        Center(
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                "Création de filière",
+                style: GoogleFonts.poppins(
+                    color: AppColors.textColor,
+                    fontSize: FontSize.xxLarge,
+                    fontWeight: FontWeight.w600),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 7),
+                child: Text(
+                  "Entrez les informations de la filière ",
+                  style: GoogleFonts.poppins(
+                      color: AppColors.secondaryColor,
+                      fontSize: FontSize.medium,
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+              const SizedBox(height: 70),
+              Form(
+                  key: _formKey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "Création de filière",
-                        style: GoogleFonts.poppins(
-                            color: AppColors.textColor,
-                            fontSize: FontSize.xxLarge,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 7),
-                        child: Text(
-                          "Entrez les informations de la filière ",
-                          style: GoogleFonts.poppins(
-                              color: AppColors.secondaryColor,
-                              fontSize: FontSize.medium,
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                      const SizedBox(height: 70),
-                      Form(
-                          key: _formKey,
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(
+                              maxWidth: 400), // Définir la largeur maximale
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               //Filière
                               TextFormField(
@@ -205,6 +406,10 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                       },
                                     );
                                   }).toList(),
+
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
                                   // Tag pour entrer une nouvelle valeur
                                   FilterChip(
                                     label: TextField(
@@ -227,6 +432,7 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                 height: 50,
                               ),
                               GFButton(
+                                color: AppColors.secondaryColor,
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     if (niveauxSelectionnes.isNotEmpty) {
@@ -237,13 +443,9 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                           context);
                                       widget.callback();
                                     } else {
-                                      GFToast.showToast(
-                                          "Sélectionner au moins un niveau",
-                                          context,
-                                          backgroundColor: Colors.white,
-                                          textStyle: const TextStyle(
-                                              color: Colors.red),
-                                          toastDuration: 6);
+                                      Helper().ErrorMessage(context,
+                                          content:
+                                              "Sélectionnez au moins un niveau");
                                     }
                                   }
                                 },
@@ -257,236 +459,14 @@ class _addNewFilierePageState extends State<addNewFilierePage> {
                                 fullWidthButton: true,
                               ),
                             ],
-                          )),
+                          ))
                     ],
-                  ),
-                ),
-              )
-            : Center(
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          "Création de filière",
-                          style: GoogleFonts.poppins(
-                              color: AppColors.textColor,
-                              fontSize: FontSize.xxLarge,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 7),
-                          child: Text(
-                            "Entrez les informations de la filière ",
-                            style: GoogleFonts.poppins(
-                                color: AppColors.secondaryColor,
-                                fontSize: FontSize.medium,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        const SizedBox(height: 70),
-                        Form(
-                            key: _formKey,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                        maxWidth:
-                                            400), // Définir la largeur maximale
-                                    child: Column(
-                                      children: [
-                                        //Filière
-                                        TextFormField(
-                                            controller: _nomController,
-                                            validator: (value) {
-                                              if (_nomController.text.isEmpty) {
-                                                return "Ce champ est obligatoire";
-                                              }
-                                              return null;
-                                            },
-                                            keyboardType: TextInputType.text,
-                                            style: GoogleFonts.poppins(
-                                                color: AppColors.textColor),
-                                            decoration: InputDecoration(
-                                              labelText:
-                                                  'Nom de la filière (Génie Logiciel par exemple)',
-                                              prefixIcon:
-                                                  const Icon(Icons.school),
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                      top: 10),
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.grey,
-                                                  width: 3.0,
-                                                ),
-                                              ),
-                                              errorBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.red,
-                                                  width: 3.0,
-                                                ),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                borderSide: const BorderSide(
-                                                    color: AppColors
-                                                        .secondaryColor,
-                                                    width: 3.0),
-                                              ),
-                                            )),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        //champ identifiant
-                                        TextFormField(
-                                            controller: _idController,
-                                            validator: (value) {
-                                              if (_idController.text.isEmpty) {
-                                                return "Ce champ est obligatoire";
-                                              }
-                                              return null;
-                                            },
-                                            keyboardType: TextInputType.text,
-                                            style: GoogleFonts.poppins(
-                                                color: AppColors.textColor),
-                                            decoration: InputDecoration(
-                                              labelText:
-                                                  'Identifiant de la filière (GL par exemple)',
-                                              prefixIcon:
-                                                  const Icon(Icons.school),
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                      top: 10),
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.grey,
-                                                  width: 3.0,
-                                                ),
-                                              ),
-                                              errorBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.red,
-                                                  width: 3.0,
-                                                ),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                borderSide: const BorderSide(
-                                                    color: AppColors
-                                                        .secondaryColor,
-                                                    width: 3.0),
-                                              ),
-                                            )),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        const Text(
-                                          'Choisir les niveaux',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Wrap(
-                                          spacing: 8,
-                                          children: [
-                                            ...niveauxDisponibles.map((niveau) {
-                                              final isSelected =
-                                                  niveauxSelectionnes
-                                                      .contains(niveau);
-                                              return FilterChip(
-                                                label: Text(niveau),
-                                                selected: isSelected,
-                                                onSelected: (selected) {
-                                                  toggleNiveau(niveau);
-                                                },
-                                              );
-                                            }).toList(),
-
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            // Tag pour entrer une nouvelle valeur
-                                            FilterChip(
-                                              label: TextField(
-                                                decoration:
-                                                    const InputDecoration(
-                                                  hintText: 'Nouveau niveau',
-                                                ),
-                                                onSubmitted: (value) {
-                                                  setState(() {
-                                                    niveauxDisponibles
-                                                        .add(value);
-                                                  });
-                                                },
-                                              ),
-                                              selected: false,
-                                              onSelected: (selected) {},
-                                            ),
-                                          ],
-                                        ),
-
-                                        const SizedBox(
-                                          height: 50,
-                                        ),
-                                        GFButton(
-                                          color: AppColors.secondaryColor,
-                                          onPressed: () async {
-                                            if (_formKey.currentState!
-                                                .validate()) {
-                                              if (niveauxSelectionnes
-                                                  .isNotEmpty) {
-                                                await set_Data().ajouterFiliere(
-                                                    _nomController.text,
-                                                    _idController.text,
-                                                    niveauxSelectionnes
-                                                        .toSet()
-                                                        .toList(),
-                                                    context);
-                                                widget.callback();
-                                              } else {
-                                                Helper().ErrorMessage(context,
-                                                    content:
-                                                        "Sélectionnez au moins un niveau");
-                                              }
-                                            }
-                                          },
-                                          text: "Ajouter la filière",
-                                          textStyle: GoogleFonts.poppins(
-                                            color: AppColors.white,
-                                            fontSize: FontSize.large,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          shape: GFButtonShape.pills,
-                                          fullWidthButton: true,
-                                        ),
-                                      ],
-                                    ))
-                              ],
-                            )),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+                  )),
+            ],
+          ),
+        ),
+      ),
+    );
     // );
   }
 }

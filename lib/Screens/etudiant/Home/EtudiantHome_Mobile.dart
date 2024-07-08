@@ -105,21 +105,21 @@ class _EtudiantHomeMobileState extends State<EtudiantHomeMobile> {
           BottomNavyBarItem(
             icon: const Icon(Icons.dashboard_outlined),
             title: const Text('Dashboard'),
-            activeColor: Colors.blue,
+            activeColor: AppColors.secondaryColor,
           ),
           BottomNavyBarItem(
             icon: const Icon(Icons.query_stats),
             title: const Text('Requête'),
-            activeColor: Colors.green,
+            activeColor: AppColors.secondaryColor,
           ),
           BottomNavyBarItem(
               icon: const Icon(Icons.qr_code_scanner),
               title: const Text('Présence'),
-              activeColor: Colors.orange),
+              activeColor: AppColors.secondaryColor),
           BottomNavyBarItem(
               icon: const Icon(Icons.person),
               title: const Text('Compte'),
-              activeColor: Colors.black),
+              activeColor: AppColors.secondaryColor),
         ],
       ),
     );

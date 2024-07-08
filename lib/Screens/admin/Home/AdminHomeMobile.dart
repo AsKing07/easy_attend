@@ -103,7 +103,11 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.home),
-                            onPressed: () {},
+                            onPressed: () {
+                              setState(() {
+                                _selectedIndex = 0;
+                              });
+                            },
                             tooltip: "Dashboard",
                           ),
                           const Text(
@@ -124,7 +128,11 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
                               children: [
                                 IconButton(
                                     tooltip: "Requêtes",
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedIndex = 6;
+                                      });
+                                    },
                                     icon:
                                         const Icon(Icons.query_stats_outlined)),
                                 const Text("Requêtes",
@@ -142,7 +150,11 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
                               children: [
                                 IconButton(
                                     tooltip: "Profil",
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedIndex = 8;
+                                      });
+                                    },
                                     icon: const Icon(Icons.person)),
                                 const Text("Profil",
                                     style: TextStyle(color: AppColors.white))
@@ -176,22 +188,22 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
           BottomNavyBarItem(
             icon: const Icon(Icons.school),
             title: const Text('Filières'),
-            activeColor: AppColors.filiereColor,
+            activeColor: AppColors.secondaryColor,
           ),
           BottomNavyBarItem(
             icon: const Icon(Icons.person_3),
             title: const Text('Professeurs'),
-            activeColor: AppColors.profColor,
+            activeColor: AppColors.secondaryColor,
           ),
           BottomNavyBarItem(
             icon: const Icon(Icons.people),
             title: const Text('Etudiants'),
-            activeColor: AppColors.studColor,
+            activeColor: AppColors.secondaryColor,
           ),
           BottomNavyBarItem(
             icon: const Icon(Icons.play_lesson),
             title: const Text('Cours'),
-            activeColor: AppColors.courColor,
+            activeColor: AppColors.secondaryColor,
           ),
           // BottomNavyBarItem(
           //   icon: const Icon(Icons.query_stats),
@@ -201,7 +213,7 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
           BottomNavyBarItem(
             icon: const Icon(Icons.assignment_turned_in_sharp),
             title: const Text('Présence'),
-            activeColor: AppColors.courColor,
+            activeColor: AppColors.secondaryColor,
           ),
         ],
         onItemSelected: (index) {

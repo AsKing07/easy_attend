@@ -630,7 +630,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                     icon:
                         const Icon(Icons.arrow_drop_down, color: Colors.black),
                     decoration: InputDecoration(
-                      labelText: 'Filtrer par filière',
+                      labelText: 'Filière',
                       contentPadding: const EdgeInsets.all(10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -674,7 +674,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                       icon: const Icon(Icons.arrow_drop_down,
                           color: Colors.black),
                       decoration: InputDecoration(
-                        labelText: 'Filtrer par niveau',
+                        labelText: 'Niveau',
                         contentPadding: const EdgeInsets.all(10),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
@@ -843,7 +843,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                     icon:
                         const Icon(Icons.arrow_drop_down, color: Colors.black),
                     decoration: InputDecoration(
-                      labelText: 'Filtrer par filière',
+                      labelText: 'Filière',
                       contentPadding: const EdgeInsets.all(10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -884,7 +884,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
                       icon: const Icon(Icons.arrow_drop_down,
                           color: Colors.black),
                       decoration: InputDecoration(
-                        labelText: 'Filtrer par niveau',
+                        labelText: 'Niveau',
                         contentPadding: const EdgeInsets.all(10),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),

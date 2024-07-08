@@ -94,17 +94,17 @@ class _ProfHomeMobileState extends State<ProfHomeMobile> {
           BottomNavyBarItem(
             icon: const Icon(Icons.dashboard_outlined),
             title: const Text('Dashboard'),
-            activeColor: Colors.blue,
+            activeColor: AppColors.secondaryColor,
           ),
           BottomNavyBarItem(
             icon: const Icon(Icons.contact_support_rounded),
             title: const Text('Chat'),
-            activeColor: Colors.green,
+            activeColor: AppColors.secondaryColor,
           ),
           BottomNavyBarItem(
               icon: const Icon(Icons.person),
               title: const Text('Compte'),
-              activeColor: Colors.black),
+              activeColor: AppColors.secondaryColor),
         ],
       ),
     );
