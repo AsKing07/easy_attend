@@ -1,12 +1,10 @@
 // ignore_for_file: camel_case_types, library_private_types_in_public_api, file_names
 
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/manageFiliere.dart';
 import 'package:easy_attend/Widgets/helper.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';

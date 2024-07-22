@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/addNewProf.dart';
 import 'package:easy_attend/Screens/admin/ManageProfesseur/edit_Prof.dart';
 import 'package:easy_attend/Widgets/helper.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ManageProf extends StatefulWidget {
   const ManageProf({super.key});
@@ -191,6 +193,8 @@ class ProfDataSource extends DataTableSource {
         "assets/admin.jpg"; // Default image
 
     final data = filteredData[index];
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
     return DataRow(
       selected: _selectedRows.contains(index),
       onSelectChanged: (selected) {
@@ -204,19 +208,21 @@ class ProfDataSource extends DataTableSource {
         DataCell(Text('${data.prof['nom']}'.toUpperCase())),
         DataCell(Text('${data.prof['prenom']}'.toUpperCase())),
         DataCell(Text('${data.prof['email']}'.toLowerCase())),
-        DataCell(Text('${data.prof['phone']}'.toUpperCase())),
-        DataCell(
-          imageUrl.startsWith('http')
-              ? GFAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.grey[200],
-                  backgroundImage: NetworkImage(imageUrl))
-              : GFAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.grey[200],
-                  backgroundImage: AssetImage(imageUrl),
-                ),
-        ),
+        if (!isSmallScreen)
+          DataCell(Text('${data.prof['phone']}'.toUpperCase())),
+        if (!isSmallScreen)
+          DataCell(
+            imageUrl.startsWith('http')
+                ? GFAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: NetworkImage(imageUrl))
+                : GFAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: AssetImage(imageUrl),
+                  ),
+          ),
         data.prof['statut'] == 1
             ? DataCell(Column(
                 children: [
@@ -224,21 +230,10 @@ class ProfDataSource extends DataTableSource {
                     icon: const Icon(Icons.edit),
                     onPressed: () {
                       //Page de modification en passant l'ID
-                      showDialog(
-                          context: context,
-                          builder: (context) => Dialog(
-                                child: SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.8,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.8,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: EditProfPage(
-                                          profId: data.prof['uid'],
-                                          callback: callback),
-                                    )),
-                              ));
+                      currentPage.updatePage(MenuItems(
+                          text: "Modifier Professeur",
+                          tap: EditProfPage(
+                              profId: data.prof['uid'], callback: callback)));
                     },
                   ),
                   const SizedBox(
@@ -330,7 +325,7 @@ class ProfDataSource extends DataTableSource {
                           ),
                           TextButton(
                             onPressed: () async {
-                              // Restaurer la filière de Firestore
+                              // Restaurer le prof
                               await set_Data()
                                   .restoreProf(data.prof['uid'], context);
                               callback();
@@ -423,6 +418,7 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
   @override
   Widget build(BuildContext context) {
     bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
 
     TextFormField searchField = TextFormField(
       controller: _searchController,
@@ -541,17 +537,9 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
                   splashColor: Colors.transparent,
                   icon: const Icon(Icons.add),
                   onPressed: () async {
-                    showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                              child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.8,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.8,
-                                  child: addNewProfPage(
-                                      callback: widget.callback2)),
-                            ));
+                    currentPage.updatePage(MenuItems(
+                        text: "Ajouter Professeur",
+                        tap: addNewProfPage(callback: widget.callback2)));
                   },
                 ),
                 IconButton(
@@ -668,21 +656,9 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
                         splashColor: Colors.transparent,
                         icon: const Icon(Icons.add),
                         onPressed: () async {
-                          showDialog(
-                              context: context,
-                              builder: (context) => Dialog(
-                                    child: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.8,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.8,
-                                        child: Padding(
-                                            padding: const EdgeInsets.all(5),
-                                            child: addNewProfPage(
-                                                callback: widget.callback2))),
-                                  ));
+                          currentPage.updatePage(MenuItems(
+                              text: "Ajouter Professeur",
+                              tap: addNewProfPage(callback: widget.callback2)));
                         },
                       ),
                       IconButton(
@@ -772,22 +748,26 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
                   onSort: (int columnIndex, bool ascending) => _sort<String>(
                       (ProfData d) => d.prof['email'], columnIndex, ascending),
                 ),
-                DataColumn(
-                  label: const Text(
-                    'Phone',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                if (!isSmallScreen)
+                  DataColumn(
+                    label: const Text(
+                      'Phone',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (int columnIndex, bool ascending) => _sort<String>(
+                        (ProfData d) => d.prof['phone'],
+                        columnIndex,
+                        ascending),
                   ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (ProfData d) => d.prof['phone'], columnIndex, ascending),
-                ),
-                const DataColumn(
-                  label: Text(
-                    'Photo',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                if (!isSmallScreen)
+                  const DataColumn(
+                    label: Text(
+                      'Photo',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
                 const DataColumn(
                   label: Text(
                     'Actions',
@@ -798,12 +778,12 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
               ],
               source: _dataSource,
               rowsPerPage: 5,
-              columnSpacing: 10,
+              columnSpacing: isSmallScreen ? 8 : 10,
               horizontalMargin: 10,
               showCheckboxColumn: true,
               showFirstLastButtons: true,
               showEmptyRows: false,
-              dataRowMaxHeight: 100,
+              dataRowMaxHeight: 120,
               sortColumnIndex: _sortColumnIndex,
               sortAscending: _sortAscending,
               headingRowColor:

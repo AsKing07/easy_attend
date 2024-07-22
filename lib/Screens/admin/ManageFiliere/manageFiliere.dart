@@ -532,17 +532,6 @@ class _FilierePaginatedTableState extends State<FilierePaginatedTable> {
                     currentPage.updatePage(MenuItems(
                         text: "Ajouter une filière",
                         tap: addNewFilierePage(callback: widget.callback2)));
-                    // showDialog(
-                    //     context: context,
-                    //     builder: (context) => Dialog(
-                    //           child: SizedBox(
-                    //               width:
-                    //                   MediaQuery.of(context).size.width * 0.8,
-                    //               height:
-                    //                   MediaQuery.of(context).size.height * 0.8,
-                    //               child: addNewFilierePage(
-                    //                   callback: widget.callback2)),
-                    //         ));
                   },
                 ),
                 IconButton(
@@ -663,21 +652,6 @@ class _FilierePaginatedTableState extends State<FilierePaginatedTable> {
                               text: "Ajouter une filière",
                               tap: addNewFilierePage(
                                   callback: widget.callback2)));
-                          // showDialog(
-                          //     context: context,
-                          //     builder: (context) => Dialog(
-                          //           child: SizedBox(
-                          //               width:
-                          //                   MediaQuery.of(context).size.width *
-                          //                       0.8,
-                          //               height:
-                          //                   MediaQuery.of(context).size.height *
-                          //                       0.8,
-                          //               child: Padding(
-                          //                   padding: const EdgeInsets.all(5),
-                          //                   child: addNewFilierePage(
-                          //                       callback: widget.callback2))),
-                          //         ));
                         },
                       ),
                       IconButton(
