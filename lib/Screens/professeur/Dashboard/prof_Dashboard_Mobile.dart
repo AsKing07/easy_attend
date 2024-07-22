@@ -425,7 +425,7 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                           onTap: () {},
                                           child: SizedBox(
                                             height: 120,
-                                            width: 300,
+                                            width: 200,
                                             child: CourseCard(
                                               filiere: _selectedFiliere != null
                                                   ? _selectedFiliere!.nomFiliere

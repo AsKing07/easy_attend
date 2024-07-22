@@ -83,6 +83,7 @@ dependencies:
   intl_phone_field: ^3.2.0
 
   path: any
+  provider: ^6.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

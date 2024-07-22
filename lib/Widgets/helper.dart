@@ -25,10 +25,11 @@ class Helper {
     GFToast.showToast(content ?? "Fait avec succès", context,
         trailing: const Icon(
           Icons.check_box_rounded,
-          color: AppColors.white,
+          color: Colors.black,
         ),
+        textStyle: const TextStyle(color: Colors.black),
         toastDuration: 8,
-        backgroundColor: AppColors.greenColor);
+        backgroundColor: const Color.fromARGB(255, 119, 255, 82));
   }
 
   void ErrorMessage(BuildContext context, {String? content}) {

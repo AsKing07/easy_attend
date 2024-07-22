@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Screens/professeur/CoursePage/OneCourseMobilePage.dart';
@@ -267,8 +268,14 @@ class _listOfCourseState extends State<listOfCourse> {
                                             GestureDetector(
                                               onTap: () {},
                                               child: SizedBox(
-                                                height: 160,
-                                                width: 300,
+                                                height: screenSize()
+                                                        .isPhone(context)
+                                                    ? 160
+                                                    : 195,
+                                                width: screenSize()
+                                                        .isPhone(context)
+                                                    ? 200
+                                                    : 300,
                                                 child: CourseCard(
                                                   filiere:
                                                       _selectedFiliere != null

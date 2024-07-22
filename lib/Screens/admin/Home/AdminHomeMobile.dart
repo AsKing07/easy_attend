@@ -14,6 +14,7 @@ import 'package:easy_attend/Screens/settings_screen.dart';
 import 'package:easy_attend/Widgets/PageOnMaintenance.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminHomeMobile extends StatefulWidget {
@@ -86,6 +87,7 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
 
   @override
   Widget build(BuildContext context) {
+    var currentPage = Provider.of<PageModelAdmin>(context);
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -94,10 +96,35 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
               itemBuilder: (context) => [
                     PopupMenuItem(
                         child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = 8;
+                              });
+                              currentPage.updatePage(items[_selectedIndex]);
+                            },
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    tooltip: "Profil",
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedIndex = 8;
+                                      });
+                                      currentPage
+                                          .updatePage(items[_selectedIndex]);
+                                    },
+                                    icon: const Icon(Icons.person)),
+                                const Text("Profil",
+                                    style: TextStyle(color: AppColors.white))
+                              ],
+                            ))),
+                    PopupMenuItem(
+                        child: InkWell(
                       onTap: () {
                         setState(() {
                           _selectedIndex = 0;
                         });
+                        currentPage.updatePage(items[_selectedIndex]);
                       },
                       child: Row(
                         children: [
@@ -107,6 +134,7 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
                               setState(() {
                                 _selectedIndex = 0;
                               });
+                              currentPage.updatePage(items[_selectedIndex]);
                             },
                             tooltip: "Dashboard",
                           ),
@@ -121,8 +149,130 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
                         child: InkWell(
                             onTap: () {
                               setState(() {
+                                _selectedIndex = 1;
+                              });
+                              currentPage.updatePage(items[_selectedIndex]);
+                            },
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    tooltip: "Filières",
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedIndex = 1;
+                                      });
+                                      currentPage
+                                          .updatePage(items[_selectedIndex]);
+                                    },
+                                    icon: const Icon(Icons.school)),
+                                const Text("Filières",
+                                    style: TextStyle(color: AppColors.white))
+                              ],
+                            ))),
+                    PopupMenuItem(
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = 2;
+                              });
+                              currentPage.updatePage(items[_selectedIndex]);
+                            },
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    tooltip: "Professeurs",
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedIndex = 2;
+                                      });
+                                      currentPage
+                                          .updatePage(items[_selectedIndex]);
+                                    },
+                                    icon: const Icon(Icons.person_3)),
+                                const Text("Professeurs",
+                                    style: TextStyle(color: AppColors.white))
+                              ],
+                            ))),
+                    PopupMenuItem(
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = 3;
+                              });
+                              currentPage.updatePage(items[_selectedIndex]);
+                            },
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    tooltip: "Etudiants",
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedIndex = 3;
+                                      });
+                                      currentPage
+                                          .updatePage(items[_selectedIndex]);
+                                    },
+                                    icon: const Icon(Icons.people)),
+                                const Text("Etudiants",
+                                    style: TextStyle(color: AppColors.white))
+                              ],
+                            ))),
+                    PopupMenuItem(
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = 4;
+                              });
+                              currentPage.updatePage(items[_selectedIndex]);
+                            },
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    tooltip: "Cours",
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedIndex = 4;
+                                      });
+                                      currentPage
+                                          .updatePage(items[_selectedIndex]);
+                                    },
+                                    icon: const Icon(Icons.play_lesson)),
+                                const Text("Cours",
+                                    style: TextStyle(color: AppColors.white))
+                              ],
+                            ))),
+                    PopupMenuItem(
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = 5;
+                              });
+                              currentPage.updatePage(items[_selectedIndex]);
+                            },
+                            child: Row(
+                              children: [
+                                IconButton(
+                                    tooltip: "Présences",
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedIndex = 5;
+                                      });
+                                      currentPage
+                                          .updatePage(items[_selectedIndex]);
+                                    },
+                                    icon: const Icon(
+                                        Icons.assignment_turned_in_sharp)),
+                                const Text("Présences",
+                                    style: TextStyle(color: AppColors.white))
+                              ],
+                            ))),
+                    PopupMenuItem(
+                        child: InkWell(
+                            onTap: () {
+                              setState(() {
                                 _selectedIndex = 6;
                               });
+                              currentPage.updatePage(items[_selectedIndex]);
                             },
                             child: Row(
                               children: [
@@ -132,6 +282,8 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
                                       setState(() {
                                         _selectedIndex = 6;
                                       });
+                                      currentPage
+                                          .updatePage(items[_selectedIndex]);
                                     },
                                     icon:
                                         const Icon(Icons.query_stats_outlined)),
@@ -139,89 +291,68 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
                                     style: TextStyle(color: AppColors.white))
                               ],
                             ))),
-                    PopupMenuItem(
-                        child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                _selectedIndex = 8;
-                              });
-                            },
-                            child: Row(
-                              children: [
-                                IconButton(
-                                    tooltip: "Profil",
-                                    onPressed: () {
-                                      setState(() {
-                                        _selectedIndex = 8;
-                                      });
-                                    },
-                                    icon: const Icon(Icons.person)),
-                                const Text("Profil",
-                                    style: TextStyle(color: AppColors.white))
-                              ],
-                            )))
                   ])
         ],
         centerTitle: true,
         backgroundColor: AppColors.secondaryColor,
         foregroundColor: Colors.white,
         title: Text(
-          items[_selectedIndex].text,
+          currentPage.currentPage.text,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: FontSize.medium,
           ),
         ),
       ),
-      body: items[_selectedIndex].tap,
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: _selectedIndex - 1,
-        showElevation: true,
-        items: [
-          // Les éléments de la barre de navigation inférieure
+      body: currentPage.currentPage.tap,
 
-          // BottomNavyBarItem(
-          //   icon: const Icon(Icons.dashboard_outlined),
-          //   title: const Text('Dashboard'),
-          //   activeColor: Colors.blue,
-          // ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.school),
-            title: const Text('Filières'),
-            activeColor: AppColors.secondaryColor,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.person_3),
-            title: const Text('Professeurs'),
-            activeColor: AppColors.secondaryColor,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.people),
-            title: const Text('Etudiants'),
-            activeColor: AppColors.secondaryColor,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.play_lesson),
-            title: const Text('Cours'),
-            activeColor: AppColors.secondaryColor,
-          ),
-          // BottomNavyBarItem(
-          //   icon: const Icon(Icons.query_stats),
-          //   title: const Text('Requêtes'),
-          //   activeColor: AppColors.studColor,
-          // ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.assignment_turned_in_sharp),
-            title: const Text('Présence'),
-            activeColor: AppColors.secondaryColor,
-          ),
-        ],
-        onItemSelected: (index) {
-          setState(() {
-            _selectedIndex = index + 1;
-          });
-        },
-      ),
+      // bottomNavigationBar: BottomNavyBar(
+      //   selectedIndex: _selectedIndex - 1,
+      //   showElevation: true,
+      //   items: [
+      //     // Les éléments de la barre de navigation inférieure
+      //     // BottomNavyBarItem(
+      //     //   icon: const Icon(Icons.dashboard_outlined),
+      //     //   title: const Text('Dashboard'),
+      //     //   activeColor: Colors.blue,
+      //     // ),
+      //     // BottomNavyBarItem(
+      //     //   icon: const Icon(Icons.school),
+      //     //   title: const Text('Filières'),
+      //     //   activeColor: AppColors.secondaryColor,
+      //     // ),
+      //     BottomNavyBarItem(
+      //       icon: const Icon(Icons.person_3),
+      //       title: const Text('Professeurs'),
+      //       activeColor: AppColors.secondaryColor,
+      //     ),
+      //     BottomNavyBarItem(
+      //       icon: const Icon(Icons.people),
+      //       title: const Text('Etudiants'),
+      //       activeColor: AppColors.secondaryColor,
+      //     ),
+      //     BottomNavyBarItem(
+      //       icon: const Icon(Icons.play_lesson),
+      //       title: const Text('Cours'),
+      //       activeColor: AppColors.secondaryColor,
+      //     ),
+      //     // BottomNavyBarItem(
+      //     //   icon: const Icon(Icons.query_stats),
+      //     //   title: const Text('Requêtes'),
+      //     //   activeColor: AppColors.studColor,
+      //     // ),
+      //     BottomNavyBarItem(
+      //       icon: const Icon(Icons.assignment_turned_in_sharp),
+      //       title: const Text('Présence'),
+      //       activeColor: AppColors.secondaryColor,
+      //     ),
+      //   ],
+      //   onItemSelected: (index) {
+      //     setState(() {
+      //       _selectedIndex = index + 1;
+      //     });
+      //   },
+      // ),
     );
   }
 }

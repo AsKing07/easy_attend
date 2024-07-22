@@ -25,7 +25,7 @@ class _CourseCardState extends State<CourseCard> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double cardPadding = screenWidth > 1200 ? 22 : 10;
+    double cardPadding = screenWidth > 1200 ? 20 : 10;
     double fontSizeTitle = screenWidth > 1200 ? 17 : 15;
     double fontSizeSubTitle = screenWidth > 1200 ? 15 : 10;
 
@@ -63,7 +63,7 @@ class _CourseCardState extends State<CourseCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                maxLines: 1,
+                maxLines: 2,
                 "${widget.course['nomCours']}",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,

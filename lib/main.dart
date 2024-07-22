@@ -1,9 +1,12 @@
+import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
+
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
 import 'package:easy_attend/Screens/etudiant/Home/EtudiantHome.dart';
 import 'package:easy_attend/Screens/professeur/Home/ProfHome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:geolocator/geolocator.dart';
@@ -22,8 +25,11 @@ void main() async {
   checkLocalisation();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  runApp(MyApp(
-    prefs: prefs,
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => PageModelAdmin())],
+    child: MyApp(
+      prefs: prefs,
+    ),
   ));
 }
 

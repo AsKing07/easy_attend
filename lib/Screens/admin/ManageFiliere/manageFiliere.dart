@@ -3,15 +3,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/addNewFiliere.dart';
 import 'package:easy_attend/Screens/admin/ManageFiliere/editFiliere.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Widgets/helper.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 class ManageFilierePage extends StatefulWidget {
   const ManageFilierePage({Key? key}) : super(key: key);
@@ -190,6 +193,8 @@ class FiliereDataSource extends DataTableSource {
   @override
   DataRow getRow(int index) {
     final data = filteredData[index];
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
     return DataRow(
       selected: _selectedRows.contains(index),
       onSelectChanged: (selected) {
@@ -200,12 +205,14 @@ class FiliereDataSource extends DataTableSource {
         return _getRowColor(index);
       }),
       cells: [
-        DataCell(Text(data.filiere['sigleFiliere'].toUpperCase())),
+        if (!isSmallScreen)
+          DataCell(Text(data.filiere['sigleFiliere'].toUpperCase())),
         DataCell(Text(data.filiere['nomFiliere'].toUpperCase())),
-        DataCell(Text(
-          data.filiere['niveaux'].toUpperCase(),
-          style: const TextStyle(fontSize: FontSize.small),
-        )),
+        if (!isSmallScreen)
+          DataCell(Text(
+            data.filiere['niveaux'].toUpperCase(),
+            style: const TextStyle(fontSize: FontSize.small),
+          )),
         data.filiere['statut'] == 1
             ? DataCell(Column(
                 children: [
@@ -213,21 +220,11 @@ class FiliereDataSource extends DataTableSource {
                     icon: const Icon(Icons.edit),
                     onPressed: () {
                       //Page de modification en passant l'ID
-                      showDialog(
-                          context: context,
-                          builder: (context) => Dialog(
-                                child: SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.8,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.8,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: ModifierFilierePage(
-                                          filiereId: data.filiere['idFiliere'],
-                                          callback: callback),
-                                    )),
-                              ));
+                      currentPage.updatePage(MenuItems(
+                          text: "Modifier filière",
+                          tap: ModifierFilierePage(
+                              filiereId: data.filiere['idFiliere'],
+                              callback: callback)));
                     },
                   ),
                   const SizedBox(
@@ -413,6 +410,7 @@ class _FilierePaginatedTableState extends State<FilierePaginatedTable> {
   @override
   Widget build(BuildContext context) {
     bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
 
     TextFormField searchField = TextFormField(
       controller: _searchController,
@@ -531,17 +529,20 @@ class _FilierePaginatedTableState extends State<FilierePaginatedTable> {
                   splashColor: Colors.transparent,
                   icon: const Icon(Icons.add),
                   onPressed: () async {
-                    showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                              child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.8,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.8,
-                                  child: addNewFilierePage(
-                                      callback: widget.callback2)),
-                            ));
+                    currentPage.updatePage(MenuItems(
+                        text: "Ajouter une filière",
+                        tap: addNewFilierePage(callback: widget.callback2)));
+                    // showDialog(
+                    //     context: context,
+                    //     builder: (context) => Dialog(
+                    //           child: SizedBox(
+                    //               width:
+                    //                   MediaQuery.of(context).size.width * 0.8,
+                    //               height:
+                    //                   MediaQuery.of(context).size.height * 0.8,
+                    //               child: addNewFilierePage(
+                    //                   callback: widget.callback2)),
+                    //         ));
                   },
                 ),
                 IconButton(
@@ -658,21 +659,25 @@ class _FilierePaginatedTableState extends State<FilierePaginatedTable> {
                         splashColor: Colors.transparent,
                         icon: const Icon(Icons.add),
                         onPressed: () async {
-                          showDialog(
-                              context: context,
-                              builder: (context) => Dialog(
-                                    child: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.8,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.8,
-                                        child: Padding(
-                                            padding: const EdgeInsets.all(5),
-                                            child: addNewFilierePage(
-                                                callback: widget.callback2))),
-                                  ));
+                          currentPage.updatePage(MenuItems(
+                              text: "Ajouter une filière",
+                              tap: addNewFilierePage(
+                                  callback: widget.callback2)));
+                          // showDialog(
+                          //     context: context,
+                          //     builder: (context) => Dialog(
+                          //           child: SizedBox(
+                          //               width:
+                          //                   MediaQuery.of(context).size.width *
+                          //                       0.8,
+                          //               height:
+                          //                   MediaQuery.of(context).size.height *
+                          //                       0.8,
+                          //               child: Padding(
+                          //                   padding: const EdgeInsets.all(5),
+                          //                   child: addNewFilierePage(
+                          //                       callback: widget.callback2))),
+                          //         ));
                         },
                       ),
                       IconButton(
@@ -735,17 +740,18 @@ class _FilierePaginatedTableState extends State<FilierePaginatedTable> {
                 textAlign: TextAlign.center,
               ),
               columns: [
-                DataColumn(
-                  label: const Text(
-                    'Sigle',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                if (!isSmallScreen)
+                  DataColumn(
+                    label: const Text(
+                      'Sigle',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (int columnIndex, bool ascending) => _sort<String>(
+                        (FiliereData d) => d.filiere['sigleFiliere'],
+                        columnIndex,
+                        ascending),
                   ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (FiliereData d) => d.filiere['sigleFiliere'],
-                      columnIndex,
-                      ascending),
-                ),
                 DataColumn(
                   label: const Text(
                     'Filières',
@@ -757,15 +763,16 @@ class _FilierePaginatedTableState extends State<FilierePaginatedTable> {
                       columnIndex,
                       ascending),
                 ),
-                const DataColumn(
-                  label: Text(
-                    'Niveaux',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                if (!isSmallScreen)
+                  const DataColumn(
+                    label: Text(
+                      'Niveaux',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    // onSort: (int columnIndex, bool ascending) => _sort<String>(
+                    //     (FiliereData d) => d.filiere['niveaux'], columnIndex, ascending),
                   ),
-                  // onSort: (int columnIndex, bool ascending) => _sort<String>(
-                  //     (FiliereData d) => d.filiere['niveaux'], columnIndex, ascending),
-                ),
                 const DataColumn(
                   label: Text(
                     'Actions',

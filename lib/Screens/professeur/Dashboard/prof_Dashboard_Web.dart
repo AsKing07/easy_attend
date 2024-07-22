@@ -470,7 +470,7 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                             GestureDetector(
                                               onTap: () {},
                                               child: SizedBox(
-                                                height: 160,
+                                                height: 195,
                                                 width: 300,
                                                 child: CourseCard(
                                                   filiere:

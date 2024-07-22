@@ -21,15 +21,15 @@ import 'package:http/http.dart' as http;
 import 'package:pie_chart/pie_chart.dart';
 
 class seeOneStudentAttendance extends StatefulWidget {
-  final String studentId, studentName;
+  final dynamic student;
 
   final dynamic course;
 
-  const seeOneStudentAttendance(
-      {super.key,
-      required this.course,
-      required this.studentId,
-      required this.studentName});
+  const seeOneStudentAttendance({
+    super.key,
+    required this.course,
+    required this.student,
+  });
 
   @override
   State<seeOneStudentAttendance> createState() =>
@@ -61,9 +61,8 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
   }
 
   Future fetchData() async {
-    final x = await get_Data().loadCurrentStudentData();
     setState(() {
-      etudiant = x;
+      etudiant = widget.student;
       _streamController = _createStreamController();
     });
     try {
@@ -81,7 +80,7 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
           Map<String, dynamic> presenceEtudiant =
               jsonDecode(seance['presenceEtudiant']);
 
-          if (presenceEtudiant[widget.studentId] == true) {
+          if (presenceEtudiant[etudiant['uid']] == true) {
             count++;
           }
         }
@@ -193,7 +192,7 @@ class _seeOneStudentAttendanceState extends State<seeOneStudentAttendance> {
                             ),
                             const SizedBox(height: 15),
                             Text(
-                              widget.studentName,
+                              '${etudiant['nom']} ${etudiant['prenom']}',
                               style: const TextStyle(
                                 fontSize: FontSize.medium,
                                 fontWeight: FontWeight.bold,

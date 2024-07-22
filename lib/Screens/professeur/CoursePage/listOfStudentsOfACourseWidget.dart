@@ -208,84 +208,122 @@ class _listOfStudentsOfACourseWidgetState
         ? LoadingAnimationWidget.hexagonDots(
             color: AppColors.secondaryColor, size: 100)
         : SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
             child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Text(
-                  'Liste des étudiants inscrits au cours ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: FontSize.medium,
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Liste des étudiants inscrits au cours ',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: FontSize.medium,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 7),
-                  child: Text(
-                    "Sélectionnez un étudiant dans la liste",
-                    style: GoogleFonts.poppins(
-                        color: AppColors.primaryColor,
-                        fontSize: FontSize.medium,
-                        fontWeight: FontWeight.w600),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 7),
+                    child: Text(
+                      "Sélectionnez un étudiant dans la liste",
+                      style: GoogleFonts.poppins(
+                          color: AppColors.primaryColor,
+                          fontSize: FontSize.medium,
+                          fontWeight: FontWeight.w600),
+                    ),
                   ),
-                ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height - 180,
-                    child: StreamBuilder(
-                        stream: _streamController.stream,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                                child: LoadingAnimationWidget.hexagonDots(
-                                    color: AppColors.secondaryColor,
-                                    size: 100));
-                          } else if (snapshot.hasError) {
-                            return errorWidget(
-                                error: snapshot.error.toString());
-                          } else {
-                            List<dynamic>? students = snapshot.data;
-                            if (students!
-                                .isEmpty) // Afficher un message si aucun résultat n'est trouvé
-                            {
-                              return const SingleChildScrollView(
-                                child: NoResultWidget(),
-                              );
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height - 180,
+                      child: StreamBuilder(
+                          stream: _streamController.stream,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                  child: LoadingAnimationWidget.hexagonDots(
+                                      color: AppColors.secondaryColor,
+                                      size: 100));
+                            } else if (snapshot.hasError) {
+                              return errorWidget(
+                                  error: snapshot.error.toString());
                             } else {
-                              return ListView.builder(
-                                  itemCount: students.length,
-                                  itemBuilder: (context, index) {
-                                    final etudiant = students[index];
-                                    String imageUrl = etudiant['image'] ??
-                                        "assets/admin.jpg"; // Default image
+                              List<dynamic>? students = snapshot.data;
+                              if (students!
+                                  .isEmpty) // Afficher un message si aucun résultat n'est trouvé
+                              {
+                                return const SingleChildScrollView(
+                                  child: NoResultWidget(),
+                                );
+                              } else {
+                                return ListView.builder(
+                                    itemCount: students.length,
+                                    itemBuilder: (context, index) {
+                                      final etudiant = students[index];
+                                      String imageUrl = etudiant['image'] ??
+                                          "assets/admin.jpg"; // Default image
 
-                                    return ListTile(
-                                      title: Text(
-                                          '${etudiant['nom']} ${etudiant['prenom']}'),
-                                      subtitle: Text(
-                                        '${etudiant['matricule']}',
-                                        style: const TextStyle(
-                                            color: AppColors.secondaryColor,
-                                            fontSize: FontSize.small),
-                                      ),
-                                      leading: imageUrl.startsWith('http')
-                                          ? GFAvatar(
-                                              radius: 30,
-                                              backgroundColor: Colors.grey,
-                                              backgroundImage: NetworkImage(
-                                                imageUrl,
-                                              ))
-                                          : GFAvatar(
-                                              radius: 30,
-                                              backgroundColor: Colors.grey[200],
-                                              backgroundImage:
-                                                  AssetImage(imageUrl),
-                                            ),
-                                      trailing: IconButton(
-                                        icon: const Icon(
-                                            Icons.remove_red_eye_sharp),
-                                        onPressed: () {
+                                      return ListTile(
+                                        title: Text(
+                                            '${etudiant['nom']} ${etudiant['prenom']}'),
+                                        subtitle: Text(
+                                          '${etudiant['matricule']}',
+                                          style: const TextStyle(
+                                              color: AppColors.secondaryColor,
+                                              fontSize: FontSize.small),
+                                        ),
+                                        leading: imageUrl.startsWith('http')
+                                            ? GFAvatar(
+                                                radius: 30,
+                                                backgroundColor: Colors.grey,
+                                                backgroundImage: NetworkImage(
+                                                  imageUrl,
+                                                ))
+                                            : GFAvatar(
+                                                radius: 30,
+                                                backgroundColor:
+                                                    Colors.grey[200],
+                                                backgroundImage:
+                                                    AssetImage(imageUrl),
+                                              ),
+                                        trailing: IconButton(
+                                          icon: const Icon(
+                                              Icons.remove_red_eye_sharp),
+                                          onPressed: () {
+                                            screenSize().isPhone(context)
+                                                ? Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            seeOneStudentAttendance(
+                                                              course:
+                                                                  widget.course,
+                                                              student: etudiant,
+                                                            )),
+                                                  )
+                                                : showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        Dialog(
+                                                            child: SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width /
+                                                              0.8,
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              0.8,
+                                                          child:
+                                                              seeOneStudentAttendance(
+                                                            course:
+                                                                widget.course,
+                                                            student: etudiant,
+                                                          ),
+                                                        )));
+                                          },
+                                        ),
+                                        onTap: () {
                                           screenSize().isPhone(context)
                                               ? Navigator.push(
                                                   context,
@@ -294,21 +332,14 @@ class _listOfStudentsOfACourseWidgetState
                                                           seeOneStudentAttendance(
                                                             course:
                                                                 widget.course,
-                                                            studentId:
-                                                                etudiant['uid'],
-                                                            studentName:
-                                                                '${etudiant['nom']} ${etudiant['prenom']}',
+                                                            student: etudiant,
                                                           )),
                                                 )
                                               : showDialog(
                                                   context: context,
                                                   builder: (context) => Dialog(
                                                           child: SizedBox(
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width /
-                                                            0.8,
+                                                        width: double.infinity,
                                                         height: MediaQuery.of(
                                                                     context)
                                                                 .size
@@ -317,55 +348,17 @@ class _listOfStudentsOfACourseWidgetState
                                                         child:
                                                             seeOneStudentAttendance(
                                                           course: widget.course,
-                                                          studentId:
-                                                              etudiant['uid'],
-                                                          studentName:
-                                                              '${etudiant['nom']} ${etudiant['prenom']}',
+                                                          student: etudiant,
                                                         ),
                                                       )));
                                         },
-                                      ),
-                                      onTap: () {
-                                        screenSize().isPhone(context)
-                                            ? Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        seeOneStudentAttendance(
-                                                          course: widget.course,
-                                                          studentId:
-                                                              etudiant['uid'],
-                                                          studentName:
-                                                              '${etudiant['nom']} ${etudiant['prenom']}',
-                                                        )),
-                                              )
-                                            : showDialog(
-                                                context: context,
-                                                builder: (context) => Dialog(
-                                                        child: SizedBox(
-                                                      width: double.infinity,
-                                                      height:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .height *
-                                                              0.8,
-                                                      child:
-                                                          seeOneStudentAttendance(
-                                                        course: widget.course,
-                                                        studentId:
-                                                            etudiant['uid'],
-                                                        studentName:
-                                                            '${etudiant['nom']} ${etudiant['prenom']}',
-                                                      ),
-                                                    )));
-                                      },
-                                    );
-                                  });
+                                      );
+                                    });
+                              }
                             }
-                          }
-                        }))
-              ],
-            ),
-          ));
+                          }))
+                ],
+              ),
+            ));
   }
 }
