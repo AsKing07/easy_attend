@@ -43,11 +43,11 @@ class _AdminHomeWebState extends State<AdminHomeWeb> {
         icon: Icons.settings_applications_outlined,
         tap: const ManageCoursePage()),
     MenuItems(
-        text: 'Analyser les requêtes',
+        text: 'Requêtes',
         icon: Icons.query_stats,
         tap: const ManageQueriesPage()),
     MenuItems(
-        text: 'Prendre les présences',
+        text: 'Présences',
         icon: Icons.assignment_turned_in_sharp,
         tap: const listOfCourse()),
     MenuItems(

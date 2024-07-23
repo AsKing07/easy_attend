@@ -205,8 +205,20 @@ class ProfDataSource extends DataTableSource {
         return _getRowColor(index);
       }),
       cells: [
-        DataCell(Text('${data.prof['nom']}'.toUpperCase())),
-        DataCell(Text('${data.prof['prenom']}'.toUpperCase())),
+        DataCell(Text(
+          '${data.prof['nom']}'.toUpperCase(),
+        )),
+        DataCell(ConstrainedBox(
+          constraints:
+              BoxConstraints(maxWidth: isSmallScreen ? 45 : 90), //SET max width
+          child: Text(
+            '${data.prof['prenom']}'.toUpperCase(),
+            style: TextStyle(
+                fontSize: isSmallScreen ? FontSize.xSmall : FontSize.medium),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        )),
         DataCell(Text('${data.prof['email']}'.toLowerCase())),
         if (!isSmallScreen)
           DataCell(Text('${data.prof['phone']}'.toUpperCase())),
@@ -214,80 +226,94 @@ class ProfDataSource extends DataTableSource {
           DataCell(
             imageUrl.startsWith('http')
                 ? GFAvatar(
-                    radius: 40,
+                    radius: 30,
                     backgroundColor: Colors.grey[200],
                     backgroundImage: NetworkImage(imageUrl))
                 : GFAvatar(
-                    radius: 40,
+                    radius: 30,
                     backgroundColor: Colors.grey[200],
                     backgroundImage: AssetImage(imageUrl),
                   ),
           ),
         data.prof['statut'] == 1
-            ? DataCell(Column(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      //Page de modification en passant l'ID
-                      currentPage.updatePage(MenuItems(
-                          text: "Modifier Professeur",
-                          tap: EditProfPage(
-                              profId: data.prof['uid'], callback: callback)));
-                    },
-                  ),
-                  const SizedBox(
-                    height: 3,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: AppColors.redColor),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Row(
-                            children: [
-                              Icon(Icons.warning, color: Colors.orange),
-                              SizedBox(width: 10),
-                              Text(
-                                "Supprimer le professeur",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: FontSize.medium,
-                                  color: Colors.orange,
-                                ),
-                              ),
-                            ],
-                          ),
-                          content: const Text(
-                            'Êtes-vous sûr de vouloir supprimer ce professeur ? ',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
+            ? DataCell(PopupMenuButton(
+                color: AppColors.secondaryColor,
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                          child: InkWell(
+                              onTap: () {
+                                //Page de modification en passant l'ID
+                                currentPage.updatePage(MenuItems(
+                                    text: "Modifier Professeur",
+                                    tap: EditProfPage(
+                                        profId: data.prof['uid'],
+                                        callback: callback)));
                               },
-                              child: const Text('Annuler'),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                await set_Data().deleteProf(
-                                  data.prof['uid'],
-                                  context,
-                                );
-                                callback();
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                  ),
+                                  Text("Editer",
+                                      style: TextStyle(color: AppColors.white))
+                                ],
+                              ))),
+                      PopupMenuItem(
+                          child: InkWell(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Row(
+                                      children: [
+                                        Icon(Icons.warning,
+                                            color: Colors.orange),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          "Supprimer le professeur",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: FontSize.medium,
+                                            color: Colors.orange,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    content: const Text(
+                                      'Êtes-vous sûr de vouloir supprimer ce professeur ? ',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Annuler'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          await set_Data().deleteProf(
+                                            data.prof['uid'],
+                                            context,
+                                          );
+                                          callback();
 
-                                Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Supprimer'),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
-                              child: const Text('Supprimer'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ))
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.delete, color: AppColors.redColor),
+                                  Text("Supprimer",
+                                      style: TextStyle(color: AppColors.white))
+                                ],
+                              ))),
+                    ]))
             : DataCell(
                 IconButton(
                   icon: const Icon(
@@ -777,13 +803,12 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
                 ),
               ],
               source: _dataSource,
-              rowsPerPage: 5,
-              columnSpacing: isSmallScreen ? 8 : 10,
+              rowsPerPage: isSmallScreen ? 8 : 10,
+              columnSpacing: 10,
               horizontalMargin: 10,
               showCheckboxColumn: true,
               showFirstLastButtons: true,
               showEmptyRows: false,
-              dataRowMaxHeight: 120,
               sortColumnIndex: _sortColumnIndex,
               sortAscending: _sortAscending,
               headingRowColor:

@@ -15,6 +15,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../../../Models/menuItems.dart';
 
 class ManageCoursePage extends StatefulWidget {
   const ManageCoursePage({super.key});
@@ -256,6 +259,8 @@ class CourseDataSource extends DataTableSource {
   @override
   DataRow getRow(int index) {
     final cours = filteredData[index];
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
     return DataRow(
       selected: _selectedRows.contains(index),
       onSelectChanged: (selected) {
@@ -266,81 +271,102 @@ class CourseDataSource extends DataTableSource {
         return _getRowColor(index);
       }),
       cells: [
-        DataCell(Text(cours.sigle.toUpperCase())),
-        DataCell(Text(cours.nomCours.toUpperCase())),
-        DataCell(Text(cours.nomFiliere.toUpperCase())),
-        DataCell(Text(cours.niveau.toUpperCase())),
-        DataCell(Text(cours.nomProf.toUpperCase())),
-        DataCell(Column(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                //Page de modification en passant l'ID
-                showDialog(
-                    context: context,
-                    builder: (context) => Dialog(
-                          child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.8,
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5),
-                                child: EditCoursePage(
-                                    id: cours.idCours, callback: callback),
-                              )),
-                        ));
-              },
-            ),
-            const SizedBox(
-              height: 3,
-            ),
-            IconButton(
-              color: AppColors.redColor,
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Row(
-                      children: [
-                        Icon(
-                          Icons.warning,
-                          color: Colors.orange,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Supprimer le cours",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                              color: Colors.orange),
-                        ),
-                      ],
-                    ),
-                    content: const Text(
-                        'Êtes-vous sûr de vouloir supprimer ce cours ? \n Cette action est irréversible'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Annuler'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          await set_Data().deleteCours(cours.idCours, context);
-                          callback();
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Supprimer'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
-        ))
+        if (!isSmallScreen)
+          DataCell(Text(cours.sigle.toUpperCase(),
+              style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        DataCell(Text(cours.nomCours.toUpperCase(),
+            style: TextStyle(
+                fontSize: isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        if (!isSmallScreen)
+          DataCell(Text(cours.nomFiliere.toUpperCase(),
+              style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        if (!isSmallScreen)
+          DataCell(Text(cours.niveau.toUpperCase(),
+              style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        DataCell(Text(cours.nomProf.toUpperCase(),
+            style: TextStyle(
+                fontSize: isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        DataCell(PopupMenuButton(
+            color: AppColors.secondaryColor,
+            itemBuilder: (context) => [
+                  PopupMenuItem(
+                      child: InkWell(
+                          onTap: () {
+                            //Page de modification en passant l'ID
+                            currentPage.updatePage(MenuItems(
+                              text: "Modifier Cours",
+                              tap: EditCoursePage(
+                                  id: cours.idCours, callback: callback),
+                            ));
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                              Text("Editer",
+                                  style: TextStyle(color: AppColors.white))
+                            ],
+                          ))),
+                  PopupMenuItem(
+                      child: InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.warning,
+                                      color: Colors.orange,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Supprimer le cours",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20.0,
+                                          color: Colors.orange),
+                                    ),
+                                  ],
+                                ),
+                                content: const Text(
+                                    'Êtes-vous sûr de vouloir supprimer ce cours ? \n Cette action est irréversible'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Annuler'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await set_Data()
+                                          .deleteCours(cours.idCours, context);
+                                      callback();
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Supprimer'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(Icons.delete, color: AppColors.redColor),
+                              Text("Supprimer",
+                                  style: TextStyle(color: AppColors.white))
+                            ],
+                          ))),
+                ]))
       ],
     );
   }
@@ -421,6 +447,7 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
   @override
   Widget build(BuildContext context) {
     bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
 
     TextFormField searchField = TextFormField(
       controller: _searchController,
@@ -565,17 +592,9 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                   splashColor: Colors.transparent,
                   icon: const Icon(Icons.add),
                   onPressed: () async {
-                    showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                              child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.8,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.8,
-                                  child: AddNewCoursePage(
-                                      callback: widget.callback2)),
-                            ));
+                    currentPage.updatePage(MenuItems(
+                        text: "Ajouter un cours",
+                        tap: AddNewCoursePage(callback: widget.callback2)));
                   },
                 ),
                 IconButton(
@@ -733,21 +752,10 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                         splashColor: Colors.transparent,
                         icon: const Icon(Icons.add),
                         onPressed: () async {
-                          showDialog(
-                              context: context,
-                              builder: (context) => Dialog(
-                                    child: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.8,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.8,
-                                        child: Padding(
-                                            padding: const EdgeInsets.all(5),
-                                            child: AddNewCoursePage(
-                                                callback: widget.callback2))),
-                                  ));
+                          currentPage.updatePage(MenuItems(
+                              text: "Ajouter un cours",
+                              tap: AddNewCoursePage(
+                                  callback: widget.callback2)));
                         },
                       ),
                       IconButton(
@@ -810,15 +818,16 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                 textAlign: TextAlign.center,
               ),
               columns: [
-                DataColumn(
-                  label: const Text(
-                    'Sigle',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                if (!isSmallScreen)
+                  DataColumn(
+                    label: const Text(
+                      'Sigle',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (int columnIndex, bool ascending) => _sort<String>(
+                        (CourseData d) => d.sigle, columnIndex, ascending),
                   ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (CourseData d) => d.sigle, columnIndex, ascending),
-                ),
                 DataColumn(
                   label: const Text(
                     'Cours',
@@ -828,24 +837,26 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                   onSort: (int columnIndex, bool ascending) => _sort<String>(
                       (CourseData d) => d.nomCours, columnIndex, ascending),
                 ),
-                DataColumn(
-                  label: const Text(
-                    'Filiere',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                if (!isSmallScreen)
+                  DataColumn(
+                    label: const Text(
+                      'Filiere',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (int columnIndex, bool ascending) => _sort<String>(
+                        (CourseData d) => d.nomFiliere, columnIndex, ascending),
                   ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (CourseData d) => d.nomFiliere, columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: const Text(
-                    'Niveau',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                if (!isSmallScreen)
+                  DataColumn(
+                    label: const Text(
+                      'Niveau',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (int columnIndex, bool ascending) => _sort<String>(
+                        (CourseData d) => d.niveau, columnIndex, ascending),
                   ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (CourseData d) => d.niveau, columnIndex, ascending),
-                ),
                 DataColumn(
                   label: const Text(
                     'Professeur',
@@ -864,13 +875,13 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                 ),
               ],
               source: _dataSource,
-              rowsPerPage: 5,
+              rowsPerPage: isSmallScreen ? 8 : 10,
               columnSpacing: 10,
               horizontalMargin: 10,
               showCheckboxColumn: true,
               showFirstLastButtons: true,
               showEmptyRows: false,
-              dataRowMaxHeight: 100,
+              // dataRowMaxHeight: 100,
               sortColumnIndex: _sortColumnIndex,
               sortAscending: _sortAscending,
               headingRowColor:

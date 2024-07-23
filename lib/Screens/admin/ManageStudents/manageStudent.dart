@@ -7,6 +7,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
+import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/addStudent.dart';
 import 'package:easy_attend/Screens/admin/ManageStudents/edit_Student.dart';
 
@@ -18,6 +19,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ManageStudentPage extends StatefulWidget {
   const ManageStudentPage({super.key});
@@ -187,7 +189,7 @@ class StudentDataSource extends DataTableSource {
     notifyListeners(); // Notifie les auditeurs des modifications
   }
 
-  // Méthode pour filtrer les données par filiere
+  // Méthode pour filtrer les données par statut
   void filterByStatut(bool? statut) {
     if (statut == null) {
       filteredData = List.from(studentData);
@@ -258,7 +260,8 @@ class StudentDataSource extends DataTableSource {
   DataRow getRow(int index) {
     String imageUrl = filteredData[index].student['image'] ??
         "assets/admin.jpg"; // Default image
-
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
     final data = filteredData[index];
     return DataRow(
       selected: _selectedRows.contains(index),
@@ -270,101 +273,144 @@ class StudentDataSource extends DataTableSource {
         return _getRowColor(index);
       }),
       cells: [
-        DataCell(Text('${data.student['matricule']}'.toUpperCase())),
-        DataCell(Text('${data.student['nom']}'.toUpperCase())),
-        DataCell(Text('${data.student['prenom']}'.toUpperCase())),
-        DataCell(Text('${data.student['email']}'.toLowerCase())),
-        DataCell(Text('${data.student['phone']}'.toUpperCase())),
+        DataCell(Text('${data.student['matricule']}'.toUpperCase(),
+            style: TextStyle(
+                fontSize: isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        DataCell(Text(
+          '${data.student['nom']}'.toUpperCase(),
+          style: TextStyle(
+              fontSize: isSmallScreen ? FontSize.xSmall : FontSize.medium),
+        )),
         DataCell(
-          imageUrl.startsWith('http')
-              ? GFAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.grey[200],
-                  backgroundImage: NetworkImage(imageUrl))
-              : GFAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.grey[200],
-                  backgroundImage: AssetImage(imageUrl),
-                ),
+          ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxWidth: isSmallScreen ? 45 : 90), //SET max width
+              child: Text(
+                '${data.student['prenom']}'.toUpperCase(),
+                style: TextStyle(
+                    fontSize:
+                        isSmallScreen ? FontSize.xSmall : FontSize.medium),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              )),
         ),
-        DataCell(Text('${data.student['filiere']}'.toUpperCase())),
-        DataCell(Text('${data.student['niveau']}'.toUpperCase())),
+        if (!isSmallScreen)
+          DataCell(ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 100), //SET max width
+              child: Text(
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  '${data.student['email']}'.toLowerCase(),
+                  style: TextStyle(
+                      fontSize:
+                          isSmallScreen ? FontSize.xSmall : FontSize.medium)))),
+        DataCell(Text('${data.student['phone']}'.toUpperCase(),
+            style: TextStyle(
+                fontSize: isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        if (!isSmallScreen)
+          DataCell(
+            imageUrl.startsWith('http')
+                ? GFAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: NetworkImage(imageUrl))
+                : GFAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: AssetImage(imageUrl),
+                  ),
+          ),
+        if (!isSmallScreen)
+          DataCell(Text('${data.student['filiere']}'.toUpperCase(),
+              style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        if (!isSmallScreen)
+          DataCell(Text('${data.student['niveau']}'.toUpperCase(),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? FontSize.xSmall : FontSize.medium))),
         data.student['statut'] == 1
-            ? DataCell(Column(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      //Page de modification en passant l'ID
-                      showDialog(
-                          context: context,
-                          builder: (context) => Dialog(
-                                child: SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.8,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.8,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: EditStudentPage(
-                                          studentId: data.student['uid'],
-                                          callback: callback),
-                                    )),
-                              ));
-                    },
-                  ),
-                  const SizedBox(
-                    height: 3,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: AppColors.redColor),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Row(
-                            children: [
-                              Icon(Icons.warning, color: Colors.orange),
-                              SizedBox(width: 10),
-                              Text(
-                                "Supprimer l' étudiant",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20.0,
-                                  color: Colors.orange,
-                                ),
-                              ),
-                            ],
-                          ),
-                          content: const Text(
-                            'Êtes-vous sûr de vouloir supprimer cet étudiant ? ',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
+            ? DataCell(PopupMenuButton(
+                color: AppColors.secondaryColor,
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                          child: InkWell(
+                              onTap: () {
+                                //Page de modification en passant l'ID
+                                currentPage.updatePage(MenuItems(
+                                    text: "Modifier Etudiant",
+                                    tap: EditStudentPage(
+                                        studentId: data.student['uid'],
+                                        callback: callback)));
                               },
-                              child: const Text('Annuler'),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                await set_Data().deleteOneStudent(
-                                  data.student['uid'],
-                                  context,
-                                );
-                                callback();
+                              child: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                  ),
+                                  Text("Editer",
+                                      style: TextStyle(color: AppColors.white))
+                                ],
+                              ))),
+                      PopupMenuItem(
+                          child: InkWell(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Row(
+                                      children: [
+                                        Icon(Icons.warning,
+                                            color: Colors.orange),
+                                        SizedBox(width: 10),
+                                        Text(
+                                          "Supprimer l' étudiant",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20.0,
+                                            color: Colors.orange,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    content: const Text(
+                                      'Êtes-vous sûr de vouloir supprimer cet étudiant ? ',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Annuler'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          await set_Data().deleteOneStudent(
+                                            data.student['uid'],
+                                            context,
+                                          );
+                                          callback();
 
-                                Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Supprimer'),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
-                              child: const Text('Supprimer'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ))
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.delete, color: AppColors.redColor),
+                                  Text("Supprimer",
+                                      style: TextStyle(color: AppColors.white))
+                                ],
+                              ))),
+                    ]))
             : DataCell(
                 IconButton(
                   icon: const Icon(
@@ -445,7 +491,7 @@ class StudentDataSource extends DataTableSource {
   }
 }
 
-// Widget représentant la table paginée des cours
+// Widget représentant la table paginée des étudiants
 
 class StudentPaginatedTable extends StatefulWidget {
   final List<StudentData> studentData;
@@ -496,6 +542,7 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
   @override
   Widget build(BuildContext context) {
     bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
 
     TextFormField searchField = TextFormField(
       controller: _searchController,
@@ -523,584 +570,559 @@ class _StudentPaginatedTableState extends State<StudentPaginatedTable> {
       },
     );
 
-    return SingleChildScrollView(
-        child: Padding(
-      padding: const EdgeInsets.all(5),
-      child: Column(
-        children: [
-          _selectedFiltre
-              ? const Text(
-                  textAlign: TextAlign.center,
-                  "Gestion des étudiants",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.secondaryColor,
-                      fontSize: FontSize.xxxLarge),
-                )
-              : const Text(
-                  textAlign: TextAlign.center,
-                  "Corbeille des étudiants",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.secondaryColor,
-                      fontSize: FontSize.xxxLarge),
-                ),
-          const SizedBox(height: 15),
-          if (!isSmallScreen)
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: searchField,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 2,
-                  child: DropdownButtonFormField(
-                    dropdownColor: Colors.white,
-                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
-                    elevation: 18,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedFiltre = value == 'Actif' ? true : false;
+    return Column(
+      children: [
+        SingleChildScrollView(
+            child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Column(
+            children: [
+              if (!isSmallScreen)
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: searchField,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: DropdownButtonFormField(
+                        dropdownColor: Colors.white,
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 12.0),
+                        elevation: 18,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedFiltre = value == 'Actif' ? true : false;
 
-                        _dataSource.filterByStatut(_selectedFiltre);
-                      });
-                    },
-                    items: ['Actif', 'Corbeille']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }).toList(),
-                    icon:
-                        const Icon(Icons.arrow_drop_down, color: Colors.black),
-                    decoration: InputDecoration(
-                      labelText: 'Filtrer par statut',
-                      contentPadding: const EdgeInsets.all(10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(
-                          color: AppColors.secondaryColor,
-                          width: 3.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide:
-                            const BorderSide(color: Colors.blue, width: 3.0),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 2,
-                  child: DropdownButtonFormField<Filiere>(
-                    dropdownColor: Colors.white,
-                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
-                    value: _selectedFiliere,
-                    elevation: 18,
-                    onChanged: (Filiere? value) {
-                      setState(() {
-                        _selectedFiliere = value;
-                        _dataSource.filterByFiliere(value!.nomFiliere);
-                      });
-                    },
-                    items: widget.allFilieres
-                        .map<DropdownMenuItem<Filiere>>((Filiere value) {
-                      return DropdownMenuItem<Filiere>(
-                        value: value,
-                        child: Text(
-                          value.nomFiliere,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }).toList(),
-                    icon:
-                        const Icon(Icons.arrow_drop_down, color: Colors.black),
-                    decoration: InputDecoration(
-                      labelText: 'Filière',
-                      contentPadding: const EdgeInsets.all(10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(
-                          color: AppColors.secondaryColor,
-                          width: 3.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(
-                            color: AppColors.secondaryColor, width: 3.0),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                if (_selectedFiliere != null)
-                  Expanded(
-                    flex: 2,
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedNiveau,
-                      dropdownColor: Colors.white,
-                      style: const TextStyle(color: Colors.black),
-                      onChanged: (String? value) {
-                        setState(() {
-                          _selectedNiveau = value!;
-                          _dataSource.filterByNiveau(value);
-                        });
-                      },
-                      items: _selectedFiliere!.niveaux
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(
-                            value,
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
-                      icon: const Icon(Icons.arrow_drop_down,
-                          color: Colors.black),
-                      decoration: InputDecoration(
-                        labelText: 'Niveau',
-                        contentPadding: const EdgeInsets.all(10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: AppColors.secondaryColor,
-                            width: 3.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                              color: AppColors.secondaryColor, width: 3.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                const SizedBox(width: 10),
-                IconButton(
-                  color: Colors.blue,
-                  splashColor: Colors.transparent,
-                  icon: const Icon(Icons.refresh),
-                  onPressed: () async {
-                    await widget.callback2();
-                  },
-                ),
-                IconButton(
-                  color: Colors.green,
-                  splashColor: Colors.transparent,
-                  icon: const Icon(Icons.add),
-                  onPressed: () async {
-                    showDialog(
-                        context: context,
-                        builder: (context) => Dialog(
-                              child: SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.8,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.8,
-                                  child:
-                                      AddStudent(callback: widget.callback2)),
-                            ));
-                  },
-                ),
-                IconButton(
-                  color: Colors.red,
-                  onPressed: () async {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Row(
-                          children: [
-                            Icon(
-                              Icons.warning,
-                              color: Colors.orange,
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              "Supprimer tous les étudiants",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: FontSize.medium,
-                                  color: Colors.orange),
-                            ),
-                          ],
-                        ),
-                        content: const Text(
-                            'Êtes-vous sûr de vouloir supprimer tous les étudiants?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Annuler'),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              await set_Data().deleteAllStudents(context);
-                              Navigator.of(context).pop();
-                              await widget.callback2();
-                            },
-                            child: const Text('Supprimer'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.delete),
-                ),
-              ],
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  searchField,
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField(
-                    dropdownColor: Colors.white,
-                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
-                    elevation: 18,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedFiltre = value == 'Actif' ? true : false;
-
-                        _dataSource.filterByStatut(_selectedFiltre);
-                      });
-                    },
-                    items: ['Actif', 'Corbeille']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }).toList(),
-                    icon:
-                        const Icon(Icons.arrow_drop_down, color: Colors.black),
-                    decoration: InputDecoration(
-                      labelText: 'Filtrer par statut',
-                      contentPadding: const EdgeInsets.all(10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(
-                          color: Colors.blue,
-                          width: 3.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide:
-                            const BorderSide(color: Colors.blue, width: 3.0),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<Filiere>(
-                    dropdownColor: Colors.white,
-                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
-                    value: _selectedFiliere,
-                    elevation: 18,
-                    onChanged: (Filiere? value) {
-                      setState(() {
-                        _selectedFiliere = value;
-                        _dataSource.filterByFiliere(value!.nomFiliere);
-                      });
-                    },
-                    items: widget.allFilieres
-                        .map<DropdownMenuItem<Filiere>>((Filiere value) {
-                      return DropdownMenuItem<Filiere>(
-                        value: value,
-                        child: Text(
-                          value.nomFiliere,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }).toList(),
-                    icon:
-                        const Icon(Icons.arrow_drop_down, color: Colors.black),
-                    decoration: InputDecoration(
-                      labelText: 'Filière',
-                      contentPadding: const EdgeInsets.all(10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(
-                          color: Colors.blue,
-                          width: 3.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide:
-                            const BorderSide(color: Colors.blue, width: 3.0),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  if (_selectedFiliere != null)
-                    DropdownButtonFormField<String>(
-                      value: _selectedNiveau,
-                      dropdownColor: Colors.white,
-                      style: const TextStyle(color: Colors.black),
-                      onChanged: (String? value) {
-                        setState(() {
-                          _selectedNiveau = value!;
-                          _dataSource.filterByNiveau(value);
-                        });
-                      },
-                      items: _selectedFiliere!.niveaux
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(
-                            value,
-                            style: const TextStyle(color: Colors.black),
-                          ),
-                        );
-                      }).toList(),
-                      icon: const Icon(Icons.arrow_drop_down,
-                          color: Colors.black),
-                      decoration: InputDecoration(
-                        labelText: 'Niveau',
-                        contentPadding: const EdgeInsets.all(10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 3.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.blue, width: 3.0),
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        color: Colors.blue,
-                        splashColor: Colors.transparent,
-                        icon: const Icon(Icons.refresh),
-                        onPressed: () async {
-                          await widget.callback2();
+                            _dataSource.filterByStatut(_selectedFiltre);
+                          });
                         },
+                        items: ['Actif', 'Corbeille']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        }).toList(),
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Filtrer par statut',
+                          contentPadding: const EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: AppColors.secondaryColor,
+                              width: 3.0,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Colors.blue, width: 3.0),
+                          ),
+                        ),
                       ),
-                      IconButton(
-                        color: Colors.green,
-                        splashColor: Colors.transparent,
-                        icon: const Icon(Icons.add),
-                        onPressed: () async {
-                          showDialog(
-                              context: context,
-                              builder: (context) => Dialog(
-                                    child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.8,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.8,
-                                        child: AddStudent(
-                                            callback: widget.callback2)),
-                                  ));
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: DropdownButtonFormField<Filiere>(
+                        dropdownColor: Colors.white,
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 12.0),
+                        value: _selectedFiliere,
+                        elevation: 18,
+                        onChanged: (Filiere? value) {
+                          setState(() {
+                            _selectedFiliere = value;
+                            _dataSource.filterByFiliere(value!.nomFiliere);
+                          });
                         },
+                        items: widget.allFilieres
+                            .map<DropdownMenuItem<Filiere>>((Filiere value) {
+                          return DropdownMenuItem<Filiere>(
+                            value: value,
+                            child: Text(
+                              value.nomFiliere,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        }).toList(),
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Filière',
+                          contentPadding: const EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: AppColors.secondaryColor,
+                              width: 3.0,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: AppColors.secondaryColor, width: 3.0),
+                          ),
+                        ),
                       ),
-                      IconButton(
-                        color: Colors.red,
-                        onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.warning,
-                                    color: Colors.orange,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    "Supprimer tous les étudiants",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: FontSize.small,
-                                        color: Colors.orange),
-                                  ),
-                                ],
+                    ),
+                    const SizedBox(width: 10),
+                    if (_selectedFiliere != null)
+                      Expanded(
+                        flex: 2,
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedNiveau,
+                          dropdownColor: Colors.white,
+                          style: const TextStyle(color: Colors.black),
+                          onChanged: (String? value) {
+                            setState(() {
+                              _selectedNiveau = value!;
+                              _dataSource.filterByNiveau(value);
+                            });
+                          },
+                          items: _selectedFiliere!.niveaux
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: const TextStyle(color: Colors.black),
                               ),
-                              content: const Text(
-                                  'Êtes-vous sûr de vouloir supprimer tous les étudiants?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Annuler'),
+                            );
+                          }).toList(),
+                          icon: const Icon(Icons.arrow_drop_down,
+                              color: Colors.black),
+                          decoration: InputDecoration(
+                            labelText: 'Niveau',
+                            contentPadding: const EdgeInsets.all(10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                color: AppColors.secondaryColor,
+                                width: 3.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                  color: AppColors.secondaryColor, width: 3.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(width: 10),
+                    IconButton(
+                      color: Colors.blue,
+                      splashColor: Colors.transparent,
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () async {
+                        await widget.callback2();
+                      },
+                    ),
+                    IconButton(
+                      color: Colors.green,
+                      splashColor: Colors.transparent,
+                      icon: const Icon(Icons.add),
+                      onPressed: () async {
+                        currentPage.updatePage(MenuItems(
+                            text: "Ajouter un étudiant",
+                            tap: AddStudent(callback: widget.callback2)));
+                      },
+                    ),
+                    IconButton(
+                      color: Colors.red,
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Row(
+                              children: [
+                                Icon(
+                                  Icons.warning,
+                                  color: Colors.orange,
                                 ),
-                                TextButton(
-                                  onPressed: () async {
-                                    await set_Data().deleteAllStudents(context);
-                                    Navigator.of(context).pop();
-                                    await widget.callback2();
-                                  },
-                                  child: const Text('Supprimer'),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Supprimer tous les étudiants",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: FontSize.medium,
+                                      color: Colors.orange),
                                 ),
                               ],
                             ),
-                          );
+                            content: const Text(
+                                'Êtes-vous sûr de vouloir supprimer tous les étudiants?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Annuler'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  await set_Data().deleteAllStudents(context);
+                                  Navigator.of(context).pop();
+                                  await widget.callback2();
+                                },
+                                child: const Text('Supprimer'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.delete),
+                    ),
+                  ],
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      searchField,
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField(
+                        dropdownColor: Colors.white,
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 12.0),
+                        elevation: 18,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedFiltre = value == 'Actif' ? true : false;
+
+                            _dataSource.filterByStatut(_selectedFiltre);
+                          });
                         },
-                        icon: const Icon(Icons.delete),
+                        items: ['Actif', 'Corbeille']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        }).toList(),
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Filtrer par statut',
+                          contentPadding: const EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: Colors.blue,
+                              width: 3.0,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Colors.blue, width: 3.0),
+                          ),
+                        ),
                       ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<Filiere>(
+                        dropdownColor: Colors.white,
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 12.0),
+                        value: _selectedFiliere,
+                        elevation: 18,
+                        onChanged: (Filiere? value) {
+                          setState(() {
+                            _selectedFiliere = value;
+                            _dataSource.filterByFiliere(value!.nomFiliere);
+                          });
+                        },
+                        items: widget.allFilieres
+                            .map<DropdownMenuItem<Filiere>>((Filiere value) {
+                          return DropdownMenuItem<Filiere>(
+                            value: value,
+                            child: Text(
+                              value.nomFiliere,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        }).toList(),
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Filière',
+                          contentPadding: const EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: Colors.blue,
+                              width: 3.0,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Colors.blue, width: 3.0),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (_selectedFiliere != null)
+                        DropdownButtonFormField<String>(
+                          value: _selectedNiveau,
+                          dropdownColor: Colors.white,
+                          style: const TextStyle(color: Colors.black),
+                          onChanged: (String? value) {
+                            setState(() {
+                              _selectedNiveau = value!;
+                              _dataSource.filterByNiveau(value);
+                            });
+                          },
+                          items: _selectedFiliere!.niveaux
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            );
+                          }).toList(),
+                          icon: const Icon(Icons.arrow_drop_down,
+                              color: Colors.black),
+                          decoration: InputDecoration(
+                            labelText: 'Niveau',
+                            contentPadding: const EdgeInsets.all(10),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                color: Colors.blue,
+                                width: 3.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                  color: Colors.blue, width: 3.0),
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            color: Colors.blue,
+                            splashColor: Colors.transparent,
+                            icon: const Icon(Icons.refresh),
+                            onPressed: () async {
+                              await widget.callback2();
+                            },
+                          ),
+                          IconButton(
+                            color: Colors.green,
+                            splashColor: Colors.transparent,
+                            icon: const Icon(Icons.add),
+                            onPressed: () async {
+                              currentPage.updatePage(MenuItems(
+                                  text: "Ajouter un étudiant",
+                                  tap: AddStudent(callback: widget.callback2)));
+                            },
+                          ),
+                          IconButton(
+                            color: Colors.red,
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.warning,
+                                        color: Colors.orange,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        "Supprimer tous les étudiants",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: FontSize.small,
+                                            color: Colors.orange),
+                                      ),
+                                    ],
+                                  ),
+                                  content: const Text(
+                                      'Êtes-vous sûr de vouloir supprimer tous les étudiants?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Annuler'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        await set_Data()
+                                            .deleteAllStudents(context);
+                                        Navigator.of(context).pop();
+                                        await widget.callback2();
+                                      },
+                                      child: const Text('Supprimer'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.delete),
+                          ),
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ),
-            ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: PaginatedDataTable(
-              actions: isSmallScreen ? null : [],
-              header: const Text(
-                'Liste des étudiants',
-                textAlign: TextAlign.center,
-              ),
-              columns: [
-                DataColumn(
-                  numeric: true,
-                  label: const Text(
-                    'Matricule',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (StudentData d) => d.student['matricule'],
-                      columnIndex,
-                      ascending),
-                ),
-                DataColumn(
-                  label: const Text(
-                    'Nom',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (StudentData d) => d.student['nom'],
-                      columnIndex,
-                      ascending),
-                ),
-                DataColumn(
-                  label: const Text(
-                    'Prénom',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (StudentData d) => d.student['prenom'],
-                      columnIndex,
-                      ascending),
-                ),
-                DataColumn(
-                  label: const Text(
-                    'Email',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (StudentData d) => d.student['email'],
-                      columnIndex,
-                      ascending),
-                ),
-                DataColumn(
-                  label: const Text(
-                    'Phone',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (StudentData d) => d.student['phone'],
-                      columnIndex,
-                      ascending),
-                ),
-                const DataColumn(
-                  label: Text(
-                    'Photo',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
-                DataColumn(
-                  label: const Text(
-                    'Filiere',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: PaginatedDataTable(
+                  actions: isSmallScreen ? null : [],
+                  header: const Text(
+                    'Liste des étudiants',
+                    textAlign: TextAlign.center,
                   ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (StudentData d) => d.student['filiere'],
-                      columnIndex,
-                      ascending),
+                  columns: [
+                    DataColumn(
+                      numeric: true,
+                      label: const Text(
+                        'Matricule',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (int columnIndex, bool ascending) =>
+                          _sort<String>(
+                              (StudentData d) => d.student['matricule'],
+                              columnIndex,
+                              ascending),
+                    ),
+                    DataColumn(
+                      label: const Text(
+                        'Nom',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (int columnIndex, bool ascending) =>
+                          _sort<String>((StudentData d) => d.student['nom'],
+                              columnIndex, ascending),
+                    ),
+                    DataColumn(
+                      label: const Text(
+                        'Prénom',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (int columnIndex, bool ascending) =>
+                          _sort<String>((StudentData d) => d.student['prenom'],
+                              columnIndex, ascending),
+                    ),
+                    if (!isSmallScreen)
+                      DataColumn(
+                        label: const Text(
+                          'Email',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        onSort: (int columnIndex, bool ascending) =>
+                            _sort<String>((StudentData d) => d.student['email'],
+                                columnIndex, ascending),
+                      ),
+                    DataColumn(
+                      label: const Text(
+                        'Phone',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (int columnIndex, bool ascending) =>
+                          _sort<String>((StudentData d) => d.student['phone'],
+                              columnIndex, ascending),
+                    ),
+                    if (!isSmallScreen)
+                      const DataColumn(
+                        label: Text(
+                          'Photo',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    if (!isSmallScreen)
+                      DataColumn(
+                        label: const Text(
+                          'Filiere',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        onSort: (int columnIndex, bool ascending) =>
+                            _sort<String>(
+                                (StudentData d) => d.student['filiere'],
+                                columnIndex,
+                                ascending),
+                      ),
+                    if (!isSmallScreen)
+                      DataColumn(
+                        label: const Text(
+                          'Niveau',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        onSort: (int columnIndex, bool ascending) =>
+                            _sort<String>(
+                                (StudentData d) => d.student['niveau'],
+                                columnIndex,
+                                ascending),
+                      ),
+                    const DataColumn(
+                      label: Text(
+                        'Actions',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                  source: _dataSource,
+                  rowsPerPage: isSmallScreen ? 8 : 10,
+                  columnSpacing: 10,
+                  horizontalMargin: 10,
+                  showCheckboxColumn: true,
+                  showFirstLastButtons: true,
+                  showEmptyRows: false,
+                  sortColumnIndex: _sortColumnIndex,
+                  sortAscending: _sortAscending,
+                  headingRowColor:
+                      MaterialStateColor.resolveWith((states) => Colors.grey),
                 ),
-                DataColumn(
-                  label: const Text(
-                    'Niveau',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (StudentData d) => d.student['niveau'],
-                      columnIndex,
-                      ascending),
-                ),
-                const DataColumn(
-                  label: Text(
-                    'Actions',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-              source: _dataSource,
-              rowsPerPage: 5,
-              columnSpacing: 10,
-              horizontalMargin: 10,
-              showCheckboxColumn: true,
-              showFirstLastButtons: true,
-              showEmptyRows: false,
-              dataRowMaxHeight: 100,
-              sortColumnIndex: _sortColumnIndex,
-              sortAscending: _sortAscending,
-              headingRowColor:
-                  MaterialStateColor.resolveWith((states) => Colors.grey),
-            ),
-          )
-        ],
-      ),
-    ));
+              )
+            ],
+          ),
+        ))
+      ],
+    );
   }
 }

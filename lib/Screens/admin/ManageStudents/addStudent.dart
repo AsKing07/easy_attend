@@ -50,7 +50,7 @@ class _AddStudentState extends State<AddStudent>
               GFTabBar(
                 indicatorColor: AppColors.secondaryColor,
                 tabBarColor: Theme.of(context).cardColor,
-                width: screenWidth / 1.5,
+                width: screenWidth > 600 ? screenWidth / 1.5 : screenWidth,
                 tabBarHeight: 58,
                 length: 2,
                 controller: tabController,
@@ -58,19 +58,16 @@ class _AddStudentState extends State<AddStudent>
                   Tab(
                     icon: Icon(Icons.add),
                     child: Text(
-                      'Un seul',
+                      "Ajout d'un étudiant",
                     ),
                   ),
                   Tab(
                     icon: Icon(Icons.file_upload),
                     child: Text(
-                      'Plusieurs',
+                      'Ajout depuis un fichier',
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(
-                height: 10,
               ),
               GFTabBarView(
                 controller: tabController,
