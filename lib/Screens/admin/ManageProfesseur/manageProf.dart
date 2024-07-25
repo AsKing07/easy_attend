@@ -420,7 +420,9 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
   bool _selectedFiltre = true;
   String? _selectedNiveau;
   late final TextEditingController _searchController = TextEditingController();
-
+  int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final int _defaultRowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final List<int> _availableRowsPerPage = [5, 10, 20, 50];
   @override
   void initState() {
     super.initState();
@@ -473,350 +475,385 @@ class _ProfPaginatedTableState extends State<ProfPaginatedTable> {
     );
 
     return SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
         child: Padding(
-      padding: const EdgeInsets.all(5),
-      child: Column(
-        children: [
-          _selectedFiltre
-              ? const Text(
-                  textAlign: TextAlign.center,
-                  "Gestion des professeurs",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.secondaryColor,
-                      fontSize: FontSize.xxxLarge),
-                )
-              : const Text(
-                  textAlign: TextAlign.center,
-                  "Corbeille des professeurs",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.secondaryColor,
-                      fontSize: FontSize.xxxLarge),
-                ),
-          const SizedBox(height: 15),
-          if (!isSmallScreen)
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: searchField,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 2,
-                  child: DropdownButtonFormField(
-                    dropdownColor: Colors.white,
-                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
-                    elevation: 18,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedFiltre = value == 'Actif' ? true : false;
-
-                        _dataSource.filterByStatut(_selectedFiltre);
-                      });
-                    },
-                    items: ['Actif', 'Corbeille']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    }).toList(),
-                    icon:
-                        const Icon(Icons.arrow_drop_down, color: Colors.black),
-                    decoration: InputDecoration(
-                      labelText: 'Filtrer par statut',
-                      contentPadding: const EdgeInsets.all(10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(
+          padding: const EdgeInsets.all(5),
+          child: Column(
+            children: [
+              _selectedFiltre
+                  ? const Text(
+                      textAlign: TextAlign.center,
+                      "Gestion des professeurs",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
                           color: AppColors.secondaryColor,
-                          width: 3.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide:
-                            const BorderSide(color: Colors.blue, width: 3.0),
-                      ),
+                          fontSize: FontSize.xxxLarge),
+                    )
+                  : const Text(
+                      textAlign: TextAlign.center,
+                      "Corbeille des professeurs",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.secondaryColor,
+                          fontSize: FontSize.xxxLarge),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  color: Colors.blue,
-                  splashColor: Colors.transparent,
-                  icon: const Icon(Icons.refresh),
-                  onPressed: () async {
-                    await widget.callback2();
-                  },
-                ),
-                IconButton(
-                  color: Colors.green,
-                  splashColor: Colors.transparent,
-                  icon: const Icon(Icons.add),
-                  onPressed: () async {
-                    currentPage.updatePage(MenuItems(
-                        text: "Ajouter Professeur",
-                        tap: addNewProfPage(callback: widget.callback2)));
-                  },
-                ),
-                IconButton(
-                  color: Colors.red,
-                  onPressed: () async {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Row(
-                          children: [
-                            Icon(
-                              Icons.warning,
-                              color: Colors.orange,
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              "Supprimer tous les professeurs",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: FontSize.medium,
-                                  color: Colors.orange),
-                            ),
-                          ],
-                        ),
-                        content: const Text(
-                            'Êtes-vous sûr de vouloir supprimer tous les professeurs?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Annuler'),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              await set_Data().deleteAllProf(context);
-                              Navigator.of(context).pop();
-                              await widget.callback2();
-                            },
-                            child: const Text('Supprimer'),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.delete),
-                ),
-              ],
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: [
-                  searchField,
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField(
-                    dropdownColor: Colors.white,
-                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
-                    elevation: 18,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedFiltre = value == 'Actif' ? true : false;
+              const SizedBox(height: 15),
+              if (!isSmallScreen)
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: searchField,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: DropdownButtonFormField(
+                        dropdownColor: Colors.white,
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 12.0),
+                        elevation: 18,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedFiltre = value == 'Actif' ? true : false;
 
-                        _dataSource.filterByStatut(_selectedFiltre);
-                      });
-                    },
-                    items: ['Actif', 'Corbeille']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.bold),
+                            _dataSource.filterByStatut(_selectedFiltre);
+                          });
+                        },
+                        items: ['Actif', 'Corbeille']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        }).toList(),
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Filtrer par statut',
+                          contentPadding: const EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: AppColors.secondaryColor,
+                              width: 3.0,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Colors.blue, width: 3.0),
+                          ),
                         ),
-                      );
-                    }).toList(),
-                    icon:
-                        const Icon(Icons.arrow_drop_down, color: Colors.black),
-                    decoration: InputDecoration(
-                      labelText: 'Filtrer par statut',
-                      contentPadding: const EdgeInsets.all(10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(
-                          color: Colors.blue,
-                          width: 3.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide:
-                            const BorderSide(color: Colors.blue, width: 3.0),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        color: Colors.blue,
-                        splashColor: Colors.transparent,
-                        icon: const Icon(Icons.refresh),
-                        onPressed: () async {
-                          await widget.callback2();
-                        },
-                      ),
-                      IconButton(
-                        color: Colors.green,
-                        splashColor: Colors.transparent,
-                        icon: const Icon(Icons.add),
-                        onPressed: () async {
-                          currentPage.updatePage(MenuItems(
-                              text: "Ajouter Professeur",
-                              tap: addNewProfPage(callback: widget.callback2)));
-                        },
-                      ),
-                      IconButton(
-                        color: Colors.red,
-                        onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.warning,
-                                    color: Colors.orange,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(
-                                    "Supprimer tous les professeurs",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: FontSize.small,
-                                        color: Colors.orange),
-                                  ),
-                                ],
-                              ),
-                              content: const Text(
-                                  'Êtes-vous sûr de vouloir supprimer tous les professeurs?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Annuler'),
+                    const SizedBox(width: 10),
+                    IconButton(
+                      color: Colors.blue,
+                      splashColor: Colors.transparent,
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () async {
+                        await widget.callback2();
+                      },
+                    ),
+                    IconButton(
+                      color: Colors.green,
+                      splashColor: Colors.transparent,
+                      icon: const Icon(Icons.add),
+                      onPressed: () async {
+                        currentPage.updatePage(MenuItems(
+                            text: "Ajouter Professeur",
+                            tap: addNewProfPage(callback: widget.callback2)));
+                      },
+                    ),
+                    IconButton(
+                      color: Colors.red,
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Row(
+                              children: [
+                                Icon(
+                                  Icons.warning,
+                                  color: Colors.orange,
                                 ),
-                                TextButton(
-                                  onPressed: () async {
-                                    await set_Data().deleteAllProf(context);
-                                    Navigator.of(context).pop();
-                                    await widget.callback2();
-                                  },
-                                  child: const Text('Supprimer'),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Supprimer tous les professeurs",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: FontSize.medium,
+                                      color: Colors.orange),
                                 ),
                               ],
                             ),
-                          );
+                            content: const Text(
+                                'Êtes-vous sûr de vouloir supprimer tous les professeurs?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Annuler'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  await set_Data().deleteAllProf(context);
+                                  Navigator.of(context).pop();
+                                  await widget.callback2();
+                                },
+                                child: const Text('Supprimer'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.delete),
+                    ),
+                  ],
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      searchField,
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField(
+                        dropdownColor: Colors.white,
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 12.0),
+                        elevation: 18,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedFiltre = value == 'Actif' ? true : false;
+
+                            _dataSource.filterByStatut(_selectedFiltre);
+                          });
                         },
-                        icon: const Icon(Icons.delete),
+                        items: ['Actif', 'Corbeille']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        }).toList(),
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.black),
+                        decoration: InputDecoration(
+                          labelText: 'Filtrer par statut',
+                          contentPadding: const EdgeInsets.all(10),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: Colors.blue,
+                              width: 3.0,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Colors.blue, width: 3.0),
+                          ),
+                        ),
                       ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            color: Colors.blue,
+                            splashColor: Colors.transparent,
+                            icon: const Icon(Icons.refresh),
+                            onPressed: () async {
+                              await widget.callback2();
+                            },
+                          ),
+                          IconButton(
+                            color: Colors.green,
+                            splashColor: Colors.transparent,
+                            icon: const Icon(Icons.add),
+                            onPressed: () async {
+                              currentPage.updatePage(MenuItems(
+                                  text: "Ajouter Professeur",
+                                  tap: addNewProfPage(
+                                      callback: widget.callback2)));
+                            },
+                          ),
+                          IconButton(
+                            color: Colors.red,
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.warning,
+                                        color: Colors.orange,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        "Supprimer tous les professeurs",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: FontSize.small,
+                                            color: Colors.orange),
+                                      ),
+                                    ],
+                                  ),
+                                  content: const Text(
+                                      'Êtes-vous sûr de vouloir supprimer tous les professeurs?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Annuler'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        await set_Data().deleteAllProf(context);
+                                        Navigator.of(context).pop();
+                                        await widget.callback2();
+                                      },
+                                      child: const Text('Supprimer'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.delete),
+                          ),
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ),
-            ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: PaginatedDataTable(
-              actions: isSmallScreen ? null : [],
-              header: const Text(
-                'Liste des professeurs',
-                textAlign: TextAlign.center,
-              ),
-              columns: [
-                DataColumn(
-                  label: const Text(
-                    'Nom',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (ProfData d) => d.prof['nom'], columnIndex, ascending),
                 ),
-                DataColumn(
-                  label: const Text(
-                    'Prénom',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (ProfData d) => d.prof['prenom'], columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: const Text(
-                    'Email',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (int columnIndex, bool ascending) => _sort<String>(
-                      (ProfData d) => d.prof['email'], columnIndex, ascending),
-                ),
-                if (!isSmallScreen)
-                  DataColumn(
-                    label: const Text(
-                      'Phone',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: PaginatedDataTable(
+                  actions: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Text('Ligne par page:'),
+                        const SizedBox(width: 8),
+                        DropdownButton<int>(
+                          value: _rowsPerPage,
+                          items: _availableRowsPerPage
+                              .map((int value) => DropdownMenuItem<int>(
+                                    value: value,
+                                    child: Text('$value'),
+                                  ))
+                              .toList(),
+                          onChanged: (int? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _rowsPerPage = newValue;
+                              });
+                            }
+                          },
+                        ),
+                      ],
                     ),
-                    onSort: (int columnIndex, bool ascending) => _sort<String>(
-                        (ProfData d) => d.prof['phone'],
-                        columnIndex,
-                        ascending),
+                  ],
+                  header: const Text(
+                    'Liste des professeurs',
+                    textAlign: TextAlign.center,
                   ),
-                if (!isSmallScreen)
-                  const DataColumn(
-                    label: Text(
-                      'Photo',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                  columns: [
+                    DataColumn(
+                      label: const Text(
+                        'Nom',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (int columnIndex, bool ascending) =>
+                          _sort<String>((ProfData d) => d.prof['nom'],
+                              columnIndex, ascending),
                     ),
-                  ),
-                const DataColumn(
-                  label: Text(
-                    'Actions',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
+                    DataColumn(
+                      label: const Text(
+                        'Prénom',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (int columnIndex, bool ascending) =>
+                          _sort<String>((ProfData d) => d.prof['prenom'],
+                              columnIndex, ascending),
+                    ),
+                    DataColumn(
+                      label: const Text(
+                        'Email',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (int columnIndex, bool ascending) =>
+                          _sort<String>((ProfData d) => d.prof['email'],
+                              columnIndex, ascending),
+                    ),
+                    if (!isSmallScreen)
+                      DataColumn(
+                        label: const Text(
+                          'Phone',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        onSort: (int columnIndex, bool ascending) =>
+                            _sort<String>((ProfData d) => d.prof['phone'],
+                                columnIndex, ascending),
+                      ),
+                    if (!isSmallScreen)
+                      const DataColumn(
+                        label: Text(
+                          'Photo',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    const DataColumn(
+                      label: Text(
+                        'Actions',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                  source: _dataSource,
+                  rowsPerPage: _rowsPerPage,
+                  availableRowsPerPage: _availableRowsPerPage,
+                  onRowsPerPageChanged: (int? value) {
+                    setState(() {
+                      _rowsPerPage = value ?? _defaultRowsPerPage;
+                    });
+                  },
+                  columnSpacing: 10,
+                  horizontalMargin: 10,
+                  showCheckboxColumn: true,
+                  showFirstLastButtons: true,
+                  sortColumnIndex: _sortColumnIndex,
+                  sortAscending: _sortAscending,
+                  headingRowColor:
+                      MaterialStateColor.resolveWith((states) => Colors.grey),
                 ),
-              ],
-              source: _dataSource,
-              rowsPerPage: isSmallScreen ? 8 : 10,
-              columnSpacing: 10,
-              horizontalMargin: 10,
-              showCheckboxColumn: true,
-              showFirstLastButtons: true,
-              showEmptyRows: false,
-              sortColumnIndex: _sortColumnIndex,
-              sortAscending: _sortAscending,
-              headingRowColor:
-                  MaterialStateColor.resolveWith((states) => Colors.grey),
-            ),
-          )
-        ],
-      ),
-    ));
+              )
+            ],
+          ),
+        ));
   }
 }

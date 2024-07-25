@@ -3,6 +3,7 @@
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
+import 'package:easy_attend/Screens/etudiant/MakeQuery/makeQueryMobile.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,6 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
   late Map<String, dynamic> etudiant;
   dynamic studentQuery;
   bool dataIsLoaded = false;
-  List<DataRow> rows = [];
 
   void loadCurrentStudent() async {
     setState(() {
@@ -54,100 +54,8 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
         studentQuery = null;
       });
       if (query.isNotEmpty) {
-        String date = DateFormat('EEEE, d MMMM yyyy', 'fr')
-            .format(DateTime.parse(query['dateCreation']).toLocal());
-        String queryStatusFromDB = query["statut"];
         setState(() {
           studentQuery = query;
-          rows.add(DataRow(cells: [
-            DataCell(Text(date.toUpperCase())),
-            DataCell(Text('${query['type']}')),
-            DataCell(Text('${query['sujet']}')),
-            DataCell(Text('${query['details']}')),
-            queryStatusFromDB == "2"
-                ? const DataCell(Text(
-                    'En attente de traitement',
-                    style: TextStyle(color: AppColors.studColor),
-                  ))
-                : queryStatusFromDB == "1"
-                    ? const DataCell(Text(
-                        'Approuvé',
-                        style: TextStyle(color: AppColors.greenColor),
-                      ))
-                    : const DataCell(Text(
-                        'Rejeté',
-                        style: TextStyle(color: AppColors.redColor),
-                      )),
-            DataCell(GFButton(
-              onPressed: () async {
-                showDialog(
-                    context: context,
-                    builder: (context) => GFFloatingWidget(
-                            child: GFAlert(
-                          title: 'Supprimer la requête ?',
-                          content: const Text(
-                              'Êtes-vous sûr de vouloir supprimer votre requête ?'),
-                          bottomBar: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              GFButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                shape: GFButtonShape.pills,
-                                child: const Text('Annuler',
-                                    style: TextStyle(color: AppColors.white)),
-                              ),
-                              const SizedBox(width: 5),
-                              GFButton(
-                                onPressed: () async {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => Center(
-                                            child: LoadingAnimationWidget
-                                                .hexagonDots(
-                                                    color: AppColors
-                                                        .secondaryColor,
-                                                    size: 100),
-                                          ));
-                                  try {
-                                    http.Response response = await http.delete(
-                                      Uri.parse(
-                                          '$BACKEND_URL/api/requete/${studentQuery['idRequete']}'),
-                                    );
-
-                                    if (response.statusCode == 200) {
-                                      Navigator.pop(context);
-                                    } else {
-                                      Helper().ErrorMessage(context);
-                                    }
-                                  } catch (e) {
-                                    Helper().ErrorMessage(context);
-                                  }
-                                  setState(() {
-                                    rows.clear();
-                                  });
-                                  loadCurrentStudent();
-                                  Navigator.of(context).pop();
-                                },
-                                color: GFColors.DANGER,
-                                shape: GFButtonShape.pills,
-                                icon: const Icon(Icons.delete,
-                                    color: AppColors.white),
-                                position: GFPosition.end,
-                                text: 'Supprimer',
-                              )
-                            ],
-                          ),
-                        )));
-              },
-              text: "Supprimer",
-              textColor: AppColors.white,
-//child: Icon(Icons.delete),
-              shape: GFButtonShape.square,
-              color: GFColors.DANGER,
-            ))
-          ]));
         });
       }
       setState(() {
@@ -198,74 +106,6 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
                         ? CrossAxisAlignment.center
                         : CrossAxisAlignment.start,
                     children: [
-                      if (studentQuery != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: GFAccordion(
-                            collapsedTitleBackgroundColor: AppColors.shadow,
-                            title: 'Vous avez une requête',
-                            contentChild: SizedBox(
-                                width: double.infinity,
-                                child: Scrollbar(
-                                    controller: _scrollController,
-                                    thumbVisibility: true,
-                                    child: SingleChildScrollView(
-                                      controller: _scrollController,
-                                      scrollDirection: Axis.horizontal,
-                                      child: DataTable(
-                                          border: TableBorder.all(width: 2),
-                                          dataRowMaxHeight: 100,
-                                          headingRowColor:
-                                              MaterialStateColor.resolveWith(
-                                                  (states) => Colors.black),
-                                          columns: const [
-                                            DataColumn(
-                                                label: Text(
-                                              'Date',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'Type',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'Objet',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'Détails',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'Statut',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'Actions',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
-                                            )),
-                                          ],
-                                          rows: rows),
-                                    ))),
-                          ),
-                        ),
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.all(5),
@@ -297,6 +137,7 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
                                     Padding(
                                       padding: const EdgeInsets.only(top: 7),
                                       child: Text(
+                                        textAlign: TextAlign.center,
                                         "Formulez et soumettez votre requête en toute facilité",
                                         style: GoogleFonts.poppins(
                                             color: AppColors.secondaryColor,
@@ -307,6 +148,144 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
                                     ),
                                     const Text(
                                         "Une requête par étudiant à la fois"),
+                                    if (studentQuery != null)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 10),
+                                        child: Center(
+                                          child: GFButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        'Détails de ma requête'),
+                                                    content:
+                                                        SingleChildScrollView(
+                                                      child: ListBody(
+                                                        children: <Widget>[
+                                                          Text(
+                                                              'Date: ${DateFormat('EEEE, d MMMM yyyy', 'fr').format(DateTime.parse(studentQuery['dateCreation']).toLocal()).toUpperCase()}'),
+                                                          Text(
+                                                              'Type: ${studentQuery['type']}'),
+                                                          Text(
+                                                              'Objet: ${studentQuery['sujet']}'),
+                                                          Text(
+                                                              'Détails: ${studentQuery['details']}'),
+                                                          Text(
+                                                              'Statut: ${studentQuery['statut'] == "2" ? "En attente de traitement" : studentQuery['statut'] == "1" ? "Approuvé" : "Rejeté"}'),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      GFButton(
+                                                        onPressed: () async {
+                                                          showDialog(
+                                                              context: context,
+                                                              builder: (context) =>
+                                                                  GFFloatingWidget(
+                                                                      child:
+                                                                          GFAlert(
+                                                                    title:
+                                                                        'Supprimer la requête ?',
+                                                                    content:
+                                                                        const Text(
+                                                                            'Êtes-vous sûr de vouloir supprimer votre requête ?'),
+                                                                    bottomBar:
+                                                                        Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .end,
+                                                                      children: <Widget>[
+                                                                        GFButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            Navigator.of(context).pop();
+                                                                          },
+                                                                          shape:
+                                                                              GFButtonShape.pills,
+                                                                          child: const Text(
+                                                                              'Annuler',
+                                                                              style: TextStyle(color: AppColors.white)),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                            width:
+                                                                                5),
+                                                                        GFButton(
+                                                                          onPressed:
+                                                                              () async {
+                                                                            showDialog(
+                                                                                context: context,
+                                                                                builder: (context) => Center(
+                                                                                      child: LoadingAnimationWidget.hexagonDots(color: AppColors.secondaryColor, size: 100),
+                                                                                    ));
+                                                                            try {
+                                                                              http.Response response = await http.delete(
+                                                                                Uri.parse('$BACKEND_URL/api/requete/${studentQuery['idRequete']}'),
+                                                                              );
+
+                                                                              if (response.statusCode == 200) {
+                                                                                Navigator.pop(context);
+                                                                              } else {
+                                                                                Helper().ErrorMessage(context);
+                                                                              }
+                                                                            } catch (e) {
+                                                                              Helper().ErrorMessage(context);
+                                                                            }
+
+                                                                            loadCurrentStudent();
+                                                                            Navigator.of(context).pop();
+                                                                            Navigator.of(context).pop();
+                                                                          },
+                                                                          color:
+                                                                              GFColors.DANGER,
+                                                                          shape:
+                                                                              GFButtonShape.pills,
+                                                                          icon: const Icon(
+                                                                              Icons.delete,
+                                                                              color: AppColors.white),
+                                                                          position:
+                                                                              GFPosition.end,
+                                                                          text:
+                                                                              'Supprimer',
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  )));
+                                                        },
+                                                        text: "Supprimer",
+                                                        textColor:
+                                                            AppColors.white,
+//child: Icon(Icons.delete),
+                                                        shape:
+                                                            GFButtonShape.pills,
+                                                        color: GFColors.DANGER,
+                                                      ),
+                                                      GFButton(
+                                                        color: AppColors
+                                                            .secondaryColor,
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        shape:
+                                                            GFButtonShape.pills,
+                                                        child: const Text(
+                                                            'Fermer'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            text: "Voir ma requête",
+                                            textColor: AppColors.white,
+                                            shape: GFButtonShape.pills,
+                                            color: AppColors.secondaryColor,
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ),
@@ -452,9 +431,6 @@ class _MakeQueryMobileState extends State<MakeQueryMobile> {
                                                     x,
                                                     context);
 
-                                                setState(() {
-                                                  rows.clear();
-                                                });
                                                 loadCurrentStudent();
 
                                                 _objetController.clear();

@@ -347,7 +347,9 @@ class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
   int _sortColumnIndex = 0;
   String? _selectedCategory;
   late final TextEditingController _searchController = TextEditingController();
-
+  int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final int _defaultRowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final List<int> _availableRowsPerPage = [5, 10, 20, 50];
   @override
   void initState() {
     super.initState();
@@ -392,109 +394,132 @@ class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
             _dataSource.filterBySearch(value);
           });
         });
-    return PaginatedDataTable(
-      actions: [
-        SizedBox(
-          width: isSmallScreen ? 100 : 200,
-          child: searchField,
-        ),
-        // Menu déroulant pour filtrer par statut
-        SizedBox(
-          width: isSmallScreen ? 150 : 250,
-          child: DropdownButtonFormField<String>(
-            decoration: InputDecoration(
-              labelText: 'Filtrer par statut',
-              contentPadding: const EdgeInsets.all(10),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(
-                  color: AppColors.secondaryColor,
-                  width: 3.0,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Expanded(flex: 1, child: searchField),
+                Expanded(
+                  flex: 1,
+                  child: DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: 'Filtrer par statut',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: AppColors.secondaryColor,
+                          width: 3.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                            color: AppColors.secondaryColor, width: 3.0),
+                      ),
+                    ),
+                    value: _selectedCategory,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedCategory = newValue;
+                        _dataSource.filter(newValue);
+                      });
+                    },
+                    items: <String>['Présent', 'Absent']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(
-                    color: AppColors.secondaryColor, width: 3.0),
-              ),
+              ],
             ),
-            value: _selectedCategory,
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedCategory = newValue;
-                _dataSource.filter(newValue);
-              });
-            },
-            items: <String>['Présent', 'Absent']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
           ),
-        ),
-        // Bouton pour rafraîchir les données
-        IconButton(
-          color: Colors.blue,
-          splashColor: Colors.transparent,
-          icon: const Icon(Icons.refresh),
-          onPressed: () async {
-            await widget.callback!();
-          },
-        ),
-        // Bouton pour imprimer en PDF
-        IconButton(
-          color: Colors.black,
-          onPressed: () async {
-            await widget.imprimPdf!();
-          },
-          icon: const Icon(Icons.print),
-        ),
-      ],
-      header: const Text(
-        'Liste de présence',
-        textAlign: TextAlign.center,
+          SizedBox(
+            width: double.infinity,
+            child: PaginatedDataTable(
+              actions: [
+                // Bouton pour rafraîchir les données
+                IconButton(
+                  color: Colors.blue,
+                  splashColor: Colors.transparent,
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () async {
+                    await widget.callback!();
+                  },
+                ),
+                // Bouton pour imprimer en PDF
+                IconButton(
+                  color: Colors.black,
+                  onPressed: () async {
+                    await widget.imprimPdf!();
+                  },
+                  icon: const Icon(Icons.print),
+                ),
+              ],
+              header: const Text(
+                'Présence',
+              ),
+              columns: [
+                DataColumn(
+                  numeric: true,
+                  label: const Text(
+                    'Matricule',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (AttendanceData d) => d.matricule,
+                      columnIndex,
+                      ascending),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Nom',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (AttendanceData d) => d.nom, columnIndex, ascending),
+                ),
+                DataColumn(
+                  label: const Text(
+                    'Présence',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (AttendanceData d) => d.statut.toString(),
+                      columnIndex,
+                      ascending),
+                ),
+              ],
+              source: _dataSource,
+              rowsPerPage: _rowsPerPage,
+              availableRowsPerPage: _availableRowsPerPage,
+              onRowsPerPageChanged: (int? value) {
+                setState(() {
+                  _rowsPerPage = value ?? _defaultRowsPerPage;
+                });
+              },
+              columnSpacing: 10,
+              horizontalMargin: 10,
+              showCheckboxColumn: true,
+              showFirstLastButtons: true,
+              showEmptyRows: false,
+              sortColumnIndex: _sortColumnIndex,
+              sortAscending: _sortAscending,
+              headingRowColor:
+                  MaterialStateColor.resolveWith((states) => Colors.grey),
+            ),
+          )
+        ],
       ),
-      columns: [
-        DataColumn(
-          numeric: true,
-          label: const Text(
-            'Matricule',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          onSort: (int columnIndex, bool ascending) => _sort<String>(
-              (AttendanceData d) => d.matricule, columnIndex, ascending),
-        ),
-        DataColumn(
-          label: const Text(
-            'Nom',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          onSort: (int columnIndex, bool ascending) => _sort<String>(
-              (AttendanceData d) => d.nom, columnIndex, ascending),
-        ),
-        DataColumn(
-          label: const Text(
-            'Présence',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          onSort: (int columnIndex, bool ascending) => _sort<String>(
-              (AttendanceData d) => d.statut.toString(),
-              columnIndex,
-              ascending),
-        ),
-      ],
-      source: _dataSource,
-      rowsPerPage: 7,
-      columnSpacing: 10,
-      horizontalMargin: 10,
-      showCheckboxColumn: true,
-      showFirstLastButtons: true,
-      showEmptyRows: false,
-      sortColumnIndex: _sortColumnIndex,
-      sortAscending: _sortAscending,
-      headingRowColor: MaterialStateColor.resolveWith((states) => Colors.grey),
     );
   }
 }

@@ -423,7 +423,9 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
   Filiere? _selectedFiliere;
   String? _selectedNiveau;
   late final TextEditingController _searchController = TextEditingController();
-
+  int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  int _defaultRowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final List<int> _availableRowsPerPage = [5, 10, 20, 50];
   @override
   void initState() {
     super.initState();
@@ -812,7 +814,31 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
           SizedBox(
             width: double.infinity,
             child: PaginatedDataTable(
-              actions: isSmallScreen ? null : [],
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Text('Ligne par page:'),
+                    const SizedBox(width: 8),
+                    DropdownButton<int>(
+                      value: _rowsPerPage,
+                      items: _availableRowsPerPage
+                          .map((int value) => DropdownMenuItem<int>(
+                                value: value,
+                                child: Text('$value'),
+                              ))
+                          .toList(),
+                      onChanged: (int? newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            _rowsPerPage = newValue;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
               header: const Text(
                 'Liste des cours',
                 textAlign: TextAlign.center,
@@ -875,12 +901,18 @@ class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
                 ),
               ],
               source: _dataSource,
-              rowsPerPage: isSmallScreen ? 8 : 10,
+              rowsPerPage: _rowsPerPage,
+              availableRowsPerPage: _availableRowsPerPage,
+              onRowsPerPageChanged: (int? value) {
+                setState(() {
+                  _rowsPerPage = value ?? _defaultRowsPerPage;
+                });
+              },
               columnSpacing: 10,
               horizontalMargin: 10,
               showCheckboxColumn: true,
               showFirstLastButtons: true,
-              showEmptyRows: false,
+
               // dataRowMaxHeight: 100,
               sortColumnIndex: _sortColumnIndex,
               sortAscending: _sortAscending,

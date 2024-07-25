@@ -25,25 +25,13 @@ class _CourseCardState extends State<CourseCard> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double cardPadding = screenWidth > 1200 ? 20 : 10;
-    double fontSizeTitle = screenWidth > 1200 ? 17 : 15;
+    double cardPadding = screenWidth > 1200 ? 19 : 9;
+    double fontSizeTitle = screenWidth > 1200 ? 16 : 14;
     double fontSizeSubTitle = screenWidth > 1200 ? 15 : 10;
 
-    return
-        // !dataIsLoaded
-        //     ? LoadingAnimationWidget.hexagonDots(
-        //         color: AppColors.secondaryColor, size: 50)
-        //     :
-        InkWell(
+    return InkWell(
       onTap: () {
         widget.onTap();
-        //   if (widget.option == "professeur" || widget.option == 'admin') {
-        //   Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) => OneCoursePage(course: widget.course)),
-        //   );
-        // }
       },
       child: Card(
         elevation: 5,

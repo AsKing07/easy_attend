@@ -36,6 +36,9 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
   int nbreCours = 0;
   Set<dynamic> profFiliere = {};
   dynamic _selectedCourse;
+  String? _selectedNiveau;
+  late final TextEditingController _searchController = TextEditingController();
+  String? searchTerm;
 
   final StreamController<List<dynamic>> _coursFilterstreamController =
       StreamController<List<dynamic>>();
@@ -154,6 +157,32 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
 
   @override
   Widget build(BuildContext context) {
+    TextFormField searchField = TextFormField(
+      controller: _searchController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Rechercher',
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.only(top: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: AppColors.secondaryColor,
+            width: 3.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide:
+              const BorderSide(color: AppColors.secondaryColor, width: 3.0),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          searchTerm = value;
+        });
+      },
+    );
     return Scaffold(
         body: !dataIsLoaded
             ? Center(
@@ -351,12 +380,8 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                       height: 100,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 24.0, left: 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Column(
+                        padding: const EdgeInsets.only(top: 24.0, left: 12),
+                        child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -378,46 +403,119 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              DropdownButtonHideUnderline(
-                                child: GFDropdown(
-                                  elevation: 18,
-                                  style:
-                                      const TextStyle(color: AppColors.white),
-                                  hint: const Text(
-                                    'Choisissez une filière pour trier',
-                                    style: TextStyle(color: AppColors.white),
-                                  ),
-                                  border: const BorderSide(
-                                      color: AppColors.secondaryColor,
-                                      width: 1),
-                                  dropdownColor: AppColors.secondaryColor,
-                                  dropdownButtonColor: AppColors.secondaryColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  value: _selectedFiliere,
-                                  items: Allfilieres.map<
-                                      DropdownMenuItem<Filiere>>(
-                                    (Filiere value) {
-                                      return DropdownMenuItem<Filiere>(
-                                        value: value,
-                                        child: Text(
-                                          value.nomFiliere,
+                              SizedBox(
+                                width: double.infinity,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: DropdownButtonFormField(
+                                        elevation: 18,
+                                        style: const TextStyle(
+                                            color: AppColors.secondaryColor,
+                                            fontSize: 12),
+                                        value: _selectedFiliere,
+                                        items: Allfilieres.map<
+                                            DropdownMenuItem<Filiere>>(
+                                          (Filiere value) {
+                                            return DropdownMenuItem<Filiere>(
+                                              value: value,
+                                              child: Text(
+                                                value.nomFiliere,
+                                                style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            );
+                                          },
+                                        ).toList(),
+                                        onChanged: (Filiere? value) {
+                                          setState(() {
+                                            _selectedFiliere = value!;
+                                            _selectedNiveau = null;
+                                            filterCourses();
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                          label: const Text("Filière"),
+                                          contentPadding:
+                                              const EdgeInsets.all(10),
+                                          border: OutlineInputBorder(
+                                            borderSide: const BorderSide(
+                                                color: AppColors.secondaryColor,
+                                                width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            borderSide: const BorderSide(
+                                                color: AppColors.secondaryColor,
+                                                width: 3.0),
+                                          ),
                                         ),
-                                      );
-                                    },
-                                  ).toList(),
-                                  onChanged: (Filiere? value) {
-                                    setState(() {
-                                      _selectedFiliere = value!;
-                                      filterCourses();
-                                    });
-                                  },
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    if (_selectedFiliere != null)
+                                      Expanded(
+                                          flex: 2,
+                                          child: DropdownButtonFormField(
+                                            elevation: 18,
+                                            style: const TextStyle(
+                                                color:
+                                                    AppColors.secondaryColor),
+                                            value: _selectedNiveau,
+                                            items: _selectedFiliere!.niveaux
+                                                .map<DropdownMenuItem<String>>(
+                                              (value) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(
+                                                    value,
+                                                  ),
+                                                );
+                                              },
+                                            ).toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _selectedNiveau = value!;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              label: const Text("Niveau"),
+                                              contentPadding:
+                                                  const EdgeInsets.all(10),
+                                              border: OutlineInputBorder(
+                                                borderSide: const BorderSide(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    width: 1),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                borderSide: const BorderSide(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    width: 3.0),
+                                              ),
+                                            ),
+                                          )),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(flex: 2, child: searchField)
+                                  ],
                                 ),
                               )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                            ])),
                     SizedBox(
                         height: 200, // Hauteur du conteneur principal
                         width: double.infinity,
@@ -441,8 +539,29 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                       error: snapshot.error.toString());
                                 } else {
                                   List<dynamic>? courses = snapshot.data;
+                                  if (searchTerm != null &&
+                                      searchTerm!.isNotEmpty &&
+                                      courses != null) {
+                                    courses = courses
+                                        .where((course) => course['nomCours']
+                                            .toLowerCase()
+                                            .contains(
+                                                searchTerm!.toLowerCase()))
+                                        .toList();
+                                  }
+                                  if (_selectedNiveau != null &&
+                                      _selectedNiveau!.isNotEmpty &&
+                                      courses != null) {
+                                    courses = courses
+                                        .where((course) =>
+                                            course['niveau'].toLowerCase() ==
+                                            _selectedNiveau!.toLowerCase())
+                                        .toList();
+                                  }
+
                                   if (courses == null || courses.isEmpty) {
                                     return Card(
+                                      color: Colors.orange,
                                       elevation: 8.0,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -455,6 +574,7 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                               'Pas de cours ici pour le moment',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
+                                                color: AppColors.white,
                                                 fontSize: FontSize.xxLarge,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -492,14 +612,6 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                                     setState(() {
                                                       _selectedCourse = course;
                                                     });
-                                                    // Navigator.push(
-                                                    //   context,
-                                                    //   MaterialPageRoute(
-                                                    //     builder: (context) =>
-                                                    //         OneCoursePage(
-                                                    //             course: course),
-                                                    //   ),
-                                                    // );
                                                   },
                                                 ),
                                               ),
@@ -517,6 +629,7 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                           ? SizedBox(
                               width: double.infinity,
                               child: Card(
+                                color: Colors.orange,
                                 elevation: 8.0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.0),
@@ -527,6 +640,7 @@ class _ProfDashboardWebState extends State<ProfDashboardWeb> {
                                       'Une fois que vous aurez sélectionné un cours, il apparaîtra ici',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
+                                          color: AppColors.white,
                                           fontSize: FontSize.xxLarge,
                                           fontWeight: FontWeight.bold),
                                     )),

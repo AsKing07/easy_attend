@@ -26,7 +26,11 @@ void main() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
   runApp(MultiProvider(
-    providers: [ChangeNotifierProvider(create: (_) => PageModelAdmin())],
+    providers: [
+      ChangeNotifierProvider(create: (_) => PageModelAdmin()),
+      ChangeNotifierProvider(create: (_) => PageModelProf()),
+      ChangeNotifierProvider(create: (_) => PageModelStud()),
+    ],
     child: MyApp(
       prefs: prefs,
     ),

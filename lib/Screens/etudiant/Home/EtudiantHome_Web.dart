@@ -7,6 +7,7 @@ import 'package:easy_attend/Screens/settings_screen.dart';
 import 'package:easy_attend/Widgets/PageOnMaintenance.dart';
 import 'package:easy_attend/Widgets/drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EtudiantHomeWeb extends StatefulWidget {
   const EtudiantHomeWeb({super.key});
@@ -16,11 +17,6 @@ class EtudiantHomeWeb extends StatefulWidget {
 }
 
 class _EtudiantHomeWebState extends State<EtudiantHomeWeb> {
-  MenuItems currentPage = MenuItems(
-      text: 'Mon Dashboard',
-      icon: Icons.dashboard_outlined,
-      tap: const EtudiantDashboard(),
-      isSelected: true);
   List<MenuItems> items = [
     MenuItems(
         text: 'Mon Dashboard',
@@ -42,13 +38,15 @@ class _EtudiantHomeWebState extends State<EtudiantHomeWeb> {
 
   @override
   Widget build(BuildContext context) {
+    var currentPage = Provider.of<PageModelStud>(context);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: AppColors.secondaryColor,
         foregroundColor: Colors.white,
         title: Text(
-          currentPage.text,
+          currentPage.currentPage.text,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: FontSize.medium,
@@ -63,7 +61,7 @@ class _EtudiantHomeWebState extends State<EtudiantHomeWeb> {
               items: items,
               changePage: (MenuItems page) {
                 setState(() {
-                  currentPage = page;
+                  currentPage.updatePage(page);
                   for (var item in items) {
                     item.isSelected = (item == page);
                   }
@@ -71,7 +69,7 @@ class _EtudiantHomeWebState extends State<EtudiantHomeWeb> {
               },
             ),
           ),
-          Expanded(child: currentPage.tap)
+          Expanded(child: currentPage.currentPage.tap)
         ],
       ),
     );

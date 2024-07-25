@@ -96,6 +96,7 @@ class _HelperDrawerState extends State<HelperDrawer> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
+                        textAlign: TextAlign.center,
                         name,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,

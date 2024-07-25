@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
+import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/etudiant/SeeMyAttendance/seeMyAttendanceMobile.dart';
 
 import 'package:easy_attend/Widgets/courseCard.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 class EtudiantDashboardMobile extends StatefulWidget {
   const EtudiantDashboardMobile({super.key});
@@ -35,6 +37,8 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
       StreamController<List<dynamic>>();
   final StreamController<List<dynamic>> _courseStreamController2 =
       StreamController<List<dynamic>>();
+  late final TextEditingController _searchController = TextEditingController();
+  String? searchTerm;
 
   String queryTypeFromDB = "Aucune requete en cours";
 
@@ -103,7 +107,34 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
 
   @override
   Widget build(BuildContext context) {
+    var currentPage = Provider.of<PageModelStud>(context);
     double screenWidth = MediaQuery.of(context).size.width;
+    TextFormField searchField = TextFormField(
+      controller: _searchController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Rechercher',
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.only(top: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: AppColors.secondaryColor,
+            width: 3.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide:
+              const BorderSide(color: AppColors.secondaryColor, width: 3.0),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          searchTerm = value;
+        });
+      },
+    );
 
     return Scaffold(
       body: !dataIsLoaded
@@ -309,9 +340,9 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                           ],
                         ),
                       )),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 24.0, left: 12),
-                    child: Row(
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24.0, left: 12),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -319,7 +350,7 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               "Vos cours",
                               textAlign: TextAlign.left,
                               style: TextStyle(
@@ -327,13 +358,20 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                                   fontSize: FontSize.xxLarge,
                                   fontWeight: FontWeight.w600),
                             ),
-                            Text(
+                            const Text(
                               "Sélectionnez pour consulter la présence :",
                               style: TextStyle(
                                   color: AppColors.secondaryColor,
                                   fontSize: FontSize.medium,
                                   fontWeight: FontWeight.w400),
                             ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child: searchField,
+                            )
                           ],
                         )
                       ],
@@ -359,8 +397,19 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                                       error: snapshot.error.toString());
                                 } else {
                                   List<dynamic>? courses = snapshot.data;
+                                  if (searchTerm != null &&
+                                      searchTerm!.isNotEmpty &&
+                                      courses != null) {
+                                    courses = courses
+                                        .where((course) => course['nomCours']
+                                            .toLowerCase()
+                                            .contains(
+                                                searchTerm!.toLowerCase()))
+                                        .toList();
+                                  }
                                   if (courses!.isEmpty) {
                                     return Card(
+                                        color: Colors.orange,
                                         elevation: 8.0,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -372,6 +421,7 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                                               'Pas de cours pour le moment',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
+                                                  color: AppColors.white,
                                                   fontSize: FontSize.xxLarge,
                                                   fontWeight: FontWeight.bold),
                                             )));
@@ -395,14 +445,21 @@ class _EtudiantDashboardMobileState extends State<EtudiantDashboardMobile> {
                                                         etudiant['filiere'],
                                                     course: course,
                                                     onTap: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                seeMyAttendanceMobilePage(
-                                                                    course:
-                                                                        course)),
-                                                      );
+                                                      currentPage.updatePage(MenuItems(
+                                                          text:
+                                                              '${course['nomCours']}',
+                                                          tap:
+                                                              seeMyAttendanceMobilePage(
+                                                                  course:
+                                                                      course)));
+                                                      // Navigator.push(
+                                                      //   context,
+                                                      //   MaterialPageRoute(
+                                                      //       builder: (context) =>
+                                                      //           seeMyAttendanceMobilePage(
+                                                      //               course:
+                                                      //                   course)),
+                                                      // );
                                                     },
                                                   )),
                                             )

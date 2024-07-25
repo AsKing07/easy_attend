@@ -207,21 +207,7 @@ class _seeMyAttendanceWebWidgetState extends State<seeMyAttendanceWebWidget> {
                                   ),
                                   //totalValue: nombreTotalSeances.toDouble(),
                                 ),
-                                // CircularPercentIndicator(
-                                //   radius: 130.0,
-                                //   animation: true,
-                                //   animationDuration: 1200,
-                                //   lineWidth: 15.0,
-                                //   percent: pourcentageDePresence,
-                                //   center: Text(
-                                //     '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
-                                //     style: const TextStyle(
-                                //         fontWeight: FontWeight.bold,
-                                //         fontSize: 20.0),
-                                //   ),
-                                //   circularStrokeCap: CircularStrokeCap.butt,
-                                //   backgroundColor: Colors.grey,
-                                //   progressColor: AppColors.secondaryColor,
+
                                 // ),
                                 const SizedBox(height: 15),
                                 InkWell(
@@ -332,6 +318,9 @@ class AttendancePaginatedTable extends StatefulWidget {
 }
 
 class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
+  int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final int _defaultRowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final List<int> _availableRowsPerPage = [5, 10, 20, 50];
   @override
   Widget build(BuildContext context) {
     return PaginatedDataTable(
@@ -366,7 +355,13 @@ class _AttendancePaginatedTableState extends State<AttendancePaginatedTable> {
         ),
       ],
       source: AttendanceDataSource(attendanceData: widget.attendanceData),
-      rowsPerPage: 5,
+      rowsPerPage: _rowsPerPage,
+      availableRowsPerPage: _availableRowsPerPage,
+      onRowsPerPageChanged: (int? value) {
+        setState(() {
+          _rowsPerPage = value ?? _defaultRowsPerPage;
+        });
+      },
       columnSpacing: 10,
       horizontalMargin: 10,
       showCheckboxColumn: true,

@@ -415,6 +415,7 @@ class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
                                     List<dynamic>? courses = snapshot.data;
                                     if (courses!.isEmpty) {
                                       return Card(
+                                          color: Colors.orange,
                                           elevation: 8.0,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -426,6 +427,7 @@ class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
                                                 'Pas de cours pour le moment',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
+                                                    color: AppColors.white,
                                                     fontSize: FontSize.xxLarge,
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -469,6 +471,7 @@ class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
                           ? SizedBox(
                               width: double.infinity,
                               child: Card(
+                                color: Colors.orange,
                                 elevation: 8.0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.0),
@@ -479,6 +482,7 @@ class _EtudiantDashboardWebState extends State<EtudiantDashboardWeb> {
                                       'Une fois que vous aurez sélectionné un cours, votre présence apparaîtra ici',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
+                                          color: AppColors.white,
                                           fontSize: FontSize.xxLarge,
                                           fontWeight: FontWeight.bold),
                                     )),

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: file_names, non_constant_identifier_names, use_build_context_synchronously, no_leading_underscores_for_local_identifiers
 
 import 'dart:async';
 import 'dart:convert';
@@ -568,6 +568,9 @@ class _QueryPaginatedTableState extends State<QueryPaginatedTable> {
   bool _sortAscending = true;
   int _sortColumnIndex = 0;
   String selectedFilter = '2';
+  int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  int _defaultRowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final List<int> _availableRowsPerPage = [5, 10, 20, 50];
 
   @override
   void initState() {
@@ -643,6 +646,31 @@ class _QueryPaginatedTableState extends State<QueryPaginatedTable> {
                       'Gestion des Requêtes',
                       textAlign: TextAlign.center,
                     ),
+                    actions: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Text('Ligne par page:'),
+                          const SizedBox(width: 8),
+                          DropdownButton<int>(
+                            value: _rowsPerPage,
+                            items: _availableRowsPerPage
+                                .map((int value) => DropdownMenuItem<int>(
+                                      value: value,
+                                      child: Text('$value'),
+                                    ))
+                                .toList(),
+                            onChanged: (int? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _rowsPerPage = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
                     columns: [
                       DataColumn(
                         label: const Text(
@@ -688,12 +716,17 @@ class _QueryPaginatedTableState extends State<QueryPaginatedTable> {
                       ),
                     ],
                     source: _dataSource,
-                    rowsPerPage: isSmallScreen ? 8 : 10,
+                    rowsPerPage: _rowsPerPage,
+                    availableRowsPerPage: _availableRowsPerPage,
+                    onRowsPerPageChanged: (int? value) {
+                      setState(() {
+                        _rowsPerPage = value ?? _defaultRowsPerPage;
+                      });
+                    },
                     columnSpacing: 10,
                     horizontalMargin: 10,
                     showCheckboxColumn: true,
                     showFirstLastButtons: true,
-                    showEmptyRows: false,
                     sortColumnIndex: _sortColumnIndex,
                     sortAscending: _sortAscending,
                     headingRowColor:

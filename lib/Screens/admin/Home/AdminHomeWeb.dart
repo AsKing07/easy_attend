@@ -21,12 +21,6 @@ class AdminHomeWeb extends StatefulWidget {
 }
 
 class _AdminHomeWebState extends State<AdminHomeWeb> {
-  MenuItems currentPage = MenuItems(
-    text: 'Dashboard',
-    icon: Icons.dashboard_outlined,
-    tap: const AdminDashboard(),
-    isSelected: true,
-  );
   List<MenuItems> items = [
     MenuItems(
         text: 'Dashboard',

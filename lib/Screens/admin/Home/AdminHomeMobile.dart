@@ -44,12 +44,6 @@ class _AdminHomeMobileState extends State<AdminHomeMobile> {
     name = '${utilisateur['nom']}  ${utilisateur['prenom']}';
   }
 
-  MenuItems currentPage = MenuItems(
-      text: 'Mon Dashboard',
-      icon: Icons.dashboard_outlined,
-      tap: const AdminDashboard(),
-      isSelected: true);
-
   List<MenuItems> items = [
     MenuItems(
         text: 'Dashboard',

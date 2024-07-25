@@ -7,6 +7,7 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
+import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/professeur/CoursePage/OneCourseMobilePage.dart';
 import 'package:easy_attend/Screens/professeur/CoursePage/coursePageWebWidget.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:getwidget/components/dropdown/gf_dropdown.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class listOfCourse extends StatefulWidget {
   const listOfCourse({super.key});
@@ -30,12 +32,15 @@ class _listOfCourseState extends State<listOfCourse> {
   bool dataIsLoaded = false;
   List<Filiere> Allfilieres = [];
   Filiere? _selectedFiliere;
+  String? _selectedNiveau;
   final StreamController<List<dynamic>> _coursFilterstreamController =
       StreamController<List<dynamic>>();
   final StreamController<List<dynamic>> _AllCourseStreamController =
       StreamController<List<dynamic>>();
   final BACKEND_URL = dotenv.env['API_URL'];
   dynamic _selectedCourse;
+  late final TextEditingController _searchController = TextEditingController();
+  String? searchTerm;
 
   Future<void> loadAllActifFilieres() async {
     List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
@@ -130,9 +135,34 @@ class _listOfCourseState extends State<listOfCourse> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double aspectRatio =
-        screenWidth > 600 ? 3 : 2; // Plus de hauteur pour les petits écrans
+    bool isSmallscreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
+    TextFormField searchField = TextFormField(
+      controller: _searchController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Rechercher',
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.only(top: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: AppColors.secondaryColor,
+            width: 3.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide:
+              const BorderSide(color: AppColors.secondaryColor, width: 3.0),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          searchTerm = value;
+        });
+      },
+    );
 
     return Scaffold(
       body: !dataIsLoaded
@@ -149,73 +179,265 @@ class _listOfCourseState extends State<listOfCourse> {
                   children: [
                     const SizedBox(height: 15.0),
                     Padding(
-                      padding: const EdgeInsets.only(top: 24.0, left: 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Liste des cours",
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    color: AppColors.secondaryColor,
-                                    fontSize: FontSize.xxLarge,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              const Text(
-                                "Sélectionnez-en un pour le gérer :",
-                                style: TextStyle(
-                                    color: AppColors.secondaryColor,
-                                    fontSize: FontSize.medium,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              DropdownButtonHideUnderline(
-                                child: GFDropdown(
-                                  elevation: 18,
-                                  style:
-                                      const TextStyle(color: AppColors.white),
-                                  hint: const Text(
-                                    'Choisissez une filière pour trier',
-                                    style: TextStyle(color: AppColors.white),
-                                  ),
-                                  border: const BorderSide(
-                                      color: AppColors.secondaryColor,
-                                      width: 1),
-                                  dropdownColor: AppColors.secondaryColor,
-                                  dropdownButtonColor: AppColors.secondaryColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  value: _selectedFiliere,
-                                  items: Allfilieres.map<
-                                      DropdownMenuItem<Filiere>>(
-                                    (Filiere value) {
-                                      return DropdownMenuItem<Filiere>(
-                                        value: value,
-                                        child: Text(
-                                          value.nomFiliere,
+                        padding: const EdgeInsets.only(top: 24.0, left: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Liste des cours",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  color: AppColors.secondaryColor,
+                                  fontSize: FontSize.xxLarge,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            const Text(
+                              "Sélectionnez-en un pour le gérer :",
+                              style: TextStyle(
+                                  color: AppColors.secondaryColor,
+                                  fontSize: FontSize.medium,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            !isSmallscreen
+                                ? SizedBox(
+                                    width: double.infinity,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 2,
+                                          child: DropdownButtonFormField(
+                                            elevation: 18,
+                                            style: const TextStyle(
+                                                color: AppColors.secondaryColor,
+                                                fontSize: 12),
+                                            value: _selectedFiliere,
+                                            items: Allfilieres.map<
+                                                DropdownMenuItem<Filiere>>(
+                                              (Filiere value) {
+                                                return DropdownMenuItem<
+                                                    Filiere>(
+                                                  value: value,
+                                                  child: Text(
+                                                    value.nomFiliere,
+                                                    style: const TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                );
+                                              },
+                                            ).toList(),
+                                            onChanged: (Filiere? value) {
+                                              setState(() {
+                                                _selectedFiliere = value!;
+                                                _selectedNiveau = null;
+                                                filterCourses();
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              label: const Text("Filière"),
+                                              contentPadding:
+                                                  const EdgeInsets.all(10),
+                                              border: OutlineInputBorder(
+                                                borderSide: const BorderSide(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    width: 1),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                borderSide: const BorderSide(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    width: 3.0),
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                      );
-                                    },
-                                  ).toList(),
-                                  onChanged: (Filiere? value) {
-                                    setState(() {
-                                      _selectedFiliere = value!;
-                                      filterCourses();
-                                    });
-                                  },
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        if (_selectedFiliere != null)
+                                          Expanded(
+                                              flex: 2,
+                                              child: DropdownButtonFormField(
+                                                elevation: 18,
+                                                style: const TextStyle(
+                                                    color: AppColors
+                                                        .secondaryColor),
+                                                value: _selectedNiveau,
+                                                items: _selectedFiliere!.niveaux
+                                                    .map<
+                                                        DropdownMenuItem<
+                                                            String>>(
+                                                  (value) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: Text(
+                                                        value,
+                                                      ),
+                                                    );
+                                                  },
+                                                ).toList(),
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    _selectedNiveau = value!;
+                                                  });
+                                                },
+                                                decoration: InputDecoration(
+                                                  label: const Text("Niveau"),
+                                                  contentPadding:
+                                                      const EdgeInsets.all(10),
+                                                  border: OutlineInputBorder(
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color: AppColors
+                                                                .secondaryColor,
+                                                            width: 1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color: AppColors
+                                                                .secondaryColor,
+                                                            width: 3.0),
+                                                  ),
+                                                ),
+                                              )),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(flex: 2, child: searchField)
+                                      ],
+                                    ),
+                                  )
+                                : Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      children: [
+                                        DropdownButtonFormField(
+                                          elevation: 18,
+                                          style: const TextStyle(
+                                              color: AppColors.secondaryColor,
+                                              fontSize: 12),
+                                          value: _selectedFiliere,
+                                          items: Allfilieres.map<
+                                              DropdownMenuItem<Filiere>>(
+                                            (Filiere value) {
+                                              return DropdownMenuItem<Filiere>(
+                                                value: value,
+                                                child: Text(
+                                                  value.nomFiliere,
+                                                  style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              );
+                                            },
+                                          ).toList(),
+                                          onChanged: (Filiere? value) {
+                                            setState(() {
+                                              _selectedFiliere = value!;
+                                              _selectedNiveau = null;
+
+                                              filterCourses();
+                                            });
+                                          },
+                                          decoration: InputDecoration(
+                                            label: const Text("Filière"),
+                                            contentPadding:
+                                                const EdgeInsets.all(10),
+                                            border: OutlineInputBorder(
+                                              borderSide: const BorderSide(
+                                                  color:
+                                                      AppColors.secondaryColor,
+                                                  width: 1),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              borderSide: const BorderSide(
+                                                  color:
+                                                      AppColors.secondaryColor,
+                                                  width: 3.0),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        if (_selectedFiliere != null)
+                                          DropdownButtonFormField(
+                                            elevation: 18,
+                                            style: const TextStyle(
+                                                color:
+                                                    AppColors.secondaryColor),
+                                            value: _selectedNiveau,
+                                            items: _selectedFiliere!.niveaux
+                                                .map<DropdownMenuItem<String>>(
+                                              (value) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(
+                                                    value,
+                                                  ),
+                                                );
+                                              },
+                                            ).toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _selectedNiveau = value!;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              label: const Text("Niveau"),
+                                              contentPadding:
+                                                  const EdgeInsets.all(10),
+                                              border: OutlineInputBorder(
+                                                borderSide: const BorderSide(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    width: 1),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                borderSide: const BorderSide(
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    width: 3.0),
+                                              ),
+                                            ),
+                                          ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        searchField
+                                      ],
+                                    ),
+                                  )
+                          ],
+                        )),
                     SizedBox(
                         height: 200, // Hauteur du conteneur principal
                         width: double.infinity,
@@ -239,8 +461,29 @@ class _listOfCourseState extends State<listOfCourse> {
                                       error: snapshot.error.toString());
                                 } else {
                                   List<dynamic>? courses = snapshot.data;
+                                  if (searchTerm != null &&
+                                      searchTerm!.isNotEmpty &&
+                                      courses != null) {
+                                    courses = courses
+                                        .where((course) => course['nomCours']
+                                            .toLowerCase()
+                                            .contains(
+                                                searchTerm!.toLowerCase()))
+                                        .toList();
+                                  }
+                                  if (_selectedNiveau != null &&
+                                      _selectedNiveau!.isNotEmpty &&
+                                      courses != null) {
+                                    courses = courses
+                                        .where((course) =>
+                                            course['niveau'].toLowerCase() ==
+                                            _selectedNiveau!.toLowerCase())
+                                        .toList();
+                                  }
+
                                   if (courses == null || courses.isEmpty) {
                                     return Card(
+                                      color: Colors.orange,
                                       elevation: 8.0,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -253,6 +496,7 @@ class _listOfCourseState extends State<listOfCourse> {
                                               'Pas de cours ici pour le moment',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
+                                                color: AppColors.white,
                                                 fontSize: FontSize.xxLarge,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -301,20 +545,19 @@ class _listOfCourseState extends State<listOfCourse> {
                                                             _selectedCourse =
                                                                 course;
                                                           })
-                                                        : Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) => OneCourseMobilePage(
-                                                                  nomFiliere: _selectedFiliere != null
-                                                                      ? _selectedFiliere!.nomFiliere
-                                                                      : Allfilieres.isEmpty
-                                                                          ? null
-                                                                          : Allfilieres.firstWhere(
-                                                                              (filiere) => filiere.idDoc == course['idFiliere'],
-                                                                            ).nomFiliere,
-                                                                  course: course),
-                                                            ),
-                                                          );
+                                                        : currentPage.updatePage(MenuItems(
+                                                            text: course['nomCours'],
+                                                            tap: OneCourseMobilePage(
+                                                                nomFiliere: _selectedFiliere != null
+                                                                    ? _selectedFiliere!.nomFiliere
+                                                                    : Allfilieres.isEmpty
+                                                                        ? null
+                                                                        : Allfilieres.firstWhere(
+                                                                            (filiere) =>
+                                                                                filiere.idDoc ==
+                                                                                course['idFiliere'],
+                                                                          ).nomFiliere,
+                                                                course: course)));
                                                   },
                                                 ),
                                               ),
@@ -333,6 +576,7 @@ class _listOfCourseState extends State<listOfCourse> {
                             ? SizedBox(
                                 width: double.infinity,
                                 child: Card(
+                                  color: Colors.orange,
                                   elevation: 8.0,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15.0),
@@ -343,6 +587,7 @@ class _listOfCourseState extends State<listOfCourse> {
                                         'Une fois que vous aurez sélectionné un cours, il apparaîtra ici',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
+                                            color: AppColors.white,
                                             fontSize: FontSize.xxLarge,
                                             fontWeight: FontWeight.bold),
                                       )),

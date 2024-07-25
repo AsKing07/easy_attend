@@ -37,6 +37,33 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
     super.initState();
   }
 
+  Future stopSeance() async {
+    setState(() {
+      started = false;
+    });
+
+    await set_Data().stopSeance(widget.seance['idSeance']);
+    widget.callback();
+    if (screenSize().isPhone(context)) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SeeSeanceAttendanceProf(
+                  seance: widget.seance, course: widget.course)));
+    } else {
+      Navigator.pop(context);
+
+      showDialog(
+          context: context,
+          builder: (context) => Dialog(
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: SeeSeanceAttendanceProf(
+                      seance: widget.seance, course: widget.course))));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -109,25 +136,7 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                             GFButton(
                                               color: AppColors.redColor,
                                               onPressed: () async {
-                                                setState(() {
-                                                  started = false;
-                                                });
-
-                                                await set_Data().stopSeance(
-                                                    widget.seance['idSeance']);
-                                                widget.callback();
-                                                if (!screenSize()
-                                                    .isLargeScreen(context)) {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              SeeSeanceAttendanceProf(
-                                                                  seance: widget
-                                                                      .seance,
-                                                                  course: widget
-                                                                      .course)));
-                                                }
+                                                await stopSeance();
                                               },
                                               icon: const Icon(
                                                 Icons.close,
@@ -160,19 +169,6 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                               ),
                                             ),
                                   Center(
-                                    child: Text(
-                                      textAlign: TextAlign.center,
-                                      'Comment Scanner le Code QR?',
-                                      style: GoogleFonts.poppins(
-                                        textStyle: const TextStyle(
-                                          fontSize: FontSize.large,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Center(
                                       child: Container(
                                     child: Column(
                                       mainAxisAlignment:
@@ -180,43 +176,6 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const InstructionStep(
-                                          number: 1,
-                                          text:
-                                              "Lancer la séance de scan de présence",
-                                          icon: Icons.qr_code_scanner,
-                                        ),
-                                        const SizedBox(height: 20),
-                                        const Center(
-                                          child: InstructionStep(
-                                            number: 2,
-                                            text:
-                                                'Partagez le code QR avec les étudiants',
-                                            icon: Icons.share,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 20),
-                                        const InstructionStep(
-                                          number: 3,
-                                          text:
-                                              'Les étudiants scannent le code QR depuis leur application.',
-                                          icon: Icons.center_focus_strong,
-                                        ),
-                                        const SizedBox(height: 20),
-                                        const InstructionStep(
-                                          number: 4,
-                                          text:
-                                              'Tous les étudiants ont scanné le code.',
-                                          icon: Icons.check_circle_outline,
-                                        ),
-                                        const SizedBox(height: 20),
-                                        const InstructionStep(
-                                          number: 5,
-                                          text:
-                                              'Arrêter la séance pour empêcher tout nouveau scan.',
-                                          icon: Icons.close,
-                                        ),
-                                        const SizedBox(height: 20),
                                         Center(
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -256,7 +215,57 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                             ),
                                             shape: GFButtonShape.pills,
                                             size: GFSize.LARGE,
-                                          )
+                                          ),
+                                        const SizedBox(height: 20),
+                                        Center(
+                                          child: Text(
+                                            textAlign: TextAlign.center,
+                                            'Comment Scanner le Code QR?',
+                                            style: GoogleFonts.poppins(
+                                              textStyle: const TextStyle(
+                                                fontSize: FontSize.large,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        const InstructionStep(
+                                          number: 1,
+                                          text:
+                                              "Lancer la séance de scan de présence",
+                                          icon: Icons.qr_code_scanner,
+                                        ),
+                                        const SizedBox(height: 20),
+                                        const Center(
+                                          child: InstructionStep(
+                                            number: 2,
+                                            text:
+                                                'Partagez le code QR avec les étudiants',
+                                            icon: Icons.share,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        const InstructionStep(
+                                          number: 3,
+                                          text:
+                                              'Les étudiants scannent le code QR depuis leur application.',
+                                          icon: Icons.center_focus_strong,
+                                        ),
+                                        const SizedBox(height: 20),
+                                        const InstructionStep(
+                                          number: 4,
+                                          text:
+                                              'Tous les étudiants ont scanné le code.',
+                                          icon: Icons.check_circle_outline,
+                                        ),
+                                        const SizedBox(height: 20),
+                                        const InstructionStep(
+                                          number: 5,
+                                          text:
+                                              'Arrêter la séance pour empêcher tout nouveau scan.',
+                                          icon: Icons.close,
+                                        ),
                                       ],
                                     ),
                                   ))
@@ -293,25 +302,7 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                             GFButton(
                                               color: AppColors.redColor,
                                               onPressed: () async {
-                                                setState(() {
-                                                  started = false;
-                                                });
-
-                                                await set_Data().stopSeance(
-                                                    widget.seance['idSeance']);
-                                                widget.callback();
-                                                if (!screenSize()
-                                                    .isLargeScreen(context)) {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              SeeSeanceAttendanceProf(
-                                                                  seance: widget
-                                                                      .seance,
-                                                                  course: widget
-                                                                      .course)));
-                                                }
+                                                await stopSeance();
                                               },
                                               icon: const Icon(
                                                 Icons.close,
@@ -352,19 +343,6 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Center(
-                                        child: Text(
-                                          textAlign: TextAlign.center,
-                                          'Comment Scanner le Code QR?',
-                                          style: GoogleFonts.poppins(
-                                            textStyle: const TextStyle(
-                                              fontSize: FontSize.large,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 20),
-                                      Center(
                                           child: Container(
                                         child: Column(
                                           mainAxisAlignment:
@@ -372,41 +350,17 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            const InstructionStep(
-                                              number: 1,
-                                              text:
-                                                  "Lancer la séance de scan de présence",
-                                              icon: Icons.qr_code_scanner,
-                                            ),
-                                            const SizedBox(height: 20),
-                                            const Center(
-                                              child: InstructionStep(
-                                                number: 2,
-                                                text:
-                                                    'Partagez le code QR avec les étudiants',
-                                                icon: Icons.share,
+                                            Center(
+                                              child: Text(
+                                                textAlign: TextAlign.center,
+                                                'Comment Scanner le Code QR?',
+                                                style: GoogleFonts.poppins(
+                                                  textStyle: const TextStyle(
+                                                    fontSize: FontSize.large,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                            const SizedBox(height: 20),
-                                            const InstructionStep(
-                                              number: 3,
-                                              text:
-                                                  'Les étudiants scannent le code QR depuis leur application.',
-                                              icon: Icons.center_focus_strong,
-                                            ),
-                                            const SizedBox(height: 20),
-                                            const InstructionStep(
-                                              number: 4,
-                                              text:
-                                                  'Tous les étudiants ont scanné le code.',
-                                              icon: Icons.check_circle_outline,
-                                            ),
-                                            const SizedBox(height: 20),
-                                            const InstructionStep(
-                                              number: 5,
-                                              text:
-                                                  'Arrêter la séance pour empêcher tout nouveau scan.',
-                                              icon: Icons.close,
                                             ),
                                             const SizedBox(height: 20),
                                             Center(
@@ -450,7 +404,44 @@ class _TakeQrAttendancePageState extends State<TakeQrAttendancePage> {
                                                 ),
                                                 shape: GFButtonShape.pills,
                                                 size: GFSize.LARGE,
-                                              )
+                                              ),
+                                            const SizedBox(height: 20),
+                                            const InstructionStep(
+                                              number: 1,
+                                              text:
+                                                  "Lancer la séance de scan de présence",
+                                              icon: Icons.qr_code_scanner,
+                                            ),
+                                            const SizedBox(height: 20),
+                                            const Center(
+                                              child: InstructionStep(
+                                                number: 2,
+                                                text:
+                                                    'Partagez le code QR avec les étudiants',
+                                                icon: Icons.share,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20),
+                                            const InstructionStep(
+                                              number: 3,
+                                              text:
+                                                  'Les étudiants scannent le code QR depuis leur application.',
+                                              icon: Icons.center_focus_strong,
+                                            ),
+                                            const SizedBox(height: 20),
+                                            const InstructionStep(
+                                              number: 4,
+                                              text:
+                                                  'Tous les étudiants ont scanné le code.',
+                                              icon: Icons.check_circle_outline,
+                                            ),
+                                            const SizedBox(height: 20),
+                                            const InstructionStep(
+                                              number: 5,
+                                              text:
+                                                  'Arrêter la séance pour empêcher tout nouveau scan.',
+                                              icon: Icons.close,
+                                            ),
                                           ],
                                         ),
                                       ))

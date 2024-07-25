@@ -2,7 +2,9 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Widgets/helper.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_attend/Config/styles.dart';
@@ -17,6 +19,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class seeMyAttendanceMobilePage extends StatefulWidget {
   final dynamic course;
@@ -118,11 +121,8 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-
+    var currentPage = Provider.of<PageModelStud>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ma Présence'),
-      ),
       body: !dataIsLoaded
           ? Center(
               child: LoadingAnimationWidget.hexagonDots(
@@ -189,6 +189,17 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 15),
+                          GFButton(
+                              fullWidthButton: false,
+                              shape: GFButtonShape.pills,
+                              text: "RETOUR",
+                              color: GFColors.DANGER,
+                              textStyle:
+                                  const TextStyle(color: AppColors.white),
+                              onPressed: () async {
+                                currentPage.updatePage(currentPage.basePage);
+                              }),
+                          const SizedBox(height: 15),
                           PieChart(
                             dataMap: dataMap,
                             chartType: ChartType.disc,
@@ -201,22 +212,6 @@ class _seeMyAttendanceMobilePageState extends State<seeMyAttendanceMobilePage> {
                             ),
                             //totalValue: nombreTotalSeances.toDouble(),
                           ),
-                          // CircularPercentIndicator(
-                          //   radius: 90.0,
-                          //   animation: true,
-                          //   animationDuration: 1200,
-                          //   lineWidth: 15.0,
-                          //   percent: pourcentageDePresence,
-                          //   center: Text(
-                          //     '${(pourcentageDePresence * 100).toStringAsFixed(2)}% de présence',
-                          //     textAlign: TextAlign.center,
-                          //     style: const TextStyle(
-                          //         fontWeight: FontWeight.bold, fontSize: 20.0),
-                          //   ),
-                          //   circularStrokeCap: CircularStrokeCap.butt,
-                          //   backgroundColor: Colors.grey,
-                          //   progressColor: AppColors.secondaryColor,
-                          // ),
                           Padding(
                             padding: const EdgeInsets.all(5),
                             child: Center(

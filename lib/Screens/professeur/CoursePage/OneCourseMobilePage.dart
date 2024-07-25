@@ -2,6 +2,8 @@
 
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
+import 'package:easy_attend/Models/menuItems.dart';
+import 'package:easy_attend/Screens/admin/seeAttendance/listOfCourse.dart';
 import 'package:easy_attend/Screens/professeur/CoursePage/createNewSeanceWidget.dart';
 import 'package:easy_attend/Screens/professeur/CoursePage/listOfOneCourseSeance.dart';
 import 'package:easy_attend/Screens/professeur/CoursePage/listOfStudentsOfACourseWidget.dart';
@@ -9,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OneCourseMobilePage extends StatefulWidget {
   final dynamic course;
@@ -46,23 +50,14 @@ class _OneCoursePageMobileState extends State<OneCourseMobilePage>
 
   @override
   Widget build(BuildContext context) {
+    var currentPage = Provider.of<PageModelProf>(context);
+    var currentPageAdmin = Provider.of<PageModelAdmin>(context);
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return !dataIsLoaded
         ? LoadingAnimationWidget.hexagonDots(
             color: AppColors.secondaryColor, size: 100)
         : Scaffold(
-            appBar: AppBar(
-              backgroundColor: AppColors.secondaryColor,
-              foregroundColor: Colors.white,
-              title: Text(
-                '${widget.course['nomCours']} -${widget.nomFiliere}${widget.course['niveau']}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: FontSize.medium,
-                ),
-              ),
-            ),
             body: SingleChildScrollView(
                 child: SizedBox(
               width: double.infinity,
@@ -81,10 +76,36 @@ class _OneCoursePageMobileState extends State<OneCourseMobilePage>
                         fontWeight: FontWeight.w600),
                     textAlign: TextAlign.center,
                   ),
+                  GFButton(
+                      fullWidthButton: false,
+                      shape: GFButtonShape.pills,
+                      text: "RETOUR",
+                      color: GFColors.DANGER,
+                      textStyle: const TextStyle(color: AppColors.white),
+                      onPressed: () async {
+                        final SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        final String role = prefs.getString("role") ?? "";
+                        if (role == "admin") {
+                          try {
+                            currentPageAdmin.updatePage(MenuItems(
+                              text: 'Présences',
+                              tap: const listOfCourse(),
+                            ));
+                          } catch (e) {
+                            print(e);
+                          }
+                        } else {
+                          print("Prof");
+                          currentPage.updatePage(currentPage.basePage);
+                        }
+                      }),
+                  const SizedBox(
+                    height: 5,
+                  ),
                   const SizedBox(
                     height: 200,
-                    child:
-                        Image(image: AssetImage("assets/coursImage.jpg")),
+                    child: Image(image: AssetImage("assets/coursImage.jpg")),
                   ),
                   Text(
                     textAlign: TextAlign.center,
@@ -164,7 +185,7 @@ class _OneCoursePageMobileState extends State<OneCourseMobilePage>
                         SizedBox(
                           width: double.infinity,
                           child: GFTabBarView(
-                            height: screenHeight / 1.6,
+                            height: 500,
                             controller: tabController,
                             children: <Widget>[
                               listOfoneCourseSeanceWidget(

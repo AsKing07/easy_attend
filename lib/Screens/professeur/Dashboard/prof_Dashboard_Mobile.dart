@@ -5,6 +5,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
+import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/professeur/CoursePage/OneCourseMobilePage.dart';
 import 'package:easy_attend/Widgets/courseCard.dart';
 import 'package:easy_attend/Widgets/errorWidget2.dart';
@@ -17,6 +18,7 @@ import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
 
 class ProfDashboardMobile extends StatefulWidget {
   const ProfDashboardMobile({super.key});
@@ -39,6 +41,9 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
       StreamController<List<dynamic>>();
   final StreamController<List<dynamic>> _AllcoursStreamController =
       StreamController<List<dynamic>>();
+  late final TextEditingController _searchController = TextEditingController();
+  String? searchTerm;
+  String? _selectedNiveau;
 
   Future<void> loadProf() async {
     final x = await get_Data().loadCurrentProfData();
@@ -151,7 +156,34 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
 
   @override
   Widget build(BuildContext context) {
+    var currentPage = Provider.of<PageModelProf>(context);
     double screenWidth = MediaQuery.of(context).size.width;
+    TextFormField searchField = TextFormField(
+      controller: _searchController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Rechercher',
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.only(top: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: AppColors.secondaryColor,
+            width: 3.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide:
+              const BorderSide(color: AppColors.secondaryColor, width: 3.0),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          searchTerm = value;
+        });
+      },
+    );
 
     return !dataIsLoaded
         ? Center(
@@ -309,46 +341,36 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 24.0, left: 12),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Vos cours",
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                                color: AppColors.textColor,
-                                fontSize: FontSize.xxLarge,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          const Text(
-                            "Sélectionnez en un pour le gérer :",
-                            style: TextStyle(
-                                color: AppColors.secondaryColor,
-                                fontSize: FontSize.medium,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          DropdownButtonHideUnderline(
-                            child: GFDropdown(
+                    padding: const EdgeInsets.only(top: 24.0, left: 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Vos cours",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              color: AppColors.textColor,
+                              fontSize: FontSize.xxLarge,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        const Text(
+                          "Sélectionnez en un pour le gérer :",
+                          style: TextStyle(
+                              color: AppColors.secondaryColor,
+                              fontSize: FontSize.medium,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Column(
+                          children: [
+                            DropdownButtonFormField(
                               elevation: 18,
-                              style: const TextStyle(color: AppColors.white),
-                              hint: const Text(
-                                'Choisissez une filière pour trier',
-                                style: TextStyle(color: AppColors.white),
-                              ),
-                              border: const BorderSide(
-                                  color: AppColors.secondaryColor, width: 1),
-                              dropdownColor: AppColors.secondaryColor,
-                              dropdownButtonColor: AppColors.secondaryColor,
-                              borderRadius: BorderRadius.circular(10),
+                              style: const TextStyle(
+                                  color: AppColors.secondaryColor,
+                                  fontSize: 12),
                               value: _selectedFiliere,
                               items: Allfilieres.map<DropdownMenuItem<Filiere>>(
                                 (Filiere value) {
@@ -356,6 +378,9 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                     value: value,
                                     child: Text(
                                       value.nomFiliere,
+                                      style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   );
                                 },
@@ -363,16 +388,81 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                               onChanged: (Filiere? value) {
                                 setState(() {
                                   _selectedFiliere = value!;
+                                  _selectedNiveau = null;
+
                                   filterCourses();
                                 });
                               },
+                              decoration: InputDecoration(
+                                label: const Text("Filière"),
+                                contentPadding: const EdgeInsets.all(10),
+                                border: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      color: AppColors.secondaryColor,
+                                      width: 1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: const BorderSide(
+                                      color: AppColors.secondaryColor,
+                                      width: 3.0),
+                                ),
+                              ),
                             ),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            if (_selectedFiliere != null)
+                              DropdownButtonFormField(
+                                elevation: 18,
+                                style: const TextStyle(
+                                    color: AppColors.secondaryColor),
+                                value: _selectedNiveau,
+                                items: _selectedFiliere!.niveaux
+                                    .map<DropdownMenuItem<String>>(
+                                  (value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(
+                                        value,
+                                      ),
+                                    );
+                                  },
+                                ).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedNiveau = value!;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  label: const Text("Niveau"),
+                                  contentPadding: const EdgeInsets.all(10),
+                                  border: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                        color: AppColors.secondaryColor,
+                                        width: 1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: const BorderSide(
+                                        color: AppColors.secondaryColor,
+                                        width: 3.0),
+                                  ),
+                                ),
+                              ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(10),
+                              child: searchField,
+                            )
+                          ],
+                        ),
+                      ],
+                    )),
                 SizedBox(
                     height: 150, // Hauteur du conteneur principal
                     width: double.infinity,
@@ -396,8 +486,27 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                   error: snapshot.error.toString());
                             } else {
                               List<dynamic>? courses = snapshot.data;
+                              if (searchTerm != null &&
+                                  searchTerm!.isNotEmpty &&
+                                  courses != null) {
+                                courses = courses
+                                    .where((course) => course['nomCours']
+                                        .toLowerCase()
+                                        .contains(searchTerm!.toLowerCase()))
+                                    .toList();
+                              }
+                              if (_selectedNiveau != null &&
+                                  _selectedNiveau!.isNotEmpty &&
+                                  courses != null) {
+                                courses = courses
+                                    .where((course) =>
+                                        course['niveau'].toLowerCase() ==
+                                        _selectedNiveau!.toLowerCase())
+                                    .toList();
+                              }
                               if (courses == null || courses.isEmpty) {
                                 return Card(
+                                  color: Colors.orange,
                                   elevation: 8.0,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15.0),
@@ -409,6 +518,7 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                           'Pas de cours ici pour le moment',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
+                                            color: AppColors.white,
                                             fontSize: FontSize.xxLarge,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -439,21 +549,41 @@ class _ProfDashboardMobileState extends State<ProfDashboardMobile> {
                                                         ).nomFiliere,
                                               course: course,
                                               onTap: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        OneCourseMobilePage(
-                                                      course: course,
-                                                      nomFiliere: Allfilieres
-                                                          .firstWhere(
-                                                        (filiere) =>
-                                                            filiere.idDoc ==
-                                                            course['idFiliere'],
-                                                      ).nomFiliere,
-                                                    ),
+                                                String nomFiliere =
+                                                    Allfilieres.firstWhere(
+                                                  (filiere) =>
+                                                      filiere.idDoc ==
+                                                      course['idFiliere'],
+                                                ).nomFiliere;
+                                                currentPage
+                                                    .updatePage(MenuItems(
+                                                  text:
+                                                      '${course['nomCours']} - $nomFiliere - ${course['niveau']}',
+                                                  tap: OneCourseMobilePage(
+                                                    course: course,
+                                                    nomFiliere:
+                                                        Allfilieres.firstWhere(
+                                                      (filiere) =>
+                                                          filiere.idDoc ==
+                                                          course['idFiliere'],
+                                                    ).nomFiliere,
                                                   ),
-                                                );
+                                                ));
+                                                // Navigator.push(
+                                                //   context,
+                                                //   MaterialPageRoute(
+                                                //     builder: (context) =>
+                                                //         OneCourseMobilePage(
+                                                //       course: course,
+                                                //       nomFiliere: Allfilieres
+                                                //           .firstWhere(
+                                                //         (filiere) =>
+                                                //             filiere.idDoc ==
+                                                //             course['idFiliere'],
+                                                //       ).nomFiliere,
+                                                //     ),
+                                                //   ),
+                                                // );
                                               },
                                             ),
                                           ),

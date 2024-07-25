@@ -8,6 +8,7 @@ import 'package:easy_attend/Screens/settings_screen.dart';
 import 'package:easy_attend/Widgets/PageOnMaintenance.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfHomeMobile extends StatefulWidget {
@@ -37,11 +38,6 @@ class _ProfHomeMobileState extends State<ProfHomeMobile> {
     name = '${utilisateur['nom']}  ${utilisateur['prenom']}';
   }
 
-  MenuItems currentPage = MenuItems(
-      text: 'Mon Dashboard',
-      icon: Icons.dashboard_outlined,
-      tap: const ProfDashboard(),
-      isSelected: true);
   List<MenuItems> items = [
     MenuItems(
         text: 'Mon Dashboard',
@@ -61,20 +57,21 @@ class _ProfHomeMobileState extends State<ProfHomeMobile> {
 
   @override
   Widget build(BuildContext context) {
+    var currentPage = Provider.of<PageModelProf>(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: AppColors.secondaryColor,
         foregroundColor: Colors.white,
         title: Text(
-          items[_selectedIndex].text,
+          currentPage.currentPage.text,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: FontSize.medium,
           ),
         ),
       ),
-      body: items[_selectedIndex].tap,
+      body: currentPage.currentPage.tap,
       bottomNavigationBar: BottomNavyBar(
         // Barre de navigation inférieure
 
@@ -86,6 +83,7 @@ class _ProfHomeMobileState extends State<ProfHomeMobile> {
           setState(() {
             _selectedIndex = index;
           });
+          currentPage.updatePage(items[_selectedIndex]);
         },
 
         items: [

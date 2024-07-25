@@ -12,6 +12,7 @@ import 'package:easy_attend/Screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:package_info/package_info.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EtudiantHomeMobile extends StatefulWidget {
@@ -72,20 +73,22 @@ class _EtudiantHomeMobileState extends State<EtudiantHomeMobile> {
 
   @override
   Widget build(BuildContext context) {
+    var currentPage = Provider.of<PageModelStud>(context);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: AppColors.secondaryColor,
         foregroundColor: Colors.white,
         title: Text(
-          items[_selectedIndex].text,
+          currentPage.currentPage.text,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: FontSize.medium,
           ),
         ),
       ),
-      body: items[_selectedIndex].tap,
+      body: currentPage.currentPage.tap,
       bottomNavigationBar: BottomNavyBar(
         // Barre de navigation inférieure
 
@@ -97,6 +100,7 @@ class _EtudiantHomeMobileState extends State<EtudiantHomeMobile> {
           setState(() {
             _selectedIndex = index;
           });
+          currentPage.updatePage(items[_selectedIndex]);
         },
 
         items: [

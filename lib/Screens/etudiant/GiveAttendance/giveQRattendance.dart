@@ -26,12 +26,11 @@ class GiveQrAttendancePage extends StatefulWidget {
 class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
   static const double campusLatitude = 6.4164971; // latitude du campus
   static const double campusLongitude = 2.3405719; //  longitude du campus
-  static const double maxDistance = 100500.0; // Distance maximale en mètres
+  static const double maxDistance = 30.0; // Distance maximale en mètres
   String? statusMessage;
-
   String studentId = "";
   dynamic student;
-  final isWebMobile = kIsWeb &&
+  final bool isWebMobile = kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.iOS ||
           defaultTargetPlatform == TargetPlatform.android);
 
@@ -153,102 +152,71 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isWebComputer = kIsWeb && !isWebMobile;
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     bool isSmallScreen = screenWidth < 600;
-    return Center(
-      child: Container(
-          child: SingleChildScrollView(
-              child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 12, right: 12, top: 20),
-            child: Text(
-              'Signer votre présence ',
-              style: GoogleFonts.varelaRound(
-                  textStyle: const TextStyle(
-                      color: AppColors.secondaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: FontSize.xLarge)),
-              textAlign: TextAlign.center,
-            ),
-          ),
-
-          SingleChildScrollView(
-            child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    !isWebMobile
-                        ? Center(
-                            child: Lottie.asset('assets/qrAnim2.json',
-                                // width: 600,
-                                height: isSmallScreen
-                                    ? screenHeight / 4
-                                    : screenHeight / 1.5,
-                                fit: BoxFit.fill),
-                          )
-                        : SizedBox(
-                            height: isSmallScreen
-                                ? screenHeight / 4
-                                : screenHeight / 1.5,
-                            child: const Image(
-                              image: AssetImage("assets/scan.jpg"),
-                            ),
-                          ),
-                    Center(
-                      child: Text(
-                        'Comment Scanner le Code QR?',
-                        style: GoogleFonts.poppins(
-                          textStyle: const TextStyle(
-                            fontSize: FontSize.large,
+    return isWebComputer
+        ? Center(
+            child: Card(
+                color: Colors.orange,
+                elevation: 8.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      "Le scan n'est pris en charge que pour les navigateurs Web mobiles et sur l'app mobile.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: FontSize.xxLarge,
+                          fontWeight: FontWeight.bold),
+                    ))),
+          )
+        : Center(
+            child: Container(
+                child: SingleChildScrollView(
+                    child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 12, top: 20),
+                  child: Text(
+                    'Signer votre présence ',
+                    style: GoogleFonts.varelaRound(
+                        textStyle: const TextStyle(
+                            color: AppColors.secondaryColor,
                             fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
+                            fontSize: FontSize.xLarge)),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Padding(
+                      padding: const EdgeInsets.all(20),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const InstructionStep(
-                            number: 1,
-                            text:
-                                "Assurez-vous d'être à moins de 500 mètres de votre uiversité",
-                            icon: Icons.location_on,
-                          ),
-                          const SizedBox(height: 20),
-                          const InstructionStep(
-                            number: 2,
-                            text:
-                                'Assurez-vous que votre caméra est propre et fonctionnelle.',
-                            icon: Icons.camera_alt,
-                          ),
-                          const SizedBox(height: 20),
-                          const InstructionStep(
-                            number: 3,
-                            text: ' Lancer le scan QR sur votre appareil.',
-                            icon: Icons.qr_code_scanner,
-                          ),
-                          const SizedBox(height: 20),
-                          const InstructionStep(
-                            number: 4,
-                            text:
-                                'Alignez le code QR dans le cadre de la caméra.',
-                            icon: Icons.center_focus_strong,
-                          ),
-                          const SizedBox(height: 20),
-                          const InstructionStep(
-                            number: 5,
-                            text:
-                                'Attendez que l\'application reconnaisse et scanne le code.',
-                            icon: Icons.check_circle_outline,
-                          ),
-                          const SizedBox(height: 20),
+                          !isWebMobile
+                              ? Center(
+                                  child: Lottie.asset('assets/qrAnim2.json',
+                                      // width: 600,
+                                      height: isSmallScreen
+                                          ? screenHeight / 4
+                                          : screenHeight / 1.5,
+                                      fit: BoxFit.fill),
+                                )
+                              : SizedBox(
+                                  height: isSmallScreen
+                                      ? screenHeight / 4
+                                      : screenHeight / 1.5,
+                                  child: const Image(
+                                    image: AssetImage("assets/scan.jpg"),
+                                  ),
+                                ),
                           Center(
                             child: Container(
                               decoration: BoxDecoration(
@@ -282,45 +250,68 @@ class _GiveQrAttendancePageState extends State<GiveQrAttendancePage> {
                             ),
                             shape: GFButtonShape.pills,
                             size: GFSize.LARGE,
+                          ),
+                          const SizedBox(height: 20),
+                          Center(
+                            child: Text(
+                              'Comment Scanner le Code QR?',
+                              style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                                  fontSize: FontSize.large,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                InstructionStep(
+                                  number: 1,
+                                  text:
+                                      "Assurez-vous d'être à moins de 500 mètres de votre uiversité",
+                                  icon: Icons.location_on,
+                                ),
+                                SizedBox(height: 20),
+                                InstructionStep(
+                                  number: 2,
+                                  text:
+                                      'Assurez-vous que votre caméra est propre et fonctionnelle.',
+                                  icon: Icons.camera_alt,
+                                ),
+                                SizedBox(height: 20),
+                                InstructionStep(
+                                  number: 3,
+                                  text:
+                                      ' Lancer le scan QR sur votre appareil.',
+                                  icon: Icons.qr_code_scanner,
+                                ),
+                                SizedBox(height: 20),
+                                InstructionStep(
+                                  number: 4,
+                                  text:
+                                      'Alignez le code QR dans le cadre de la caméra.',
+                                  icon: Icons.center_focus_strong,
+                                ),
+                                SizedBox(height: 20),
+                                InstructionStep(
+                                  number: 5,
+                                  text:
+                                      'Attendez que l\'application reconnaisse et scanne le code.',
+                                  icon: Icons.check_circle_outline,
+                                ),
+                              ],
+                            ),
                           )
                         ],
-                      ),
-                    )
-                  ],
-                )),
-          )
-          // : SingleChildScrollView(
-          //     child: Center(
-          //         child: Column(
-          //       children: [
-          //         !isWebMobile
-          //             ? Center(
-          //                 child: Lottie.asset('assets/qrAnim.json',
-          //                     width: 600, height: 300, fit: BoxFit.fill),
-          //               )
-          //             : Container(),
-          //         const SizedBox(height: 20),
-          //         GFButton(
-          //           color: AppColors.secondaryColor,
-          //           onPressed: () {
-          //             screenSize().isWeb()
-          //                 ? scanPassWeb()
-          //                 : scanPass(context);
-          //           },
-          //           text: 'Scanner QR code',
-          //           icon: const Icon(
-          //             Icons.qr_code_scanner,
-          //             color: Colors.white,
-          //           ),
-          //           shape: GFButtonShape.pills,
-          //           size: GFSize.LARGE,
-          //         )
-          //       ],
-          //     )),
-          //   )
-        ],
-      ))),
-    );
+                      )),
+                )
+              ],
+            ))),
+          );
   }
 
   void _showErrorDialog(BuildContext context, String message) {
