@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class screenSize {
@@ -18,7 +19,7 @@ class screenSize {
 
 // Fonction pour vérifier si l'appareil est un grand écran
   bool isLargeScreen(BuildContext context) {
-    return MediaQuery.of(context).size.shortestSide >= 960;
+    return MediaQuery.of(context).size.shortestSide >= 1200;
   }
 
   bool isAndroid() {
@@ -26,6 +27,6 @@ class screenSize {
   }
 
   bool isWeb() {
-    return identical(0, 0.0);
+    return kIsWeb;
   }
 }

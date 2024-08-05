@@ -48,4 +48,5 @@ app.*.map.json
 
 #Script using adminFirebase
 /script_to_delete_all_users
+
 lib/firebase_options.dart

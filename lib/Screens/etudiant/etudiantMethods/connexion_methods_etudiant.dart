@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
+import 'package:easy_attend/Screens/etudiant/Home/EtudiantHome.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_warning_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,7 +29,7 @@ class auth_methods_etudiant {
             ));
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
+        email: email.trim(),
         password: password,
       );
       final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -44,7 +44,10 @@ class auth_methods_etudiant {
           if (student["statut"] == "0") {
             Navigator.pop(context);
 
-            Helper().notAuthorizedMessage(context);
+            Helper().ErrorMessage(context,
+                content:
+                    "Désolé, vous n'êtes pas autorisé(e) à accéder à cette page.");
+
             FirebaseAuth.instance.signOut();
           } else {
             final SharedPreferences prefs = await _prefs;
@@ -59,7 +62,9 @@ class auth_methods_etudiant {
         } else {
           Navigator.pop(context);
 
-          Helper().notAuthorizedMessage(context);
+          Helper().ErrorMessage(context,
+              content:
+                  "Désolé, vous n'êtes pas autorisé(e) à accéder à cette page.");
           FirebaseAuth.instance.signOut();
         }
       }
@@ -69,12 +74,14 @@ class auth_methods_etudiant {
         if (e.code == 'user-not-found' ||
             e.code == 'wrong-password' ||
             e.code == 'invalid-credential') {
-          Helper().badCredential(context);
+          Helper().ErrorMessage(context,
+              content: "Veuillez vérifier vos informations de connexion.");
         } else {
           Helper().ErrorMessage(context);
         }
       } else if (e is SocketException) {
-        Helper().networkErrorMessage(context);
+        Helper().ErrorMessage(context,
+            content: "Oups... veuillez vérifiez votre connexion internet");
       } else {
         Helper().ErrorMessage(context);
       }

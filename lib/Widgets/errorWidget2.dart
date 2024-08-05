@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable, camel_case_types
 
-import 'package:easy_attend/Config/styles.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

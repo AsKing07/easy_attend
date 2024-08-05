@@ -2,10 +2,14 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:easy_attend/Models/menuItems.dart';
+import 'package:easy_attend/Screens/admin/ManageStudents/manageStudent.dart';
+import 'package:easy_attend/Screens/etudiant/GiveAttendance/giveQRattendance.dart';
+import 'package:flutter/foundation.dart';
+import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:easy_attend/Config/styles.dart';
-import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +26,9 @@ class AddStudentFromExcel extends StatefulWidget {
 }
 
 class _AddStudentFromExcelState extends State<AddStudentFromExcel> {
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
   Future<void> selectFile(BuildContext context) async {
     final fileInput = html.FileUploadInputElement();
     fileInput.accept =
@@ -53,199 +60,338 @@ class _AddStudentFromExcelState extends State<AddStudentFromExcel> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.secondaryColor,
-        foregroundColor: Colors.white,
-        title: const Text(
-          'Ajouter plusieurs étudiants',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: FontSize.medium,
-          ),
-        ),
-      ),
-      body: !screenSize().isWeb()
-          ?
-          //Mobile App
-          SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(30, 30, 30, 30),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Création de plusieurs étudiants",
-                      style: GoogleFonts.poppins(
-                          color: AppColors.textColor,
-                          fontSize: FontSize.xxLarge,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 7),
-                      child: Text(
-                        "Suivez attentivement les instructions",
-                        style: GoogleFonts.poppins(
-                            color: AppColors.primaryColor,
-                            fontSize: FontSize.medium,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Instructions",
-                      style: TextStyle(
-                          fontSize: FontSize.xxLarge,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline),
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    bool isSmallScreen = screenWidth < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
+    return MediaQuery.of(context).size.shortestSide <= 600
+        ? SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 3, right: 3),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 12, right: 12, top: 20),
+                    child: Text(
+                      'Ajout de plusieurs étudiants',
+                      style: GoogleFonts.varelaRound(
+                          textStyle: const TextStyle(
+                              color: AppColors.secondaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: FontSize.xLarge)),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      '1. Le fichier authorisé est un fichier excel d\'extension xlsx',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      "2. Votre fichier excel doit avoir les en-tête suivantes:  'Matricule','Nom','Prenom','Email','Password','Phone','Filiere','Niveau' ",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '3. Respectez exactement l\'en-tête des colonnes: la casse est importante',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '3. Les noms des filières doivent être écrit en entier (Exemple: GENIE LOGICIEL)',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '4. Les noms des niveaux doivent être écrit en entier (Exemple: LICENCE 1)',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '5. Un étudiant ayant une filière non créée dans l\'application sera ignoré ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '6.Un étudiant ayant un même matricule ou le même email qu\'un autre étudiant déjà inscrit sera ignoré  ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '6.L\'étudiant pourra plus tard modifier son mot de pass ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 20),
-                    GFButton(
-                      onPressed: () async {
-                        File? studentsFile;
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  GFButton(
+                      fullWidthButton: false,
+                      shape: GFButtonShape.pills,
+                      text: "Annuler",
+                      color: GFColors.DANGER,
+                      textStyle: const TextStyle(color: AppColors.white),
+                      onPressed: () {
+                        currentPage.updatePage(MenuItems(
+                            text: 'Etudiants',
+                            icon: Icons.person,
+                            tap: const ManageStudentPage()));
+                      }),
+                  Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            !isWebMobile
+                                ? Center(
+                                    child: Lottie.asset(
+                                        'assets/uploadAnim.json',
+                                        height: isSmallScreen
+                                            ? screenHeight / 4
+                                            : screenHeight / 1.5,
+                                        fit: BoxFit.fill),
+                                  )
+                                : SizedBox(
+                                    height: isSmallScreen
+                                        ? screenHeight / 4
+                                        : screenHeight / 1.5,
+                                    child: const Image(
+                                      image: AssetImage("assets/upload.jpg"),
+                                    ),
+                                  ),
+                            GFButton(
+                              color: AppColors.secondaryColor,
+                              onPressed: () async {
+                                File? studentsFile;
 
-                        final result = await FilePicker.platform.pickFiles(
-                            type: FileType.custom,
-                            allowedExtensions: ['xlsx'],
-                            allowMultiple: false);
-                        if (result != null) {
-                          setState(() {
-                            studentsFile = File(result.files.single.path!);
-                          });
-                          await auth_methods_admin()
-                              .addMultipleStudent(studentsFile!.path, context);
-                          widget.callback();
-                        }
-                      },
-                      text: "Sélectionner le fichier",
-                      textStyle: const TextStyle(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: FontSize.large),
-                      shape: GFButtonShape.pills,
-                      fullWidthButton: true,
-                    )
-                  ],
-                ),
+                                final result = await FilePicker.platform
+                                    .pickFiles(
+                                        type: FileType.custom,
+                                        allowedExtensions: ['xlsx'],
+                                        allowMultiple: false);
+                                if (result != null) {
+                                  setState(() {
+                                    studentsFile =
+                                        File(result.files.single.path!);
+                                  });
+                                  await auth_methods_admin().addMultipleStudent(
+                                      studentsFile!.path, context);
+                                  widget.callback();
+                                }
+                              },
+                              text: "Sélectionner le fichier",
+                              icon: const Icon(
+                                Icons.upload_file,
+                                color: AppColors.white,
+                              ),
+                              textStyle: const TextStyle(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: FontSize.large),
+                              shape: GFButtonShape.pills,
+                              size: GFSize.LARGE,
+                            ),
+                            Center(
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                'Comment télécharger le fichier?',
+                                style: GoogleFonts.poppins(
+                                  textStyle: const TextStyle(
+                                    fontSize: FontSize.large,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            const SingleChildScrollView(
+                              child: Column(children: [
+                                InstructionStep(
+                                    number: 1,
+                                    text:
+                                        "Le fichier autorisé est un fichier excel d'extension xlsx",
+                                    icon: Icons.table_view),
+                                SizedBox(height: 15),
+                                InstructionStep(
+                                    number: 2,
+                                    text:
+                                        " En-têtes obligatoires du fichier:  'Matricule','Nom','Prenom','Email','Password','Phone','Filiere','Niveau'",
+                                    icon: Icons.table_rows),
+                                SizedBox(height: 15),
+                                InstructionStep(
+                                  number: 3,
+                                  text:
+                                      'Respectez exactement l\'en-tête des colonnes: la casse est importante',
+                                  icon: Icons.format_bold,
+                                ),
+                                SizedBox(height: 15),
+                                InstructionStep(
+                                  number: 4,
+                                  text:
+                                      'Les noms des filières doivent être écrit en entier (Exemple: GENIE LOGICIEL)',
+                                  icon: Icons.text_format,
+                                ),
+                                SizedBox(height: 15),
+                                InstructionStep(
+                                  number: 5,
+                                  text:
+                                      'Les noms des niveaux doivent être écrit en entier (Exemple: LICENCE 1)',
+                                  icon: Icons.text_format,
+                                ),
+                                SizedBox(height: 15),
+                                InstructionStep(
+                                  number: 6,
+                                  text:
+                                      'Un étudiant ayant une filière non créée dans l\'application sera ignoré',
+                                  icon: Icons.cancel,
+                                ),
+                                SizedBox(height: 15),
+                                InstructionStep(
+                                  number: 7,
+                                  text:
+                                      'Un étudiant ayant un même matricule ou le même email qu\'un autre étudiant déjà inscrit sera ignoré',
+                                  icon: Icons.cancel,
+                                ),
+                                SizedBox(height: 15),
+                                InstructionStep(
+                                  number: 8,
+                                  text:
+                                      'L\'étudiant pourra plus tard modifier son mot de passe',
+                                  icon: Icons.lock,
+                                ),
+                              ]),
+                            ),
+                          ],
+                        ),
+                      ))
+                ],
               ),
-            )
-          :
-          //WebView
-          Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+            ))
+        :
+        //LargeScreen
+
+        Padding(
+            padding: const EdgeInsets.only(left: 10, right: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Ajout de plusieurs étudiants',
+                  style: GoogleFonts.varelaRound(
+                      textStyle: const TextStyle(
+                          color: AppColors.secondaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: FontSize.xLarge)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                GFButton(
+                    fullWidthButton: false,
+                    shape: GFButtonShape.pills,
+                    text: "Annuler",
+                    color: GFColors.DANGER,
+                    textStyle: const TextStyle(color: AppColors.white),
+                    onPressed: () {
+                      currentPage.updatePage(MenuItems(
+                          text: 'Etudiants',
+                          icon: Icons.person,
+                          tap: const ManageStudentPage()));
+                    }),
+                Row(
                   children: [
-                    Text(
-                      "Création de plusieurs étudiants",
-                      style: GoogleFonts.poppins(
-                          color: AppColors.textColor,
-                          fontSize: FontSize.xxLarge,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 7),
-                      child: Text(
-                        "Suivez attentivement les instructions",
-                        style: GoogleFonts.poppins(
-                            color: AppColors.primaryColor,
-                            fontSize: FontSize.medium,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Instructions",
-                      style: TextStyle(
-                          fontSize: FontSize.xxLarge,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      '1. Le fichier authorisé est un fichier excel d\'extension xlsx',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      "2. Votre fichier excel doit avoir les en-tête suivantes:  'Matricule','Nom','Prenom','Email','Password','Phone','Filiere','Niveau' ",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '3. Respectez exactement l\'en-tête des colonnes: la casse est importante',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '3. Les noms des filières doivent être écrit en entier (Exemple: GENIE LOGICIEL)',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '4. Les noms des niveaux doivent être écrit en entier (Exemple: LICENCE 1)',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '5. Un étudiant ayant une filière non créée dans l\'application sera ignoré ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '6.Un étudiant ayant un même matricule ou le même email qu\'un autre étudiant déjà inscrit sera ignoré  ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const Text(
-                      '6.L\'étudiant pourra plus tard modifier son mot de pass ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 20),
-                    GFButton(
-                      onPressed: () => selectFile(context),
-                      text: "Sélectionner le fichier",
-                      textStyle: const TextStyle(
-                        color: AppColors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: FontSize.large,
-                      ),
-                      shape: GFButtonShape.pills,
-                      fullWidthButton: true,
-                    ),
+                    Expanded(
+                        child: SingleChildScrollView(
+                            child: Column(
+                      children: [
+                        Text(
+                          textAlign: TextAlign.center,
+                          'Comment télécharger le fichier?',
+                          style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                              fontSize: FontSize.large,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const InstructionStep(
+                            number: 1,
+                            text:
+                                "Le fichier autorisé est un fichier excel d'extension xlsx",
+                            icon: Icons.table_view),
+                        const SizedBox(height: 15),
+                        const InstructionStep(
+                            number: 2,
+                            text:
+                                " En-têtes obligatoires du fichier:  'Matricule','Nom','Prenom','Email','Password','Phone','Filiere','Niveau'",
+                            icon: Icons.table_rows),
+                        const SizedBox(height: 15),
+                        const InstructionStep(
+                          number: 3,
+                          text:
+                              'Respectez exactement l\'en-tête des colonnes: la casse est importante',
+                          icon: Icons.format_bold,
+                        ),
+                        const SizedBox(height: 15),
+                        const InstructionStep(
+                          number: 4,
+                          text:
+                              'Les noms des filières doivent être écrit en entier (Exemple: GENIE LOGICIEL)',
+                          icon: Icons.text_format,
+                        ),
+                        const SizedBox(height: 15),
+                        const InstructionStep(
+                          number: 5,
+                          text:
+                              'Les noms des niveaux doivent être écrit en entier (Exemple: LICENCE 1)',
+                          icon: Icons.text_format,
+                        ),
+                        const SizedBox(height: 15),
+                        const InstructionStep(
+                          number: 6,
+                          text:
+                              'Un étudiant ayant une filière non créée dans l\'application sera ignoré',
+                          icon: Icons.cancel,
+                        ),
+                        const SizedBox(height: 15),
+                        const InstructionStep(
+                          number: 7,
+                          text:
+                              'Un étudiant ayant un même matricule ou le même email qu\'un autre étudiant déjà inscrit sera ignoré',
+                          icon: Icons.cancel,
+                        ),
+                        const SizedBox(height: 15),
+                        const InstructionStep(
+                          number: 8,
+                          text:
+                              'L\'étudiant pourra plus tard modifier son mot de passe',
+                          icon: Icons.lock,
+                        ),
+                      ],
+                    ))),
+                    Expanded(
+                        child: Column(
+                      children: [
+                        !isWebMobile
+                            ? Center(
+                                child: Lottie.asset('assets/uploadAnim.json',
+                                    height: isSmallScreen
+                                        ? screenHeight / 5
+                                        : screenHeight / 2,
+                                    fit: BoxFit.fill),
+                              )
+                            : SizedBox(
+                                height: isSmallScreen
+                                    ? screenHeight / 5
+                                    : screenHeight / 2,
+                                child: const Image(
+                                  image: AssetImage("assets/upload.jpg"),
+                                ),
+                              ),
+                        GFButton(
+                          color: AppColors.secondaryColor,
+                          onPressed: () async {
+                            File? studentsFile;
+
+                            final result = await FilePicker.platform.pickFiles(
+                                type: FileType.custom,
+                                allowedExtensions: ['xlsx'],
+                                allowMultiple: false);
+                            if (result != null) {
+                              setState(() {
+                                studentsFile = File(result.files.single.path!);
+                              });
+                              await auth_methods_admin().addMultipleStudent(
+                                  studentsFile!.path, context);
+                              widget.callback();
+                            }
+                          },
+                          text: "Sélectionner le fichier",
+                          icon: const Icon(
+                            Icons.upload_file,
+                            color: AppColors.white,
+                          ),
+                          textStyle: const TextStyle(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: FontSize.large),
+                          shape: GFButtonShape.pills,
+                          size: GFSize.LARGE,
+                        )
+                      ],
+                    ))
                   ],
-                ),
-              ),
+                )
+              ],
             ),
-    );
+          );
   }
 }

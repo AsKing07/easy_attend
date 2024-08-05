@@ -6,15 +6,17 @@ import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Models/Cours.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
-import 'package:easy_attend/Screens/professeur/ManageAttendance/listOfOneCourseSeance.dart';
+import 'package:easy_attend/Screens/admin/adminMethods/auth_methods_admin.dart';
 import 'package:easy_attend/Widgets/helper.dart';
 import 'package:easy_attend/Widgets/my_error_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:getwidget/components/toast/gf_toast.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:http/http.dart' as http;
 import 'package:random_string/random_string.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class set_Data {
   final BACKEND_URL = dotenv.env['API_URL'];
@@ -37,7 +39,8 @@ class set_Data {
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       // La filière existe déjà, afficher un message d'erreur
       Navigator.pop(context);
-      Helper().filiereExistanteMessage(context);
+      Helper().ErrorMessage(context,
+          content: "Une filière avec le même identifiant/Sigle existe déjà.");
     } else {
       // La filière n'existe pas encore, ajouter la nouvelle filière
       http.Response response = await http.post(
@@ -167,14 +170,17 @@ class set_Data {
         );
 
         if (response.statusCode != 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Erreur lors de la restauration des etudiants de la filière'),
-              duration: Duration(seconds: 6),
-              backgroundColor: Colors.red,
-            ),
-          );
+          Helper().ErrorMessage(context,
+              content: "Erreur de restauration des étudiants de la filière");
+
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content: Text(
+          //         'Erreur lors de la restauration des etudiants de la filière'),
+          //     duration: Duration(seconds: 6),
+          //     backgroundColor: Colors.red,
+          //   ),
+          // );
         }
 
         response = await http.put(
@@ -182,24 +188,20 @@ class set_Data {
         );
 
         if (response.statusCode != 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Erreur lors de la restauration des cours de la filière'),
-              duration: Duration(seconds: 6),
-              backgroundColor: Colors.red,
-            ),
-          );
+          Helper().ErrorMessage(context,
+              content: "Erreur de restauration des cours de la filière");
         }
       } else {
         // La requête a échoué, gérer l'erreur ici
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erreur lors de la restauration de la filière.'),
-            duration: Duration(seconds: 6),
-            backgroundColor: Colors.red,
-          ),
-        );
+        Helper().ErrorMessage(context,
+            content: "Erreur de restauration de la filière");
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(
+        //     content: Text('Erreur lors de la restauration de la filière.'),
+        //     duration: Duration(seconds: 6),
+        //     backgroundColor: Colors.red,
+        //   ),
+        // );
       }
 
       Navigator.pop(context);
@@ -235,13 +237,8 @@ class set_Data {
         );
       } else {
         // La requête a échoué, gérer l'erreur ici
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erreur lors de la suppression des données!'),
-            duration: Duration(seconds: 6),
-            backgroundColor: Colors.red,
-          ),
-        );
+        Helper()
+            .ErrorMessage(context, content: "Erreur lors de la suppression");
       }
     } catch (e) {
       Helper().ErrorMessage(context);
@@ -383,8 +380,11 @@ class set_Data {
 
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       // Le cours existe déjà, afficher un message d'erreur
+
       Navigator.pop(context);
-      Helper().coursExistantMessage(context);
+
+      Helper().ErrorMessage(context,
+          content: "Une filière avec le même identifiant/Sigle existe déjà.");
     } else {
       // Le cours n'existe pas encore, ajouter le
       http.Response response = await http.post(
@@ -521,8 +521,8 @@ class set_Data {
         context: context,
         builder: (context) {
           return myErrorWidget(
-              content: "Un étudiant avec le même matricule existe déjà.",
-              height: 160);
+            content: "Un étudiant avec le même matricule existe déjà.",
+          );
         },
       );
     } else {
@@ -727,25 +727,26 @@ class set_Data {
       );
 
       if (response.statusCode == 200) {
-        // Cours ajouté avec succès
+        // Requête créée avec succès
         Navigator.pop(context);
         Helper().succesMessage(context);
       } else {
-        // Une erreur s'est produite lors de l'ajout du cours
+        // Une erreur s'est produite
 
         Navigator.pop(context);
         Helper().ErrorMessage(context);
       }
     } catch (e) {
       Navigator.pop(context);
-      Helper().ErrorMessage(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: $e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      kReleaseMode
+          ? Helper().ErrorMessage(context)
+          : ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Erreur: $e'),
+                duration: const Duration(seconds: 6),
+                backgroundColor: Colors.red,
+              ),
+            );
     }
   }
 
@@ -755,13 +756,6 @@ class set_Data {
   Future updatePresenceEtudiant(String codeSeance, String etudiantId,
       bool present, BuildContext context) async {
     try {
-      showDialog(
-          context: context,
-          builder: (context) => Center(
-                child: LoadingAnimationWidget.hexagonDots(
-                    color: AppColors.secondaryColor, size: 100),
-              ));
-
       // Récupérer le document existant
       dynamic seance = await get_Data().getSeanceByCode(codeSeance, context);
 
@@ -790,7 +784,6 @@ class set_Data {
           headers: {'Content-Type': 'application/json'},
         );
         if (response.statusCode == 200) {
-          Navigator.pop(context);
           return true;
         } else {
           // Une erreur s'est produite
@@ -803,13 +796,15 @@ class set_Data {
     } catch (e) {
       Navigator.pop(context);
       Helper().ErrorMessage(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur : $e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (!kReleaseMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur : $e'),
+            duration: const Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
   // Future<void> updatePresenceEtudiant(String seanceId, String etudiantId,
@@ -913,14 +908,14 @@ class set_Data {
         // Séance ajouté avec succès
 
         Navigator.pop(context);
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ListOfOneCourseSeancePage(
-                    course: course,
-                  )),
-        );
+        GFToast.showToast("Séance créée!", context,
+            trailing: const Icon(
+              Icons.check_box_rounded,
+              color: AppColors.white,
+            ),
+            toastPosition: GFToastPosition.TOP,
+            toastDuration: 8,
+            backgroundColor: AppColors.greenColor);
       } else {
         // Une erreur s'est produite
 
@@ -930,13 +925,15 @@ class set_Data {
     } catch (e) {
       Navigator.pop(context);
       Helper().ErrorMessage(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erreur: $e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (!kReleaseMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur: $e'),
+            duration: const Duration(seconds: 6),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -958,15 +955,16 @@ class set_Data {
 
     if (response.statusCode == 200) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: AppColors.secondaryColor,
-          content: Text(
-            'Présence enregistrée avec succès',
-            style: TextStyle(color: AppColors.white),
-          ),
-        ),
-      );
+      Helper().succesMessage(context, content: "Présence enregistrée !");
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     backgroundColor: AppColors.secondaryColor,
+      //     content: Text(
+      //       'Présence enregistrée avec succès',
+      //       style: TextStyle(color: AppColors.white),
+      //     ),
+      //   ),
+      // );
     } else {
       // Une erreur s'est produite
 
@@ -1011,5 +1009,28 @@ class set_Data {
     // print(response.body);
     Navigator.pop(context);
     Navigator.pop(context);
+  }
+
+  Future UpdateCurrentUserData(BuildContext context) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var utilisateur = json.decode(prefs.getString('user')!);
+    var newUser;
+    var role = prefs.getString('role');
+    switch (role) {
+      case 'admin':
+        newUser = await auth_methods_admin()
+            .getAdminById(utilisateur['uid'], context);
+
+        break;
+      case 'prof':
+        newUser = await get_Data().getProfById(utilisateur['uid'], context);
+        break;
+      case 'student':
+        newUser = await get_Data().getStudentById(utilisateur['uid'], context);
+        break;
+    }
+
+    prefs.setString("user", json.encode(newUser));
+    utilisateur = json.decode(prefs.getString('user')!);
   }
 }
