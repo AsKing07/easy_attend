@@ -3,9 +3,11 @@
 import 'dart:convert';
 
 import 'package:easy_attend/Config/styles.dart';
+import 'package:easy_attend/Config/utils.dart';
 import 'package:easy_attend/Methods/get_data.dart';
 import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Etudiant.dart';
+import 'package:easy_attend/Screens/professeur/ManageAttendance/seeAttendance.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,6 +35,10 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
   late Map<String, dynamic> oldPresenceEtudiant;
 
   late List<Etudiant> AllEtudiant = [];
+  late List<Etudiant> SearchedEtudiant = [];
+  late final TextEditingController _searchController = TextEditingController();
+
+  String? searchTerm;
 
   Future getEtudiantsCours() async {
     try {
@@ -51,7 +57,8 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
             idFiliere: doc['idFiliere'],
             filiere: doc["filiere"],
             niveau: doc['niveau'],
-            statut: doc['statut'] == 1);
+            statut: doc['statut'] == 1,
+            imageUrl: doc['image']);
 
         etudiants.add(etudiant);
       }
@@ -59,6 +66,7 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
 
       setState(() {
         AllEtudiant.addAll(etudiants);
+        SearchedEtudiant = List.from(AllEtudiant);
         presenceEtudiant = List.generate(etudiants.length, (index) {
           return {
             'id': etudiants[index].uid,
@@ -91,11 +99,29 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
           presenceEtudiant[i]['present'];
     }
 
-    // Mettre à jour le document Firebase
+    // Mettre à jour
     await set_Data()
         .updateSeancePresence(seanceId, presenceEtudiantsMap, context);
 
     widget.callback();
+    if (screenSize().isPhone(context)) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SeeSeanceAttendanceProf(
+                  seance: widget.seance, course: widget.course)));
+    } else {
+      Navigator.pop(context);
+
+      showDialog(
+          context: context,
+          builder: (context) => Dialog(
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: SeeSeanceAttendanceProf(
+                      seance: widget.seance, course: widget.course))));
+    }
   }
 
   @override
@@ -109,6 +135,37 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
 
   @override
   Widget build(BuildContext context) {
+    TextFormField searchField = TextFormField(
+      controller: _searchController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Rechercher',
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.only(top: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: AppColors.secondaryColor,
+            width: 3.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide:
+              const BorderSide(color: AppColors.secondaryColor, width: 3.0),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          searchTerm = value;
+          SearchedEtudiant = AllEtudiant.where((etudiant) {
+            final fullName = "${etudiant.nom} ${etudiant.prenom}".toLowerCase();
+            return fullName.contains(searchTerm!.toLowerCase());
+          }).toList();
+        });
+      },
+    );
+
     return dataIsloaded == false
         ? Center(
             child: LoadingAnimationWidget.hexagonDots(
@@ -127,52 +184,127 @@ class _TakeManualAttendanceState extends State<TakeManualAttendance> {
               ),
             ),
             body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(
                   height: 20,
                 ),
-                Text('Cours: ${widget.course['nomCours']}',
-                    style: GoogleFonts.poppins(
-                        color: AppColors.textColor,
-                        fontSize: FontSize.xxLarge,
-                        fontWeight: FontWeight.w600)),
-                Text(
-                    'Séance du ${DateFormat('EEEE, d MMM yy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal()).toUpperCase()}',
-                    style: GoogleFonts.poppins(
-                        color: AppColors.primaryColor,
-                        fontSize: FontSize.medium,
-                        fontWeight: FontWeight.w600)),
-                const SizedBox(height: 70),
-                Flexible(
-                    child: ListView.builder(
-                        itemCount: AllEtudiant.length,
-                        itemBuilder: (context, index) {
-                          return CheckboxListTile(
-                            activeColor: AppColors.secondaryColor,
-                            title: Text(
-                                '${AllEtudiant[index].nom} ${AllEtudiant[index].prenom}'),
-                            value: presenceEtudiant[index]['present'],
-                            onChanged: (value) {
-                              setState(() {
-                                presenceEtudiant[index]['present'] = value!;
-                              });
-                            },
-                          );
-                        })),
+                screenSize().isLargeScreen(context)
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              Text('Cours: ${widget.course['nomCours']}',
+                                  style: GoogleFonts.poppins(
+                                      color: AppColors.textColor,
+                                      fontSize: FontSize.xxLarge,
+                                      fontWeight: FontWeight.w600)),
+                              Text(
+                                  'Séance du ${DateFormat('EEEE, d MMM yy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(const Duration(hours: 1))).toUpperCase()}',
+                                  style: GoogleFonts.poppins(
+                                      color: AppColors.primaryColor,
+                                      fontSize: FontSize.medium,
+                                      fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: GFButton(
+                              color: AppColors.secondaryColor,
+                              onPressed: () async {
+                                await enregistrerPresence();
+                              },
+                              text: "Enregistrer",
+                              textStyle: const TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: FontSize.large,
+                                  fontWeight: FontWeight.bold),
+                              shape: GFButtonShape.square,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(' ${widget.course['nomCours']}',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.poppins(
+                                    color: AppColors.textColor,
+                                    fontSize: FontSize.xxLarge,
+                                    fontWeight: FontWeight.w600)),
+                            Text(
+                                'Séance du ${DateFormat('EEEE, d MMM yy, hh:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(const Duration(hours: 1))).toUpperCase()}',
+                                style: GoogleFonts.poppins(
+                                    color: AppColors.primaryColor,
+                                    fontSize: FontSize.medium,
+                                    fontWeight: FontWeight.w600)),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: GFButton(
+                                color: AppColors.secondaryColor,
+                                onPressed: () async {
+                                  await enregistrerPresence();
+                                },
+                                text: "Enregistrer",
+                                textStyle: const TextStyle(
+                                    color: AppColors.white,
+                                    fontSize: FontSize.large,
+                                    fontWeight: FontWeight.bold),
+                                shape: GFButtonShape.square,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                const SizedBox(height: 5),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 10, top: 10),
-                  child: GFButton(
-                    onPressed: () async {
-                      await enregistrerPresence();
+                  padding: EdgeInsets.all(10),
+                  child: searchField,
+                ),
+                const SizedBox(height: 40),
+                Flexible(
+                  child: ListView.builder(
+                    itemCount: SearchedEtudiant.length,
+                    itemBuilder: (context, index) {
+                      String imageUrl = SearchedEtudiant[index].imageUrl ??
+                          "assets/admin.jpg"; // Default image
+
+                      return GFCheckboxListTile(
+                        titleText:
+                            "${SearchedEtudiant[index].nom} ${SearchedEtudiant[index].prenom}",
+                        value: presenceEtudiant[
+                                AllEtudiant.indexOf(SearchedEtudiant[index])]
+                            ['present'],
+                        avatar: imageUrl.startsWith('http')
+                            ? GFAvatar(
+                                backgroundColor: Colors.grey,
+                                backgroundImage: NetworkImage(
+                                  imageUrl,
+                                ))
+                            : GFAvatar(
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage: AssetImage(imageUrl),
+                              ),
+                        activeBgColor: Colors.green,
+                        type: GFCheckboxType.circle,
+                        activeIcon: const Icon(
+                          Icons.check,
+                          size: 15,
+                          color: Colors.white,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            presenceEtudiant[AllEtudiant.indexOf(
+                                SearchedEtudiant[index])]['present'] = value;
+                          });
+                        },
+                      );
                     },
-                    text: "Enregistrer la présence",
-                    textStyle: const TextStyle(
-                        color: AppColors.white,
-                        fontSize: FontSize.large,
-                        fontWeight: FontWeight.bold),
-                    shape: GFButtonShape.pills,
-                    fullWidthButton: true,
                   ),
                 ),
               ],

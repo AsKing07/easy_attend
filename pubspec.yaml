@@ -71,7 +71,19 @@ dependencies:
   http: ^1.2.1
   flutter_dotenv: ^5.1.0
   simple_barcode_scanner: ^0.0.8
+  bottom_navy_bar: ^6.0.0
+  flutter_svg_provider: ^1.0.7
+  animated_text_kit: ^4.2.2
+  pie_chart: ^5.4.0
+  image_picker: ^1.1.2
+  http_parser: ^4.0.0
+  mime: ^1.0.5
+  image_picker_web: any
+  omni_datetime_picker: ^1.1.0
+  intl_phone_field: ^3.2.0
 
+  path: any
+  provider: ^6.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -114,10 +126,23 @@ flutter:
   assets:
     - assets/admin.jpg
     - assets/ifri.jpg
+    - assets/upload.jpg
+    - assets/chat.jpeg
+    - assets/makeQuery.png
+    - assets/makeQuery.jpg
+    - assets/coursImage.jpg
+    - assets/scan.jpg
+    - assets/studentlogo.png
+    - assets/easyattend.png
+    - assets/students.svg
+    - assets/courslogo.svg
     - assets/search.svg
     - assets/qrAnim.json
+    - assets/qrAnim2.json
     - assets/failed.json
+    - assets/maintenance.json
     - assets/done.json
+    - assets/uploadAnim.json
     - .env
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

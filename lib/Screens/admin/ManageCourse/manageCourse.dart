@@ -9,13 +9,15 @@ import 'package:easy_attend/Methods/set_data.dart';
 import 'package:easy_attend/Models/Filiere.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/addNewCourse.dart';
 import 'package:easy_attend/Screens/admin/ManageCourse/editCourse.dart';
-import 'package:easy_attend/Widgets/errorWidget2.dart';
-import 'package:easy_attend/Widgets/noResultWidget.dart';
+import 'package:easy_attend/Widgets/helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../../../Models/menuItems.dart';
 
 class ManageCoursePage extends StatefulWidget {
   const ManageCoursePage({super.key});
@@ -25,17 +27,10 @@ class ManageCoursePage extends StatefulWidget {
 }
 
 class _ManageCoursePageState extends State<ManageCoursePage> {
-  final TextEditingController _searchController = TextEditingController();
   final BACKEND_URL = dotenv.env['API_URL'];
-  final StreamController<List<dynamic>> _streamController =
-      StreamController<List<dynamic>>();
+  List<CourseData> courseData = [];
+  bool dataIsLoading = true;
   List<Filiere> Allfilieres = [];
-  Filiere? _selectedFiliere;
-  var _selectedNiveau;
-
-  void _onSearchChanged() {
-    fetchData();
-  }
 
   Future<void> loadAllActifFilieres() async {
     List<dynamic> docsFiliere = await get_Data().getActifFiliereData(context);
@@ -59,443 +54,874 @@ class _ManageCoursePageState extends State<ManageCoursePage> {
   }
 
   Future<void> fetchData() async {
+    setState(() {
+      dataIsLoading = true;
+    });
     http.Response response;
     try {
-      if (_selectedFiliere != null) {
-        if (_selectedNiveau != null) {
-          response = await http.get(Uri.parse(
-              '$BACKEND_URL/api/cours/getCoursesData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}&niveau=$_selectedNiveau'));
-        } else {
-          response = await http.get(Uri.parse(
-              '$BACKEND_URL/api/cours/getCoursesData?search=${_searchController.text}&idFiliere=${_selectedFiliere?.idDoc}'));
-        }
-      } else {
-        response = await http.get(Uri.parse(
-            '$BACKEND_URL/api/cours/getCoursesData?search=${_searchController.text}'));
-      }
+      response =
+          await http.get(Uri.parse('$BACKEND_URL/api/cours/getCoursesData'));
+      // }
       if (response.statusCode == 200) {
         List<dynamic> courses = jsonDecode(response.body);
-        _streamController.add(courses);
+        courseData.clear();
+        for (var entry in courses) {
+          final filiere =
+              await get_Data().getFiliereById(entry['idFiliere'], context);
+          final prof =
+              await get_Data().getProfById(entry['idProfesseur'], context);
+
+          final nomCours = entry['nomCours'];
+          final sigle = entry['sigleCours'];
+          final niveau = entry['niveau'];
+          courseData.add(CourseData(
+              idCours: entry['idCours'],
+              nomCours: nomCours,
+              sigle: sigle,
+              niveau: niveau,
+              nomProf: '${prof['nom']} ${prof['prenom']}',
+              nomFiliere: filiere['nomFiliere']));
+        }
+
+        setState(() {
+          dataIsLoading = false;
+        });
       } else {
-        throw Exception('Erreur lors de la récupération des cours');
+        Helper().ErrorMessage(context);
       }
     } catch (e) {
       // Gérer les erreurs ici
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Impossible de récupérer les étudiants. Erreur:$e'),
-          duration: const Duration(seconds: 6),
-          backgroundColor: Colors.red,
-        ),
-      );
+      kReleaseMode
+          ? Helper().ErrorMessage(context)
+          : ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text('Impossible de récupérer les étudiants. Erreur:$e'),
+                duration: const Duration(seconds: 100),
+                backgroundColor: Colors.red,
+              ),
+            );
     }
-  }
-
-  void showCourseDetailsDialog(BuildContext context, dynamic course) async {
-    final prof = await get_Data().getProfById(course['idProfesseur'], context);
-    final fil = await get_Data().getFiliereById(course['idFiliere'], context);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(course['nomCours']),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Sigle: ${course['sigleCours']}'),
-              Text('Niveau: ${course['niveau']}'),
-              Text('Filière: ${fil['nomFiliere']}'),
-              Text('Professeur: ${prof['nom']} ${prof['prenom']}'),
-              // Ajoutez d'autres détails du cours ici
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Fermer'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
   void initState() {
     super.initState();
-    loadAllActifFilieres();
-
-    _searchController.addListener(_onSearchChanged);
-
     fetchData();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _streamController.close();
-    super.dispose();
+    loadAllActifFilieres();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-              color: AppColors.secondaryColor,
-              height: 75,
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: MediaQuery.of(context).size.width >= 1024
-                    ? MediaQuery.of(context).size.width * 0.2
-                    : MediaQuery.of(context).size.width >= 600
-                        ? MediaQuery.of(context).size.width * 0.05
-                        : 10,
-              ),
-              child: Row(
+    return dataIsLoading
+        ? Container(
+            decoration: const BoxDecoration(color: AppColors.white),
+            child: Center(
+              child: LoadingAnimationWidget.hexagonDots(
+                  color: AppColors.secondaryColor, size: 100),
+            ),
+          )
+        : Scaffold(
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  const Text(
+                    'Gestion des cours',
+                    style: TextStyle(
+                      fontSize: FontSize.xxxLarge,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.secondaryColor,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 15),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: CoursePaginatedTable(
+                          key: ValueKey(courseData),
+                          courseData: courseData,
+                          callback: fetchData,
+                          callback2: fetchData,
+                          allFilieres: Allfilieres,
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+  }
+}
+
+// Classe représentant les données de cours
+class CourseData {
+  final dynamic idCours;
+  final String nomCours;
+  final String sigle;
+  final String niveau;
+  final String nomProf;
+  final String nomFiliere;
+
+  CourseData({
+    required this.idCours,
+    required this.nomCours,
+    required this.sigle,
+    required this.niveau,
+    required this.nomProf,
+    required this.nomFiliere,
+  });
+}
+
+// Classe représentant la source des données pour le DataTable
+class CourseDataSource extends DataTableSource {
+  BuildContext context;
+  void Function() callback;
+  List<CourseData> courseData;
+  List<CourseData> filteredData;
+  final Set<int> _selectedRows = {};
+
+  CourseDataSource({
+    required this.courseData,
+    required this.context,
+    required this.callback,
+  }) : filteredData = List.from(courseData);
+
+  // Méthode pour trier les données
+  void sort<T>(Comparable<T> Function(CourseData d) getField, bool ascending) {
+    filteredData.sort((a, b) {
+      if (!ascending) {
+        final CourseData c = a;
+        a = b;
+        b = c;
+      }
+      final Comparable<T> aValue = getField(a);
+      final Comparable<T> bValue = getField(b);
+      if (getField(a) is int) {
+        return ascending
+            ? aValue.compareTo(bValue as T)
+            : bValue.compareTo(aValue as T);
+      } else {
+        return Comparable.compare(aValue, bValue);
+      }
+    });
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  // Méthode pour filtrer les données par filiere
+  void filterByFiliere(String? filiere) {
+    if (filiere == null ||
+        filiere.isEmpty ||
+        filiere == 'Toutes les filières') {
+      filteredData = List.from(courseData);
+    } else {
+      filteredData = courseData
+          .where(
+              (data) => data.nomFiliere.toUpperCase() == filiere.toUpperCase())
+          .toList();
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  // Méthode pour filtrer les données par niveau
+  void filterByNiveau(String? niveau) {
+    if (niveau == null || niveau.isEmpty || niveau == 'Toutes les niveau') {
+      filteredData = List.from(courseData);
+    } else {
+      filteredData = courseData
+          .where((data) => data.niveau.toUpperCase() == niveau.toUpperCase())
+          .toList();
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  void filterBySearch(String searchQuery) {
+    if (searchQuery.isEmpty) {
+      filteredData = List.from(courseData);
+    } else {
+      filteredData = courseData
+          .where((data) =>
+              data.nomCours.toLowerCase().contains(searchQuery.toLowerCase()) ||
+              data.sigle.toLowerCase().contains(searchQuery.toLowerCase()) ||
+              data.nomFiliere
+                  .toLowerCase()
+                  .contains(searchQuery.toLowerCase()) ||
+              data.niveau.toLowerCase().contains(searchQuery.toLowerCase()) ||
+              data.nomProf.toLowerCase().contains(searchQuery.toLowerCase()))
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  @override
+  DataRow getRow(int index) {
+    final cours = filteredData[index];
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
+    return DataRow(
+      selected: _selectedRows.contains(index),
+      onSelectChanged: (selected) {
+        _handleRowSelected(selected, index);
+      },
+      color: MaterialStateProperty.resolveWith<Color?>(
+          (Set<MaterialState> states) {
+        return _getRowColor(index);
+      }),
+      cells: [
+        if (!isSmallScreen)
+          DataCell(Text(cours.sigle.toUpperCase(),
+              style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        DataCell(Text(cours.nomCours.toUpperCase(),
+            style: TextStyle(
+                fontSize: isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        if (!isSmallScreen)
+          DataCell(Text(cours.nomFiliere.toUpperCase(),
+              style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        if (!isSmallScreen)
+          DataCell(Text(cours.niveau.toUpperCase(),
+              style: TextStyle(
+                  fontSize:
+                      isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        DataCell(Text(cours.nomProf.toUpperCase(),
+            style: TextStyle(
+                fontSize: isSmallScreen ? FontSize.xSmall : FontSize.medium))),
+        DataCell(PopupMenuButton(
+            color: AppColors.secondaryColor,
+            itemBuilder: (context) => [
+                  PopupMenuItem(
+                      child: InkWell(
+                          onTap: () {
+                            //Page de modification en passant l'ID
+                            currentPage.updatePage(MenuItems(
+                              text: "Modifier Cours",
+                              tap: EditCoursePage(
+                                  id: cours.idCours, callback: callback),
+                            ));
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                              Text("Editer",
+                                  style: TextStyle(color: AppColors.white))
+                            ],
+                          ))),
+                  PopupMenuItem(
+                      child: InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.warning,
+                                      color: Colors.orange,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Supprimer le cours",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20.0,
+                                          color: Colors.orange),
+                                    ),
+                                  ],
+                                ),
+                                content: const Text(
+                                    'Êtes-vous sûr de vouloir supprimer ce cours ? \n Cette action est irréversible'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Annuler'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await set_Data()
+                                          .deleteCours(cours.idCours, context);
+                                      callback();
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Supprimer'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(Icons.delete, color: AppColors.redColor),
+                              Text("Supprimer",
+                                  style: TextStyle(color: AppColors.white))
+                            ],
+                          ))),
+                ]))
+      ],
+    );
+  }
+
+  // Méthode pour gérer la sélection d'une ligne
+  void _handleRowSelected(bool? selected, int rowIndex) {
+    if (selected!) {
+      _selectedRows.add(rowIndex);
+    } else {
+      _selectedRows.remove(rowIndex);
+    }
+    notifyListeners(); // Notifie les auditeurs des modifications
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => filteredData.length;
+
+  @override
+  int get selectedRowCount => _selectedRows.length;
+
+  // Méthode pour obtenir la couleur d'une ligne en fonction de sa sélection
+  Color _getRowColor(int index) {
+    return _selectedRows.contains(index) ? Colors.green : Colors.grey[200]!;
+  }
+}
+
+// Widget représentant la table paginée des cours
+
+class CoursePaginatedTable extends StatefulWidget {
+  final List<CourseData> courseData;
+  final Future<void> Function() callback;
+  final Future<void> Function() callback2;
+  final List<Filiere> allFilieres;
+
+  const CoursePaginatedTable({
+    Key? key,
+    required this.courseData,
+    required this.callback,
+    required this.callback2,
+    required this.allFilieres,
+  }) : super(key: key);
+
+  @override
+  _CoursePaginatedTableState createState() => _CoursePaginatedTableState();
+}
+
+class _CoursePaginatedTableState extends State<CoursePaginatedTable> {
+  late CourseDataSource _dataSource;
+  bool _sortAscending = true;
+  int _sortColumnIndex = 0;
+  Filiere? _selectedFiliere;
+  String? _selectedNiveau;
+  late final TextEditingController _searchController = TextEditingController();
+  int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  int _defaultRowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  final List<int> _availableRowsPerPage = [5, 10, 20, 50];
+  @override
+  void initState() {
+    super.initState();
+    _dataSource = CourseDataSource(
+      courseData: widget.courseData,
+      context: context,
+      callback: widget.callback,
+    );
+  }
+
+  // Méthode pour trier les colonnes
+  void _sort<T>(Comparable<T> Function(CourseData d) getField, int columnIndex,
+      bool ascending) {
+    _dataSource.sort<T>(getField, ascending);
+    setState(() {
+      _sortColumnIndex = columnIndex;
+      _sortAscending = ascending;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+    var currentPage = Provider.of<PageModelAdmin>(context);
+
+    TextFormField searchField = TextFormField(
+      controller: _searchController,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        labelText: 'Rechercher',
+        prefixIcon: const Icon(Icons.search),
+        contentPadding: const EdgeInsets.only(top: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(
+            color: Colors.blue,
+            width: 3.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: const BorderSide(color: Colors.blue, width: 3.0),
+        ),
+      ),
+      onChanged: (value) {
+        setState(() {
+          _dataSource.filterBySearch(value);
+        });
+      },
+    );
+
+    return SingleChildScrollView(
+        child: Padding(
+      padding: const EdgeInsets.all(5),
+      child: Column(
+        children: [
+          if (!isSmallScreen)
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: searchField,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 2,
+                  child: DropdownButtonFormField<Filiere>(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
+                    value: _selectedFiliere,
+                    elevation: 18,
+                    onChanged: (Filiere? value) {
+                      setState(() {
+                        _selectedFiliere = value;
+                        _dataSource.filterByFiliere(value!.nomFiliere);
+                      });
+                    },
+                    items: widget.allFilieres
+                        .map<DropdownMenuItem<Filiere>>((Filiere value) {
+                      return DropdownMenuItem<Filiere>(
+                        value: value,
+                        child: Text(
+                          value.nomFiliere,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }).toList(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Filière',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: AppColors.secondaryColor,
+                          width: 3.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                            color: AppColors.secondaryColor, width: 3.0),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                if (_selectedFiliere != null)
                   Expanded(
-                    child:
-                        //Dropdown Filieres
-                        DropdownButtonFormField<Filiere>(
-                      dropdownColor: AppColors.secondaryColor,
-                      style: const TextStyle(
-                          color: AppColors.backgroundColor,
-                          fontSize: FontSize.small),
-                      value: _selectedFiliere,
-                      elevation: 18,
-                      onChanged: (Filiere? value) {
+                    flex: 2,
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedNiveau,
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black),
+                      onChanged: (String? value) {
                         setState(() {
-                          _selectedFiliere = value!;
-                          _selectedNiveau = null;
+                          _selectedNiveau = value!;
+                          _dataSource.filterByNiveau(value);
                         });
-                        fetchData();
                       },
-                      items: Allfilieres.map<DropdownMenuItem<Filiere>>(
-                          (Filiere value) {
-                        return DropdownMenuItem<Filiere>(
+                      items: _selectedFiliere!.niveaux
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
                           value: value,
                           child: Text(
-                            value.nomFiliere,
-                            style: const TextStyle(
-                                fontSize: 8.5, fontWeight: FontWeight.bold),
+                            value,
+                            style: const TextStyle(color: Colors.black),
                           ),
                         );
                       }).toList(),
                       icon: const Icon(Icons.arrow_drop_down,
-                          color: AppColors.white),
-                      decoration: const InputDecoration(
-                        labelStyle: TextStyle(color: AppColors.white),
-                        labelText: 'Filière',
-                        enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: AppColors.white, width: 2.0),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.0))),
+                          color: Colors.black),
+                      decoration: InputDecoration(
+                        labelText: 'Niveau',
+                        contentPadding: const EdgeInsets.all(10),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: AppColors.secondaryColor,
+                            width: 3.0,
+                          ),
+                        ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.white),
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                              color: AppColors.secondaryColor, width: 3.0),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: //Dropdown Niveaux
-                        _selectedFiliere != null
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondaryColor,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  border: Border.all(
-                                      color: AppColors.white, width: 2.0),
-                                ),
-                                child: DropdownButton<String>(
-                                  value: _selectedNiveau,
-                                  dropdownColor: AppColors.secondaryColor,
-                                  style:
-                                      const TextStyle(color: AppColors.white),
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _selectedNiveau = value!;
-                                      fetchData();
-                                    });
-                                  },
-                                  items: _selectedFiliere!.niveaux
-                                      .map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(
-                                        value,
-                                        style: const TextStyle(
-                                            color: AppColors.white),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  hint: const Text(
-                                    'Niveau',
-                                    style: TextStyle(color: AppColors.white),
-                                  ),
-                                  icon: const Icon(Icons.arrow_drop_down,
-                                      color: AppColors.white),
-                                  isExpanded: true,
-                                  underline:
-                                      const SizedBox(), // Supprime la ligne de séparation
-                                ),
-                              )
-                            : const SizedBox(),
-                  )
-                ],
-              )),
-          Container(
-            color: AppColors.secondaryColor,
-            height: 80,
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: MediaQuery.of(context).size.width >= 1024
-                  ? MediaQuery.of(context).size.width * 0.2
-                  : MediaQuery.of(context).size.width >= 600
-                      ? MediaQuery.of(context).size.width * 0.05
-                      : 10,
-            ),
-            child: TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: AppColors.white,
+                const SizedBox(width: 10),
+                IconButton(
+                  color: Colors.blue,
+                  splashColor: Colors.transparent,
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () async {
+                    await widget.callback2();
+                  },
                 ),
-                hintText: "Rechercher",
-                hintStyle: TextStyle(color: AppColors.white),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.white),
+                IconButton(
+                  color: Colors.green,
+                  splashColor: Colors.transparent,
+                  icon: const Icon(Icons.add),
+                  onPressed: () async {
+                    currentPage.updatePage(MenuItems(
+                        text: "Ajouter un cours",
+                        tap: AddNewCoursePage(callback: widget.callback2)));
+                  },
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.white),
-                ),
-              ),
-              style: const TextStyle(color: AppColors.white),
-              onChanged: (value) {
-                _onSearchChanged();
-              },
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const Text(
-            "Gestion des cours",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppColors.secondaryColor,
-                fontSize: FontSize.large),
-          ),
-          Expanded(
-              child: StreamBuilder<List<dynamic>>(
-            stream: _streamController.stream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: LoadingAnimationWidget.hexagonDots(
-                      color: AppColors.secondaryColor, size: 100),
-                );
-              } else if (snapshot.hasError) {
-                return errorWidget(error: snapshot.error.toString());
-              } else {
-                List<dynamic>? cours = snapshot.data;
-                if (cours!.isEmpty) {
-                  return const SingleChildScrollView(
-                    child: NoResultWidget(),
-                  );
-                } else {
-                  final cours = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: cours.length,
-                    itemBuilder: (contex, index) {
-                      final cour = cours[index];
-                      return ListTile(
-                        title: Text(cour['nomCours']),
-                        subtitle: Text(
-                          cour['sigleCours'],
-                          style:
-                              const TextStyle(color: AppColors.secondaryColor),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
+                IconButton(
+                  color: Colors.red,
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Row(
                           children: [
-                            IconButton(
-                              icon: const Icon(Icons.visibility),
-                              onPressed: () {
-                                showCourseDetailsDialog(context, cour);
-                              },
+                            Icon(
+                              Icons.warning,
+                              color: Colors.orange,
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                // Naviguez vers la page de modification en passant l'ID
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => EditCoursePage(
-                                            id: cour['idCours'],
-                                            callback: fetchData,
-                                          )),
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete,
-                                color: AppColors.redColor,
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Row(
-                                      children: [
-                                        Icon(
-                                          Icons.warning,
-                                          color: Colors.orange,
-                                        ),
-                                        SizedBox(width: 10),
-                                        Text(
-                                          "Supprimer le cours",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20.0,
-                                              color: Colors.orange),
-                                        ),
-                                      ],
-                                    ),
-                                    content: const Text(
-                                        'Êtes-vous sûr de vouloir supprimer ce cours ?  Cette action est irréversible'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Annuler'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          // Supprimez la filière de Firestore
-                                          await set_Data().deleteCours(
-                                              cour['idCours'], context);
-                                          fetchData();
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Supprimer'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                            SizedBox(width: 10),
+                            Text(
+                              "Supprimer tous les cours",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20.0,
+                                  color: Colors.orange),
                             ),
                           ],
                         ),
-                      );
-                    },
-                  );
-                }
-              }
-            },
-          ))
-        ],
-      ),
-      floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: ExpandableFab(
-        distance: 70,
-        type: ExpandableFabType.up,
-        children: [
-          Row(
-            children: [
-              const Text("Ajouter"),
-              const SizedBox(
-                width: 10,
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.add),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddNewCoursePage(
-                              callback: fetchData,
-                            )),
-                  );
-                },
-              ),
-            ],
-          ),
-          Row(
-            children: [
-              const Text("Tous supprimer"),
-              const SizedBox(
-                width: 10,
-              ),
-              FloatingActionButton(
-                heroTag: null,
-                child: const Icon(Icons.delete_forever),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Row(
-                        children: [
-                          Icon(
-                            Icons.warning,
-                            color: Colors.orange,
+                        content: const Text(
+                            'Êtes-vous sûr de vouloir supprimer tous les cours? \n Cette action est irréversible.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Annuler'),
                           ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Supprimer tous les cours",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20.0,
-                                color: Colors.orange),
+                          TextButton(
+                            onPressed: () async {
+                              await set_Data().deleteAllCours(context);
+                              Navigator.of(context).pop();
+                              await widget.callback2();
+                            },
+                            child: const Text('Supprimer'),
                           ),
                         ],
                       ),
-                      content: const Text(
-                          'Êtes-vous sûr de vouloir supprimer tous les cours? Cette action est irréversible.'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Annuler'),
+                    );
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  searchField,
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField<Filiere>(
+                    dropdownColor: Colors.white,
+                    style: const TextStyle(color: Colors.black, fontSize: 12.0),
+                    value: _selectedFiliere,
+                    elevation: 18,
+                    onChanged: (Filiere? value) {
+                      setState(() {
+                        _selectedFiliere = value;
+                        _dataSource.filterByFiliere(value!.nomFiliere);
+                      });
+                    },
+                    items: widget.allFilieres
+                        .map<DropdownMenuItem<Filiere>>((Filiere value) {
+                      return DropdownMenuItem<Filiere>(
+                        value: value,
+                        child: Text(
+                          value.nomFiliere,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold),
                         ),
-                        TextButton(
-                          onPressed: () async {
-                            // Supprimez les filière de Firestore
-                            await set_Data().deleteAllCours(context);
-                            fetchData();
-
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Supprimer'),
+                      );
+                    }).toList(),
+                    icon:
+                        const Icon(Icons.arrow_drop_down, color: Colors.black),
+                    decoration: InputDecoration(
+                      labelText: 'Filtrer par filière',
+                      contentPadding: const EdgeInsets.all(10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: const BorderSide(
+                          color: Colors.blue,
+                          width: 3.0,
                         ),
-                      ],
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 3.0),
+                      ),
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(height: 10),
+                  if (_selectedFiliere != null)
+                    DropdownButtonFormField<String>(
+                      value: _selectedNiveau,
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black),
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedNiveau = value!;
+                          _dataSource.filterByNiveau(value);
+                        });
+                      },
+                      items: _selectedFiliere!.niveaux
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        );
+                      }).toList(),
+                      icon: const Icon(Icons.arrow_drop_down,
+                          color: Colors.black),
+                      decoration: InputDecoration(
+                        labelText: 'Filtrer par niveau',
+                        contentPadding: const EdgeInsets.all(10),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(
+                            color: Colors.blue,
+                            width: 3.0,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 3.0),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        color: Colors.blue,
+                        splashColor: Colors.transparent,
+                        icon: const Icon(Icons.refresh),
+                        onPressed: () async {
+                          await widget.callback2();
+                        },
+                      ),
+                      IconButton(
+                        color: Colors.green,
+                        splashColor: Colors.transparent,
+                        icon: const Icon(Icons.add),
+                        onPressed: () async {
+                          currentPage.updatePage(MenuItems(
+                              text: "Ajouter un cours",
+                              tap: AddNewCoursePage(
+                                  callback: widget.callback2)));
+                        },
+                      ),
+                      IconButton(
+                        color: Colors.red,
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Row(
+                                children: [
+                                  Icon(
+                                    Icons.warning,
+                                    color: Colors.orange,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Supprimer tous les cours",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20.0,
+                                        color: Colors.orange),
+                                  ),
+                                ],
+                              ),
+                              content: const Text(
+                                  'Êtes-vous sûr de vouloir supprimer tous les cours? Cette action est irréversible.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Annuler'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    await set_Data().deleteAllCours(context);
+                                    Navigator.of(context).pop();
+                                    await widget.callback2();
+                                  },
+                                  child: const Text('Supprimer'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                    ],
+                  )
+                ],
               ),
-            ],
-          ),
+            ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: PaginatedDataTable(
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Text('Ligne par page:'),
+                    const SizedBox(width: 8),
+                    DropdownButton<int>(
+                      value: _rowsPerPage,
+                      items: _availableRowsPerPage
+                          .map((int value) => DropdownMenuItem<int>(
+                                value: value,
+                                child: Text('$value'),
+                              ))
+                          .toList(),
+                      onChanged: (int? newValue) {
+                        if (newValue != null) {
+                          setState(() {
+                            _rowsPerPage = newValue;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
+              header: const Text(
+                'Liste des cours',
+                textAlign: TextAlign.center,
+              ),
+              columns: [
+                if (!isSmallScreen)
+                  DataColumn(
+                    label: const Text(
+                      'Sigle',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (int columnIndex, bool ascending) => _sort<String>(
+                        (CourseData d) => d.sigle, columnIndex, ascending),
+                  ),
+                DataColumn(
+                  label: const Text(
+                    'Cours',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (CourseData d) => d.nomCours, columnIndex, ascending),
+                ),
+                if (!isSmallScreen)
+                  DataColumn(
+                    label: const Text(
+                      'Filiere',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (int columnIndex, bool ascending) => _sort<String>(
+                        (CourseData d) => d.nomFiliere, columnIndex, ascending),
+                  ),
+                if (!isSmallScreen)
+                  DataColumn(
+                    label: const Text(
+                      'Niveau',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (int columnIndex, bool ascending) => _sort<String>(
+                        (CourseData d) => d.niveau, columnIndex, ascending),
+                  ),
+                DataColumn(
+                  label: const Text(
+                    'Professeur',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (int columnIndex, bool ascending) => _sort<String>(
+                      (CourseData d) => d.nomProf, columnIndex, ascending),
+                ),
+                const DataColumn(
+                  label: Text(
+                    'Actions',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+              source: _dataSource,
+              rowsPerPage: _rowsPerPage,
+              availableRowsPerPage: _availableRowsPerPage,
+              onRowsPerPageChanged: (int? value) {
+                setState(() {
+                  _rowsPerPage = value ?? _defaultRowsPerPage;
+                });
+              },
+              columnSpacing: 10,
+              horizontalMargin: 10,
+              showCheckboxColumn: true,
+              showFirstLastButtons: true,
+
+              // dataRowMaxHeight: 100,
+              sortColumnIndex: _sortColumnIndex,
+              sortAscending: _sortAscending,
+              headingRowColor:
+                  MaterialStateColor.resolveWith((states) => Colors.grey),
+            ),
+          )
         ],
       ),
-    );
+    ));
   }
 }

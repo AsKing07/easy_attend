@@ -14,23 +14,25 @@ class Etudiant {
   String filiere;
   String niveau;
   bool statut;
+  String? imageUrl;
 
-  Etudiant({
-    this.uid,
-    required this.matricule,
-    required this.nom,
-    required this.prenom,
-    this.email,
-    this.password,
-    required this.phone,
-    required this.idFiliere,
-    required this.filiere,
-    required this.niveau,
-    required this.statut,
-  });
+  Etudiant(
+      {this.uid,
+      required this.matricule,
+      required this.nom,
+      required this.prenom,
+      this.email,
+      this.password,
+      required this.phone,
+      required this.idFiliere,
+      required this.filiere,
+      required this.niveau,
+      required this.statut,
+      this.imageUrl});
 
   factory Etudiant.fromDocument(DocumentSnapshot doc) {
     return Etudiant(
+        imageUrl: doc['imageUrl'],
         uid: doc.id,
         matricule: doc['matricule'],
         nom: doc["nom"],

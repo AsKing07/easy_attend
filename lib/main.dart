@@ -1,19 +1,22 @@
-import 'package:easy_attend/Screens/admin/AdminHome.dart';
+import 'package:easy_attend/Models/menuItems.dart';
+import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
+
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
-import 'package:easy_attend/Screens/etudiant/EtudiantHome.dart';
-import 'package:easy_attend/Screens/professeur/ProfHome.dart';
+import 'package:easy_attend/Screens/etudiant/Home/EtudiantHome.dart';
+import 'package:easy_attend/Screens/professeur/Home/ProfHome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
+  // MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   ); //Initialiser Firebase
@@ -22,8 +25,15 @@ void main() async {
   checkLocalisation();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  runApp(MyApp(
-    prefs: prefs,
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => PageModelAdmin()),
+      ChangeNotifierProvider(create: (_) => PageModelProf()),
+      ChangeNotifierProvider(create: (_) => PageModelStud()),
+    ],
+    child: MyApp(
+      prefs: prefs,
+    ),
   ));
 }
 
@@ -82,11 +92,14 @@ class SplashScreen extends StatelessWidget {
             // Utilisateur connecté, rediriger en fonction du rôle
             final String role = prefs.getString("role") ?? "";
             if (role == "admin") {
-              return const AdminHome(); // Rediriger vers la page d'administration
+              return const SelectionArea(child: AdminHome());
+              // Rediriger vers la page d'administration
             } else if (role == "student") {
-              return const EtudiantHome(); // Rediriger vers la page d'étudiant
+              return const SelectionArea(child: EtudiantHome());
+              // Rediriger vers la page d'étudiant
             } else if (role == "prof") {
-              return const ProfHome(); // Rediriger vers la page de professeur
+              return const SelectionArea(child: ProfHome());
+              // Rediriger vers la page de professeur
             }
           }
           // Utilisateur non connecté, rediriger vers la page de connexion
