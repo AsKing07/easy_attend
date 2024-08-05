@@ -1,3 +1,4 @@
+import 'package:easy_attend/Config/styles.dart';
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
 
@@ -16,6 +17,42 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: AppColors.textColor,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Easy",
+                    style: TextStyle(
+                        color: AppColors.primaryColor,
+                        fontSize: 30,
+                        letterSpacing: 10.0),
+                  ),
+                  Text(
+                    "Attend",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      letterSpacing: 10.0,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              CircularProgressIndicator(),
+            ],
+          ),
+        ),
+      )));
+
   // MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -86,7 +123,38 @@ class SplashScreen extends StatelessWidget {
       future: checkUserLoggedIn(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Afficher un indicateur de chargement en attendant la vérification
+          return const Scaffold(
+            backgroundColor: AppColors.textColor,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Easy",
+                        style: TextStyle(
+                            color: AppColors.primaryColor,
+                            fontSize: 30,
+                            letterSpacing: 10.0),
+                      ),
+                      Text(
+                        "Attend",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30,
+                          letterSpacing: 10.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            ),
+          ); // Afficher un indicateur de chargement en attendant la vérification
         } else {
           if (snapshot.data == true) {
             // Utilisateur connecté, rediriger en fonction du rôle
