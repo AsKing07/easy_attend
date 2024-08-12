@@ -116,7 +116,7 @@ class _EditProfPageState extends State<EditProfPage> {
               TextFormField(
                   controller: _prenomController,
                   validator: (value) {
-                    if (_phoneController.text.isEmpty) {
+                    if (_prenomController.text.isEmpty) {
                       return "Ce champ est obligatoire";
                     }
                     return null;
