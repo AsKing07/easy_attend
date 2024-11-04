@@ -45,7 +45,7 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
 
     await pdfHelper.savePdf(
         pdfBytes,
-        '${widget.course['nomCours']}- ${widget.course['niveau']}- ${DateFormat('EEEE, d MMMM yyyy, hh:mm', 'fr').format(seance['dateSeance'].toDate())}',
+        '${widget.course['nomCours']}- ${widget.course['niveau']}-  ${DateFormat('EEEE, d MMMM yyyy, HH:mm', 'fr').format(DateTime.parse(widget.seance['dateSeance']).toLocal().subtract(const Duration(hours: 1)))} ',
         context);
   }
 
