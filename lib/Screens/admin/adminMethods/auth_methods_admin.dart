@@ -160,8 +160,12 @@ class auth_methods_admin {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool("loggedIn", true);
         prefs.setString("role", "admin");
-        prefs.setString("user", json.encode(admin));
-
+        if (admin.containsKey('token')) {
+          await prefs.setString('token', admin['token']);
+        }
+        if (admin.containsKey('result')) {
+          prefs.setString("user", json.encode(admin['result']));
+        }
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const AdminHome()),
@@ -294,6 +298,8 @@ class auth_methods_admin {
 
 //Ajouter 1 étudiant
   Future<void> addOneStudent(Etudiant etudiant, BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
     try {
       showDialog(
           context: context,
@@ -342,15 +348,19 @@ class auth_methods_admin {
               'niveau': etudiant.niveau.toUpperCase().trim(),
               'statut': true,
             }),
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+              'Content-Type': 'application/json',
+              'authorization': 'Bearer $token'
+            },
           );
 
           if (response.statusCode == 200) {
             Navigator.pop(context);
             Helper().succesMessage(context);
           } else {
+            var responseBody = jsonDecode(response.body);
             Navigator.pop(context);
-            Helper().ErrorMessage(context);
+            Helper().ErrorMessage(context, content: responseBody['message']);
           }
         }
       }
@@ -377,83 +387,6 @@ class auth_methods_admin {
       }
     }
   }
-  // Future<void> addOneStudent(Etudiant etudiant, BuildContext context) async {
-  //   try {
-  //     showDialog(
-  //         context: context,
-  //         builder: (context) => Center(
-  //               child: LoadingAnimationWidget.hexagonDots(
-  //                   color: AppColors.secondaryColor, size: 200),
-  //             ));
-  //     final docSnapshot = await FirebaseFirestore.instance
-  //         .collection('etudiant')
-  //         .where('matricule', isEqualTo: etudiant.matricule)
-  //         .get();
-  //     if (docSnapshot.docs.isNotEmpty) {
-  //       // L' étudiant existe déjà, afficher un message d'erreur
-  //       Navigator.pop(context);
-  //       showDialog(
-  //         context: context,
-  //         builder: (context) {
-  //           return myErrorWidget(
-  //               content: "Un étudiant avec le même matricule existe déjà.",
-  //               height: 160);
-  //         },
-  //       );
-  //     } else {
-  //       FirebaseApp firebaseApp = await Firebase.initializeApp(
-  //           name: 'Secondary', options: Firebase.app().options);
-  //       // Création de l'etudiant
-  //       UserCredential userCredential = await register(
-  //           etudiant.email!.trim(), etudiant.password!.trim(), firebaseApp);
-  //       // Obtention de l'UID de l'étudiant
-  //       String? uid = userCredential.user?.uid;
-  //       if (uid != null) {
-  //         // L'étudiant n'existe pas encore, ajouter
-  //         await FirebaseFirestore.instance.collection('etudiant').doc(uid).set({
-  //           'nom': etudiant.nom.toUpperCase().trim(),
-  //           'prenom': etudiant.prenom.toUpperCase().trim(),
-  //           'matricule': etudiant.matricule.toUpperCase().trim(),
-  //           'phone': etudiant.phone.toUpperCase().trim(),
-  //           'filiere': etudiant.filiere.toUpperCase().trim(),
-  //           'idFiliere': etudiant.idFiliere!.trim(),
-  //           'niveau': etudiant.niveau.toUpperCase().trim(),
-  //           'statut': etudiant.statut.toUpperCase().trim(),
-  //         }).then((value) {
-  //           // Etudiant ajouté avec succès
-  //           Navigator.pop(context);
-  //           Helper().succesMessage(context);
-  //         }).catchError((error) {
-  //           // Une erreur s'est produite lors de l'ajout du cours
-  //           // print(error);
-  //           Navigator.pop(context);
-  //           Helper().ErrorMessage(context);
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     Navigator.pop(context);
-  //     // Gérer l'erreur d'inscription ici
-  //     if (e is FirebaseAuthException) {
-  //       if (e.code == 'email-already-in-use') {
-  //         // L'email est déjà utilisé, afficher un message à l'utilisateur
-  //         GFToast.showToast(
-  //             'Un utilisateur avec cet email existe déjà', context,
-  //             backgroundColor: Colors.white,
-  //             textStyle: const TextStyle(color: Colors.red),
-  //             toastDuration: 6);
-  //       } else {
-  //         // Gérer les autres erreurs Firebase
-  //         // print('Une erreur s\'est produite lors de l\'inscription : $e');
-  //         Helper().ErrorMessage(context);
-  //       }
-  //     } else {
-  //       // Gérer les autres erreurs
-  //       // print('Une erreur s\'est produite lors de l\'inscription : $e');
-  //       Helper().ErrorMessage(context);
-  //     }
-  //   }
-  // }
 
 //Ajout d'un étudiant récupérer depuis un fichier excel
   Future<void> addStudentTookFromExcel(
@@ -723,6 +656,7 @@ class auth_methods_admin {
     prefs.remove("email");
     prefs.remove("mdp");
     prefs.remove("user");
+    prefs.remove('token');
 
     Navigator.pushAndRemoveUntil(
         context,

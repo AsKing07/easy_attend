@@ -502,6 +502,8 @@ class set_Data {
 
   Future<void> modifierEtudiantByAdmin(idEtudiant, nom, prenom, phone, filiere,
       idFiliere, niveau, matricule, BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
     showDialog(
         context: context,
         builder: (context) => Center(
@@ -538,7 +540,10 @@ class set_Data {
           'matricule': matricule.toString().toUpperCase().trim(),
           'uid': idEtudiant
         }),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': 'Bearer $token'
+        },
       );
 
       if (response.statusCode == 200) {

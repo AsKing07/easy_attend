@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:easy_attend/Models/menuItems.dart';
 import 'package:easy_attend/Screens/admin/Home/AdminHome.dart';
 
 import 'package:easy_attend/Screens/authScreens/auth_page.dart';
 import 'package:easy_attend/Screens/etudiant/Home/EtudiantHome.dart';
 import 'package:easy_attend/Screens/professeur/Home/ProfHome.dart';
+import 'package:easy_attend/Widgets/forbienAcces.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +15,8 @@ import 'firebase_options.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart' as loc;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'package:http/http.dart' as http;
 // import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
@@ -78,6 +83,7 @@ class MyApp extends StatelessWidget {
 
 class SplashScreen extends StatelessWidget {
   final dynamic prefs;
+
   const SplashScreen({super.key, required this.prefs});
 
   @override
@@ -88,9 +94,10 @@ class SplashScreen extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Afficher un indicateur de chargement en attendant la vérification
         } else {
+          final String role = prefs.getString("role") ?? "";
           if (snapshot.data == true) {
             // Utilisateur connecté, rediriger en fonction du rôle
-            final String role = prefs.getString("role") ?? "";
+
             if (role == "admin") {
               return const SelectionArea(child: AdminHome());
               // Rediriger vers la page d'administration
@@ -102,7 +109,21 @@ class SplashScreen extends StatelessWidget {
               // Rediriger vers la page de professeur
             }
           }
+          // Utilisateur connecté mais acces non autorisé, rediriger vers la page de connexion
+
+          if (role.isNotEmpty) {
+            return ForbiddenAccess(
+                message: "Vous n'êtes pas autorisé à acceder à cette page",
+                onLoginRedirect: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AuthPage()),
+                    (route) => false,
+                  );
+                });
+          }
           // Utilisateur non connecté, rediriger vers la page de connexion
+
           return const AuthPage();
         }
       },
@@ -111,8 +132,25 @@ class SplashScreen extends StatelessWidget {
 
   Future<bool> checkUserLoggedIn() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? role = prefs.getString("role");
+    String? token = prefs.getString("token");
+    final BACKEND_URL = dotenv.env['API_URL'];
 
-    bool loggedIn = prefs.getBool("loggedIn") ?? false;
-    return loggedIn;
+    http.Response response = await http.post(
+      Uri.parse('$BACKEND_URL/api/verifyToken'),
+      body: jsonEncode({
+        'role': role,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': 'Bearer $token'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

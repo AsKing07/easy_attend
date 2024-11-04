@@ -82,33 +82,6 @@ class get_Data {
     var utilisateur = json.decode(prefs.getString('user')!);
     Map<String, dynamic> admin = utilisateur;
     return admin;
-    // try {
-    //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-    //   var utilisateur = json.decode(prefs.getString('user')!);
-    //   // final uid = FirebaseAuth.instance.currentUser?.uid;
-    //   final uid = utilisateur['uid'];
-
-    //   // Envoi d'une requête GET à l'API
-    //   http.Response response = await http.get(
-    //     Uri.parse('$BACKEND_URL/api/admin/$uid'),
-    //   );
-
-    //   if (response.statusCode == 200) {
-    //     // La requête a réussi, traiter la réponse ici
-    //     Map<String, dynamic> admin = jsonDecode(response.body);
-    //     // Utiliser les données de l'administrateur ici
-    //     // print(admin);
-    //     return admin;
-    //   } else {
-    //     // La requête a échoué, gérer l'erreur ici
-    //     print(
-    //         'Erreur lors de la récupération des données de l\'administrateur');
-    //     return {'nom': 'Administrateur', 'prenom': 'Administrateur'};
-    //   }
-    // } catch (e) {
-    //   // Gérer l'erreur d'envoi de la requête ici
-    //   print('Erreur lors de l\'envoi de la requête');
-    //}
   }
 
   //METHODES DES ETUDIANTS
@@ -116,15 +89,6 @@ class get_Data {
   Future loadCurrentStudentData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var utilisateur = json.decode(prefs.getString('user')!);
-    //   // final uid = FirebaseAuth.instance.currentUser?.uid;
-    //   final uid = utilisateur['uid'];
-    // http.Response response = await http.get(
-    //   Uri.parse('$BACKEND_URL/api/student/getStudentById/$uid'),
-    // );
-
-    // Map<String, dynamic> x = jsonDecode(response.body);
-    // // print(uid);
-
     Map<String, dynamic> x = utilisateur;
     return x;
   }

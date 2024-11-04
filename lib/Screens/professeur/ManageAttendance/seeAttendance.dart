@@ -40,11 +40,12 @@ class _SeeSeanceAttendanceProfState extends State<SeeSeanceAttendanceProf> {
 
   Future<void> imprimerPdf() async {
     PDFHelper pdfHelper = PDFHelper();
-    Uint8List pdfBytes = await pdfHelper.buildStudentPdf(widget.course,
-        '${etudiant['nom']} ${etudiant['prenom']}', etudiant['uid'], context);
+    Uint8List pdfBytes =
+        await pdfHelper.buildGeneralPdf(widget.seance, widget.course, context);
+
     await pdfHelper.savePdf(
         pdfBytes,
-        '${widget.course['nomCours']}- ${widget.course['niveau']}- ${etudiant['nom']} ${etudiant['prenom']}',
+        '${widget.course['nomCours']}- ${widget.course['niveau']}- ${DateFormat('EEEE, d MMMM yyyy, hh:mm', 'fr').format(seance['dateSeance'].toDate())}',
         context);
   }
 
